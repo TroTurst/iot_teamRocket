@@ -1,0 +1,1 @@
+﻿/**\r\n * Pantalla de login: correo/contraseña; link a registro y recuperación; luego RoleRouter.\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

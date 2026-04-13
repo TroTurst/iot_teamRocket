@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Grafo raíz: incluye grafos por rol; startDestination apunta al grafo del sistema. -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_root.xml"
+    app:startDestination="@id/placeholder">
+    <!-- Placeholder: definir destinos/acciones según INMIA_estructura_proyecto.md -->
+</navigation>

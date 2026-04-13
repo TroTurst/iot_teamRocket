@@ -1,0 +1,1 @@
+﻿/**\r\n * Onboarding de 3 slides con ViewPager2 + indicadores.\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n
