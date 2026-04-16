@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "teamRocket"
+rootProject.name = "inmia"
 include ':app'

@@ -1,1 +1,0 @@
-﻿/**\r\n * Detalle de separación del cliente (monto, fecha límite, pagar).\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

@@ -1,1 +1,0 @@
-﻿/**\r\n * Enum de roles del sistema (CLIENTE, ASESOR, ADMIN_INMOBILIARIA, SUPERADMIN).\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

@@ -1,1 +1,0 @@
-﻿/**\r\n * Utilidad para redirigir a la navegación según rol del usuario (placeholder por ahora).\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

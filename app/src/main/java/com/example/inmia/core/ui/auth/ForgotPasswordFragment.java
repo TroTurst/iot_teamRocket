@@ -1,1 +1,0 @@
-﻿/**\r\n * Solicitud de recuperación de contraseña con correo.\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

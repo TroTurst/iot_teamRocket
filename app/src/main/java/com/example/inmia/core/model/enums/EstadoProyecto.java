@@ -1,1 +1,0 @@
-﻿/**\r\n * Enum de estados del proyecto (EN_PLANOS, EN_PREVENTA, EN_VENTA).\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n

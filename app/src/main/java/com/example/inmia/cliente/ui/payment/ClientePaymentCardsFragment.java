@@ -1,1 +1,0 @@
-﻿/**\r\n * Gestión de tarjetas del cliente (pendiente integración de pagos).\r\n *\r\n * NOTE: Archivo placeholder generado desde INMIA_estructura_proyecto.md.\r\n * No contiene implementación a propósito.\r\n */\r\n
