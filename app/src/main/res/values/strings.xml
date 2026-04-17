@@ -48,4 +48,7 @@
     <string name="cd_logo">Logo INMIA</string>
     <string name="cd_forgot_icon">Recuperar contraseña</string>
 
+    <!-- Error credenciales incorrectas -->
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+
 </resources>

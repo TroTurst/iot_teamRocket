@@ -51,6 +51,30 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia"/>
 
+        <!-- CLIENTE -->
+        <activity
+            android:name=".cliente.ClienteHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- ASESOR -->
+        <activity
+            android:name=".asesor.AsesorHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- ADMIN -->
+        <activity
+            android:name=".admin.AdminHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- SUPERADMIN -->
+        <activity
+            android:name=".superadmin.SuperAdminHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
     </application>
 
 </manifest>

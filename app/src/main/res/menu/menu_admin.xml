@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@drawable/ic_inicio"
+        android:title="Inicio"
+        android:orderInCategory="1"/>
+
+    <item
+        android:id="@+id/nav_proyectos"
+        android:icon="@drawable/ic_proyectos"
+        android:title="Proyectos"
+        android:orderInCategory="2"/>
+
+    <item
+        android:id="@+id/nav_asesores"
+        android:icon="@drawable/ic_asesores"
+        android:title="Asesores"
+        android:orderInCategory="3"/>
+
+    <item
+        android:id="@+id/nav_reportes"
+        android:icon="@drawable/ic_reportes"
+        android:title="Reportes"
+        android:orderInCategory="4"/>
+
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_perfil"
+        android:title="Perfil"
+        android:orderInCategory="5"/>
+
+</menu>
