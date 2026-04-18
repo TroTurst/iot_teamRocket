@@ -25,22 +25,24 @@ public class RankingCompletoActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_ranking_completo);
 
-        bottomNav  = findViewById(R.id.bottomNavSuperAdmin);
-        tabHoy     = findViewById(R.id.tabHoy);
-        tabSemana  = findViewById(R.id.tabSemana);
-        tabMes     = findViewById(R.id.tabMes);
-        tabAnio    = findViewById(R.id.tabAnio);
-        tabRango   = findViewById(R.id.tabRango);
+        bottomNav = findViewById(R.id.bottomNavSuperAdmin);
+        tabHoy    = findViewById(R.id.tabHoy);
+        tabSemana = findViewById(R.id.tabSemana);
+        tabMes    = findViewById(R.id.tabMes);
+        tabAnio   = findViewById(R.id.tabAnio);
+        tabRango  = findViewById(R.id.tabRango);
 
-        // Filtros — misma lógica que ReportesActivity
+        // ← CAMBIO: botón atrás
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        // Filtros
         tabHoy.setOnClickListener(v    -> seleccionarPeriodo(tabHoy));
         tabSemana.setOnClickListener(v -> seleccionarPeriodo(tabSemana));
         tabMes.setOnClickListener(v    -> seleccionarPeriodo(tabMes));
         tabAnio.setOnClickListener(v   -> seleccionarPeriodo(tabAnio));
-        tabRango.setOnClickListener(v  -> {
-            Toast.makeText(this, "Selecciona un rango de fechas",
-                    Toast.LENGTH_SHORT).show();
-        });
+        tabRango.setOnClickListener(v  ->
+                Toast.makeText(this, "Selecciona un rango de fechas",
+                        Toast.LENGTH_SHORT).show());
 
         // Bottom nav
         bottomNav.setSelectedItemId(R.id.nav_reportes);
@@ -53,13 +55,14 @@ public class RankingCompletoActivity extends AppCompatActivity {
                 startActivity(new Intent(this, GestionUsuariosActivity.class));
                 return true;
             } else if (id == R.id.nav_reportes) {
-                finish(); // volver a reportes
+                finish();
                 return true;
             } else if (id == R.id.nav_logs) {
-                Toast.makeText(this, "Logs del sistema", Toast.LENGTH_SHORT).show();
+                // ← CAMBIO: navegar a LogsActivity
+                startActivity(new Intent(this, LogsActivity.class));
                 return true;
             } else if (id == R.id.nav_perfil) {
-                Toast.makeText(this, "Mi perfil", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
             return false;

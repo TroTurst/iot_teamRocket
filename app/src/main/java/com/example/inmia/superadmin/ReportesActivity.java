@@ -26,7 +26,7 @@ import java.util.List;
 public class ReportesActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private FrameLayout frameNotificaciones;
+
     private TextView tabHoy, tabSemana, tabMes, tabAnio, tabRango;
     private TextView tvVerTodo;
     private LineChart lineChart;
@@ -67,7 +67,7 @@ public class ReportesActivity extends AppCompatActivity {
 
         // Vincular vistas
         bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
-        frameNotificaciones = findViewById(R.id.frameNotificaciones);
+
         tabHoy              = findViewById(R.id.tabHoy);
         tabSemana           = findViewById(R.id.tabSemana);
         tabMes              = findViewById(R.id.tabMes);
@@ -93,9 +93,7 @@ public class ReportesActivity extends AppCompatActivity {
         tvVerTodo.setOnClickListener(v ->
                 startActivity(new Intent(this, RankingCompletoActivity.class)));
 
-        // Campanita
-        frameNotificaciones.setOnClickListener(v ->
-                Toast.makeText(this, "Notificaciones", Toast.LENGTH_SHORT).show());
+
 
         // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_reportes);
@@ -110,10 +108,10 @@ public class ReportesActivity extends AppCompatActivity {
             } else if (id == R.id.nav_reportes) {
                 return true;
             } else if (id == R.id.nav_logs) {
-                Toast.makeText(this, "Logs del sistema", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, LogsActivity.class));
                 return true;
             } else if (id == R.id.nav_perfil) {
-                Toast.makeText(this, "Mi perfil", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
             return false;

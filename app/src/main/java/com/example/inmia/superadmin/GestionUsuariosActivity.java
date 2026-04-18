@@ -115,12 +115,10 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ReportesActivity.class));
                 return true;
             } else if (id == R.id.nav_logs) {
-                // TODO: navegar a LogsActivity
-                Toast.makeText(this, "Logs del sistema", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, LogsActivity.class));
                 return true;
             } else if (id == R.id.nav_perfil) {
-                // TODO: navegar a PerfilActivity
-                Toast.makeText(this, "Mi perfil", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
 

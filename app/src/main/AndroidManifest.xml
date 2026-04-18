@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inmia">
         <activity
+            android:name=".superadmin.PerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.LogsActivity"
+            android:exported="false" />
+        <activity
             android:name=".superadmin.RankingCompletoActivity"
             android:exported="false" />
         <activity

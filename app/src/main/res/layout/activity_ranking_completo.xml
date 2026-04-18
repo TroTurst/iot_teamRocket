@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ── HEADER ── -->
+            <!-- ── HEADER — botón atrás + título, sin logo ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,64 +27,34 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp">
 
-                <!-- Logo -->
+                <!-- Botón atrás -->
                 <ImageView
-                    android:id="@+id/imgHeaderLogo"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_logo_inmia"
-                    android:contentDescription="@string/cd_logo"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <TextView
-                    android:id="@+id/tvHeaderAppName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-light"
-                    android:letterSpacing="0.2"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
-                    app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
-                    app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
-
-                <!-- Campanita -->
-                <FrameLayout
-                    android:id="@+id/frameNotificaciones"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:contentDescription="Volver"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"/>
 
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notifications"
-                        android:contentDescription="Notificaciones"/>
-
-                </FrameLayout>
-
-                <!-- Título -->
+                <!-- Título inline con botón atrás -->
                 <TextView
                     android:id="@+id/tvTitulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ranking de inmobiliarias"
                     android:textColor="@color/inmia_text"
-                    android:textSize="22sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/btnBack"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"/>
 
                 <!-- Filtros de período -->
                 <HorizontalScrollView
@@ -92,8 +62,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:scrollbars="none"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/btnBack"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -309,7 +279,6 @@
                     </LinearLayout>
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
 
-                    <!-- Filas 4-8 — normal -->
                     <!-- Fila 4 -->
                     <LinearLayout
                         android:layout_width="match_parent"
