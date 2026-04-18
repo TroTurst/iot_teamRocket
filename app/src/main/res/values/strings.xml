@@ -51,4 +51,26 @@
     <!-- Error credenciales incorrectas -->
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
 
+    <!-- ── SUPERADMIN — Gestión de usuarios ── -->
+    <string name="gestion_usuarios_title">Gestión de usuarios</string>
+    <string name="tab_admins">Admins</string>
+    <string name="tab_asesores">Asesores</string>
+    <string name="tab_clientes">Clientes</string>
+    <string name="buscar_hint">Buscar...</string>
+    <string name="btn_nuevo">+ Nuevo</string>
+    <string name="btn_solicitudes">Solicitudes</string>
+    <string name="ver_perfil">Ver perfil</string>
+    <string name="estado_activo">Activo</string>
+    <string name="estado_inactivo">Inactivo</string>
+    <string name="filtro_todos">Todos</string>
+    <string name="filtro_activos">Activos</string>
+    <string name="filtro_inactivos">Inactivos</string>
+    <string name="dialog_inhabilitar_titulo">¿Estás seguro?</string>
+    <string name="dialog_inhabilitar_mensaje">¿Estás seguro de inhabilitar a este usuario?</string>
+    <string name="dialog_inhabilitar_confirmar">Inhabilitar</string>
+    <string name="dialog_inhabilitar_cancelar">Cancelar</string>
+    <string name="dialog_habilitar_titulo">¿Estás seguro?</string>
+    <string name="dialog_habilitar_mensaje">¿Estás seguro de habilitar a este usuario?</string>
+    <string name="dialog_habilitar_confirmar">Habilitar</string>
+
 </resources>
