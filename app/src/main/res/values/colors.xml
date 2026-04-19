@@ -6,12 +6,4 @@
     <color name="inmia_text">#3D7A7A</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary_teal">#12B5B5</color>
-    <color name="background_light">#F5F5F5</color>
-    <color name="status_confirmed">#4CAF50</color>
-    <color name="status_pending">#FF9800</color>
-    <color name="status_finished">#757575</color>
-    <color name="error_red">#E53935</color>
-    <color name="text_gray">#757575</color>
-    <color name="card_background">#FFFFFF</color>
 </resources>
