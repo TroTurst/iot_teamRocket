@@ -88,28 +88,22 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         // Filtro
         btnFiltro.setOnClickListener(v -> mostrarDialogoFiltro());
 
-        // Botón Nuevo
-        btnNuevo.setOnClickListener(v -> {
-            // TODO: navegar a CrearAdminActivity
-            Toast.makeText(this, "Crear nuevo usuario", Toast.LENGTH_SHORT).show();
-        });
+        // ← CAMBIO: navega a CrearAdminActivity
+        btnNuevo.setOnClickListener(v ->
+                startActivity(new Intent(this, CrearAdminActivity.class)));
 
         // Botón Solicitudes
-        btnSolicitudes.setOnClickListener(v -> {
-            // TODO: navegar a SolicitudesActivity
-            Toast.makeText(this, "Ver solicitudes pendientes", Toast.LENGTH_SHORT).show();
-        });
+        btnSolicitudes.setOnClickListener(v ->
+                startActivity(new Intent(this, SolicitudesActivity.class)));
 
         // ── BOTTOM NAVIGATION ──
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
-                // Volver al home del superadmin
                 startActivity(new Intent(this, SuperAdminHomeActivity.class));
                 return true;
             } else if (id == R.id.nav_usuarios) {
-                // Ya estamos aquí
                 return true;
             } else if (id == R.id.nav_reportes) {
                 startActivity(new Intent(this, ReportesActivity.class));
@@ -137,7 +131,6 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         tabClientes.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabClientes.setTextColor(getColor(R.color.inmia_teal_dark));
 
-        // Activar tab seleccionado
         switch (tab) {
             case "admins":
                 tabAdmins.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));

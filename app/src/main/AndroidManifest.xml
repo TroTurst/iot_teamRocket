@@ -10,6 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inmia">
         <activity
+            android:name=".RegisterFotoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.SolicitudesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.CrearAdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".superadmin.PerfilActivity"
             android:exported="false" />
         <activity

@@ -73,4 +73,22 @@
     <string name="dialog_habilitar_mensaje">¿Estás seguro de habilitar a este usuario?</string>
     <string name="dialog_habilitar_confirmar">Habilitar</string>
 
+    <!-- ── CREAR ADMIN ── -->
+    <string name="crear_admin_titulo">Nuevo administrador</string>
+    <string name="hint_nombres">Nombres</string>
+    <string name="hint_apellidos">Apellidos</string>
+    <string name="hint_tipo_documento">Tipo de documento</string>
+    <string name="hint_num_documento">Número de documento</string>
+    <string name="hint_fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="hint_correo">Correo electrónico</string>
+    <string name="hint_telefono">Teléfono</string>
+    <string name="hint_domicilio">Domicilio</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_confirm_password">Confirmar contraseña</string>
+    <string name="btn_crear_cuenta">Crear cuenta</string>
+    <string name="error_campo_requerido">Este campo es obligatorio</string>
+    <string name="error_passwords_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="error_password_corta">Mínimo 6 caracteres</string>
+    <string name="registro_exitoso">¡Administrador creado exitosamente!</string>
+
 </resources>
