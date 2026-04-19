@@ -25,6 +25,7 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private FrameLayout framePerfil;
     private RecyclerView recyclerChatThreads;
     private EditText etSearchChat;
     private ChatThreadAdapter adapter;
@@ -44,6 +45,7 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
         bottomNav = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        framePerfil = findViewById(R.id.framePerfil);
         recyclerChatThreads = findViewById(R.id.recyclerChatThreads);
         etSearchChat = findViewById(R.id.etSearchChat);
 
@@ -52,6 +54,10 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
+        });
+
+        framePerfil.setOnClickListener(v -> {
+            startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
         bottomNav.setSelectedItemId(R.id.nav_chat);
@@ -69,7 +75,8 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
                 finish();
                 return true;
             } else if (id == R.id.nav_separaciones) {
-                Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                finish();
                 return true;
             }
 

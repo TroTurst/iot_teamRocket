@@ -17,6 +17,7 @@ public class AsesorHomeActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private FrameLayout framePerfil;
 
     // Hardcodeado — luego vendrá de Firebase
     private int totalNotificaciones = 2;
@@ -34,6 +35,7 @@ public class AsesorHomeActivity extends AppCompatActivity {
         bottomNav           = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
+        framePerfil         = findViewById(R.id.framePerfil);
 
         // Configurar badge inicial
         configurarBadge();
@@ -42,6 +44,10 @@ public class AsesorHomeActivity extends AppCompatActivity {
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
+        });
+
+        framePerfil.setOnClickListener(v -> {
+            startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
         // Bottom navigation
@@ -59,7 +65,8 @@ public class AsesorHomeActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_separaciones) {
-                Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                finish();
                 return true;
             }
 

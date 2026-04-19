@@ -10,14 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="80dp">
+        android:paddingBottom="96dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header shared across roles -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -52,13 +51,13 @@
                     android:id="@+id/frameNotificaciones"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_marginTop="44dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintEnd_toStartOf="@id/framePerfil">
 
                     <ImageView
                         android:id="@+id/imgCampana"
@@ -82,6 +81,29 @@
                         android:gravity="center"
                         android:background="@drawable/badge_background"
                         android:visibility="gone"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/framePerfil"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="44dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_profile_circle"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_perfil"
+                        android:tint="@color/inmia_teal_dark"
+                        android:contentDescription="Perfil"/>
 
                 </FrameLayout>
 
@@ -116,97 +138,444 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nuevas"
-                android:textColor="@color/inmia_text"
-                android:textSize="18sp"
+                android:text="HOY"
+                android:textColor="#7A9E9E"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:letterSpacing="0.2"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="8dp"/>
 
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="12dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/inmia_teal_light"
+                        android:alpha="0.8"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/inmia_info">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_citas"
+                            android:tint="@color/inmia_white"
+                            android:contentDescription="Cita"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_weight="1"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nueva cita registrada"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Juan Perez agendo una visita para hoy"
-                        android:textColor="#7A9E9E"
-                        android:textSize="13sp"
-                        android:layout_marginTop="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="George Cordova confirmo una cita para Palm Living"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hace 5 min"
-                        android:textColor="#7A9E9E"
-                        android:textSize="11sp"
-                        android:layout_marginTop="8dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cita confirmada"
+                            android:textColor="@color/inmia_info"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hoy 3:59 pm"
+                            android:textColor="#7A9E9E"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
 
-            <com.google.android.material.card.MaterialCardView
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="12dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/inmia_teal_light"
+                        android:alpha="0.8"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/inmia_teal_dark">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_separaciones"
+                            android:tint="@color/inmia_white"
+                            android:contentDescription="Separacion"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_weight="1"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Separacion pendiente"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Adrian solicita separacion para Palm Living Dpto 402"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Separacion solicitada"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hoy 2:39 am"
+                            android:textColor="#7A9E9E"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="12dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/inmia_teal_light"
+                        android:alpha="0.8"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/inmia_success">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_separaciones"
+                            android:tint="@color/inmia_white"
+                            android:contentDescription="Separacion"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Cliente solicita separar el inmueble A-402"
-                        android:textColor="#7A9E9E"
-                        android:textSize="13sp"
-                        android:layout_marginTop="6dp"/>
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="La separacion de Maria Quispe fue aprobada"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Separacion aprobada"
+                            android:textColor="@color/inmia_success"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hoy 9:14 am"
+                            android:textColor="#7A9E9E"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AYER"
+                android:textColor="#7A9E9E"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="12dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/inmia_line"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/inmia_danger">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_citas"
+                            android:tint="@color/inmia_white"
+                            android:contentDescription="Cita"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Hace 20 min"
-                        android:textColor="#7A9E9E"
-                        android:textSize="11sp"
-                        android:layout_marginTop="8dp"/>
+                        android:orientation="vertical"
+                        android:padding="14dp">
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Juan Perez cancelo su cita del 06/04/2026"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cita cancelada"
+                            android:textColor="@color/inmia_danger"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ayer 11:39 pm"
+                            android:textColor="#7A9E9E"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp">
+
+                <FrameLayout
+                    android:layout_width="28dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="12dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/inmia_line"/>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/inmia_warning">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_reportes"
+                            android:tint="@color/inmia_white"
+                            android:contentDescription="Pago"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </FrameLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Carlos Mendoza realizo el pago de S/ 2,000"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pago recibido"
+                            android:textColor="@color/inmia_warning"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ayer 4:20 pm"
+                            android:textColor="#7A9E9E"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

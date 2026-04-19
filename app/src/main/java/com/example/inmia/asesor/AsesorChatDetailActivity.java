@@ -21,6 +21,7 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private TextView tvSubGreeting;
+    private FrameLayout framePerfil;
 
     private int totalNotificaciones = 2;
 
@@ -38,6 +39,7 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         tvSubGreeting = findViewById(R.id.tvSubGreeting);
+        framePerfil = findViewById(R.id.framePerfil);
 
         String chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
         if (chatName != null && !chatName.trim().isEmpty()) {
@@ -49,6 +51,10 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
+        });
+
+        framePerfil.setOnClickListener(v -> {
+            startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
         bottomNav.setSelectedItemId(R.id.nav_chat);
@@ -68,7 +74,8 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_separaciones) {
-                Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                finish();
                 return true;
             }
 

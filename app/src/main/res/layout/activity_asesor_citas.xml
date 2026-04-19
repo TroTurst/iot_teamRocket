@@ -52,13 +52,13 @@
                     android:id="@+id/frameNotificaciones"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_marginTop="44dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintEnd_toStartOf="@id/framePerfil">
 
                     <ImageView
                         android:id="@+id/imgCampana"
@@ -82,6 +82,29 @@
                         android:gravity="center"
                         android:background="@drawable/badge_background"
                         android:visibility="visible"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/framePerfil"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="44dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_profile_circle"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_perfil"
+                        android:tint="@color/inmia_teal_dark"
+                        android:contentDescription="Perfil"/>
 
                 </FrameLayout>
 
@@ -199,7 +222,7 @@
                     app:boxStrokeColor="#D9E5E5"
                     app:boxStrokeWidth="1dp"
                     app:boxStrokeWidthFocused="1dp"
-                    app:endIconMode="dropdown"
+                    app:endIconMode="dropdown_menu"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -229,7 +252,7 @@
                     app:boxStrokeColor="#D9E5E5"
                     app:boxStrokeWidth="1dp"
                     app:boxStrokeWidthFocused="1dp"
-                    app:endIconMode="dropdown"
+                    app:endIconMode="dropdown_menu"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -259,7 +282,7 @@
                     app:boxStrokeColor="#D9E5E5"
                     app:boxStrokeWidth="1dp"
                     app:boxStrokeWidthFocused="1dp"
-                    app:endIconMode="dropdown"
+                    app:endIconMode="dropdown_menu"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView

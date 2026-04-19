@@ -24,6 +24,7 @@ public class AsesorCitasActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private FrameLayout framePerfil;
     private View btnCalendar;
     private AutoCompleteTextView dropdownEstado;
     private AutoCompleteTextView dropdownProyecto;
@@ -44,6 +45,7 @@ public class AsesorCitasActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        framePerfil = findViewById(R.id.framePerfil);
         btnCalendar = findViewById(R.id.btnCalendar);
         dropdownEstado = findViewById(R.id.dropdownEstado);
         dropdownProyecto = findViewById(R.id.dropdownProyecto);
@@ -56,6 +58,10 @@ public class AsesorCitasActivity extends AppCompatActivity {
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
+        });
+
+        framePerfil.setOnClickListener(v -> {
+            startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
         bottomNav.setSelectedItemId(R.id.nav_citas);
@@ -73,7 +79,8 @@ public class AsesorCitasActivity extends AppCompatActivity {
             } else if (id == R.id.nav_citas) {
                 return true;
             } else if (id == R.id.nav_separaciones) {
-                Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                finish();
                 return true;
             }
 

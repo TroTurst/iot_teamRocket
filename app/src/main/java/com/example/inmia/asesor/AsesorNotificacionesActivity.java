@@ -2,6 +2,7 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class AsesorNotificacionesActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
+    private FrameLayout framePerfil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,11 @@ public class AsesorNotificacionesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_asesor_notificaciones);
 
         bottomNav = findViewById(R.id.bottomNavAsesor);
+        framePerfil = findViewById(R.id.framePerfil);
+
+        framePerfil.setOnClickListener(v -> {
+            startActivity(new Intent(this, AsesorPerfilActivity.class));
+        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -41,7 +48,8 @@ public class AsesorNotificacionesActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_separaciones) {
-                Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                finish();
                 return true;
             }
 

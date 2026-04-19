@@ -88,6 +88,21 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar"/>
 
+        <activity
+            android:name=".asesor.AsesorSeparacionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorSeparacionDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorPerfilActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
         <!-- ADMIN -->
         <activity
             android:name=".admin.AdminHomeActivity"

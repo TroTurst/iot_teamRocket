@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#F5FAFA">
 
-    <!-- ── CONTENIDO PRINCIPAL CON SCROLL ── -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,13 +17,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ── HEADER — mismo diseño para todos los roles ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@drawable/gradient_background">
 
-                <!-- Logo -->
                 <ImageView
                     android:id="@+id/imgHeaderLogo"
                     android:layout_width="36dp"
@@ -36,7 +33,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
-                <!-- Nombre app -->
                 <TextView
                     android:id="@+id/tvHeaderAppName"
                     android:layout_width="wrap_content"
@@ -51,7 +47,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
 
-                <!-- Campanita — mismo diseño para todos los roles -->
                 <FrameLayout
                     android:id="@+id/frameNotificaciones"
                     android:layout_width="44dp"
@@ -112,12 +107,11 @@
 
                 </FrameLayout>
 
-                <!-- Saludo -->
                 <TextView
                     android:id="@+id/tvGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="¡Hola, Asesor!"
+                    android:text="Separaciones"
                     android:textColor="@color/inmia_text"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -127,12 +121,11 @@
                     app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toStartOf="parent"/>
 
-                <!-- Subtítulo -->
                 <TextView
                     android:id="@+id/tvSubGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gestiona tus citas y separaciones"
+                    android:text="Gestion de separaciones"
                     android:textColor="#5A8A8A"
                     android:textSize="14sp"
                     android:layout_marginStart="20dp"
@@ -142,125 +135,17 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ── SECCIÓN: RESUMEN DEL DÍA — placeholder ── -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="-24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="20dp">
-
-                    <!-- Citas hoy -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="3"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="32sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Citas hoy"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#E0EEEE"/>
-
-                    <!-- Separaciones pendientes -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="1"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="32sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Separaciones"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#E0EEEE"/>
-
-                    <!-- Proyectos asignados -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="2"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="32sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Proyectos"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- ── SECCIÓN: PRÓXIMAS CITAS — placeholder ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Próximas citas"
+                android:text="Por confirmar"
                 android:textColor="@color/inmia_text"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Cita placeholder 1 -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -270,83 +155,122 @@
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="#FFFFFF">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:padding="16dp">
 
-                    <!-- Hora -->
+                    <FrameLayout
+                        android:id="@+id/frameSeparacionImagenPendiente"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_map_placeholder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_proyectos"
+                            android:tint="#7A9E9E"
+                            android:contentDescription="Inmueble"/>
+
+                    </FrameLayout>
+
                     <LinearLayout
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="10:00"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="AM"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"/>
-                    </LinearLayout>
-
-                    <!-- Divisor vertical -->
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="40dp"
-                        android:layout_marginHorizontal="12dp"
-                        android:background="@color/inmia_teal_dark"/>
-
-                    <!-- Info cita -->
-                    <LinearLayout
+                        android:id="@+id/layoutSeparacionPendiente"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toEndOf="@id/frameSeparacionImagenPendiente"
+                        app:layout_constraintEnd_toStartOf="@id/btnConfirmarSeparacion"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvEstadoSeparacionPendiente"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Por confirmar"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Juan Pérez"
+                            android:text="Palm Living"
                             android:textColor="@color/inmia_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold"/>
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/ic_location"
+                                android:contentDescription="Ubicacion" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="San Isidro, Lima"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Edificio Catalina Sky"
-                            android:textColor="#7A9E9E"
-                            android:textSize="13sp"
-                            android:layout_marginTop="2dp"/>
+                            android:text="Galeon Inmobiliaria"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+
                     </LinearLayout>
 
-                    <!-- Badge estado -->
                     <TextView
+                        android:id="@+id/btnConfirmarSeparacion"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pendiente"
-                        android:textColor="@color/inmia_teal_dark"
-                        android:textSize="11sp"
+                        android:layout_height="34dp"
+                        android:text="Confirmar"
+                        android:textColor="@color/inmia_white"
                         android:textStyle="bold"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/badge_outline"/>
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:background="@drawable/btn_rounded"
+                        android:layout_marginStart="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Cita placeholder 2 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aprobada"
+                android:textColor="@color/inmia_text"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"/>
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -356,82 +280,113 @@
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="#FFFFFF">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:padding="16dp">
+
+                    <FrameLayout
+                        android:id="@+id/frameSeparacionImagenAprobada"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_map_placeholder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_proyectos"
+                            android:tint="#7A9E9E"
+                            android:contentDescription="Inmueble"/>
+
+                    </FrameLayout>
 
                     <LinearLayout
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="02:00"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PM"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="40dp"
-                        android:layout_marginHorizontal="12dp"
-                        android:background="@color/inmia_teal_dark"/>
-
-                    <LinearLayout
+                        android:id="@+id/layoutSeparacionAprobada"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toEndOf="@id/frameSeparacionImagenAprobada"
+                        app:layout_constraintEnd_toStartOf="@id/btnDetallesSeparacionAprobada"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="María García"
+                            android:text="Aprobada"
+                            android:textColor="@color/inmia_success"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Palm Living"
                             android:textColor="@color/inmia_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold"/>
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/ic_location"
+                                android:contentDescription="Ubicacion" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="San Isidro, Lima"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Condominio Pueblo Libre"
-                            android:textColor="#7A9E9E"
-                            android:textSize="13sp"
-                            android:layout_marginTop="2dp"/>
+                            android:text="Galeon Inmobiliaria"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/btnDetallesSeparacionAprobada"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Confirmada"
-                        android:textColor="#FFFFFF"
-                        android:textSize="11sp"
+                        android:layout_height="34dp"
+                        android:text="Detalles"
+                        android:textColor="@color/inmia_white"
                         android:textStyle="bold"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/btn_rounded"/>
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:background="@drawable/btn_rounded"
+                        android:layout_marginStart="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- ── BOTTOM NAVIGATION BAR — mismo diseño para todos ── -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavAsesor"
         android:layout_width="match_parent"
