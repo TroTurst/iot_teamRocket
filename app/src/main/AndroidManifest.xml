@@ -69,12 +69,22 @@
             android:theme="@style/Theme.Inmia.NoActionBar"/>
 
         <activity
+            android:name=".asesor.AsesorChatDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
             android:name=".asesor.AsesorNotificacionesActivity"
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar"/>
 
         <activity
             android:name=".asesor.AsesorCitasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorCitaDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar"/>
 

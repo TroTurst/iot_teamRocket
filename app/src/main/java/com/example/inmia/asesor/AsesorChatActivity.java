@@ -2,21 +2,32 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AsesorChatActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class AsesorChatActivity extends AppCompatActivity implements ChatThreadAdapter.Listener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private RecyclerView recyclerChatThreads;
+    private EditText etSearchChat;
+    private ChatThreadAdapter adapter;
 
     private int totalNotificaciones = 2;
 
@@ -33,6 +44,8 @@ public class AsesorChatActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        recyclerChatThreads = findViewById(R.id.recyclerChatThreads);
+        etSearchChat = findViewById(R.id.etSearchChat);
 
         configurarBadge();
 
@@ -62,6 +75,78 @@ public class AsesorChatActivity extends AppCompatActivity {
 
             return false;
         });
+
+        adapter = new ChatThreadAdapter(buildMockThreads(), this);
+        recyclerChatThreads.setLayoutManager(new LinearLayoutManager(this));
+        recyclerChatThreads.setAdapter(adapter);
+
+        etSearchChat.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.filterByName(s == null ? "" : s.toString());
+            }
+        });
+    }
+
+    private List<ChatThread> buildMockThreads() {
+        List<ChatThread> threads = new ArrayList<>();
+        threads.add(new ChatThread(
+            "chat_1",
+            "Maria R.",
+            "Hola, quiero info del proyecto Catalina Sky",
+            "10:02",
+            R.drawable.ic_perfil
+        ));
+        threads.add(new ChatThread(
+            "chat_2",
+            "Carlos M.",
+            "Gracias, tambien quiero agendar visita",
+            "10:04",
+            R.drawable.ic_perfil
+        ));
+        threads.add(new ChatThread(
+            "chat_3",
+            "Luisa T.",
+            "Me puedes enviar el brochure del proyecto",
+            "09:45",
+            R.drawable.ic_perfil
+        ));
+        threads.add(new ChatThread(
+            "chat_4",
+            "Javier P.",
+            "Estoy interesado en separar un departamento",
+            "Ayer",
+            R.drawable.ic_perfil
+        ));
+        threads.add(new ChatThread(
+            "chat_5",
+            "Ana L.",
+            "Podemos ver opciones de financiamiento",
+            "Ayer",
+            R.drawable.ic_perfil
+        ));
+        return threads;
+    }
+
+    @Override
+    public void onChatSelected(ChatThread thread) {
+        Intent intent = new Intent(this, AsesorChatDetailActivity.class);
+        intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_ID, thread.getId());
+        intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_NAME, thread.getName());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onChatDeleted(ChatThread thread) {
+        Toast.makeText(this, "Chat eliminado", Toast.LENGTH_SHORT).show();
     }
 
     private void configurarBadge() {

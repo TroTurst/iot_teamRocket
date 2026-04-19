@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="citas_estado_options">
+        <item>Todas</item>
+        <item>Pendiente</item>
+        <item>Confirmada</item>
+        <item>Terminada</item>
+    </string-array>
+
+    <string-array name="citas_proyecto_options">
+        <item>Catalina Sky</item>
+        <item>Pueblo Libre</item>
+        <item>Miraflores</item>
+        <item>San Isidro</item>
+    </string-array>
+
+    <string-array name="citas_horario_options">
+        <item>Manana</item>
+        <item>Tarde</item>
+        <item>Noche</item>
+    </string-array>
+</resources>
