@@ -23,7 +23,7 @@ public class RankingCompletoActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_ranking_completo);
+        setContentView(R.layout.activity_ranking_completo_superadmin);
 
         bottomNav = findViewById(R.id.bottomNavSuperAdmin);
         tabHoy    = findViewById(R.id.tabHoy);

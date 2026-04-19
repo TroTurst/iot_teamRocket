@@ -45,7 +45,7 @@ public class GestionUsuariosActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_gestion_usuarios);
+        setContentView(R.layout.activity_gestion_usuarios_superadmin);
 
         // Vincular vistas
         tabAdmins      = findViewById(R.id.tabAdmins);

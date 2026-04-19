@@ -34,7 +34,7 @@ public class LogsActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_logs);
+        setContentView(R.layout.activity_logs_superadmin);
 
         // Vincular vistas
         cardFechaInicio  = findViewById(R.id.cardFechaInicio);

@@ -34,7 +34,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_super_admin_home);
+        setContentView(R.layout.activity_home_superadmin);
 
         bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -85,7 +85,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     }
 
     private void irAGestionUsuarios() {
-        startActivity(new Intent(this, GestionUsuariosActivity.class));
+        startActivity(new Intent(this, SolicitudesActivity.class));
     }
 
     private void configurarSolicitudes() {
