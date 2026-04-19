@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="80dp">
+        android:paddingBottom="96dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,62 +89,20 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:layout_marginEnd="16dp"
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal">
+                    android:layout_marginTop="44dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/bg_profile_circle"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-                        <FrameLayout
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:background="@drawable/bg_profile_circle">
-
-                            <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_perfil"
-                                android:tint="@color/inmia_teal_dark"
-                                android:contentDescription="Perfil"/>
-
-                            <FrameLayout
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="bottom|end"
-                                android:layout_marginEnd="-2dp"
-                                android:layout_marginBottom="-2dp"
-                                android:background="@drawable/bg_profile_edit_badge">
-
-                                <ImageView
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_edit"
-                                    android:tint="@color/inmia_teal_dark"
-                                    android:contentDescription="Editar foto"/>
-
-                            </FrameLayout>
-
-                        </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/btnSubirFoto"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Subir foto"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="11sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="4dp"
-                            android:layout_marginTop="8dp"
-                            android:background="@drawable/badge_outline"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:onClick="onSubirFoto"/>
-
-                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_perfil"
+                        android:tint="@color/inmia_teal_dark"
                         android:contentDescription="Perfil"/>
 
                 </FrameLayout>
@@ -354,5 +312,17 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavAsesor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#FFFFFF"
+        app:menu="@menu/menu_asesor"
+        app:itemIconTint="@color/inmia_teal_dark"
+        app:itemTextColor="@color/inmia_teal_dark"
+        app:labelVisibilityMode="labeled"
+        app:elevation="12dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
