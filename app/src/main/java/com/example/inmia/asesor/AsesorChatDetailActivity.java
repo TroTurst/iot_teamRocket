@@ -3,7 +3,6 @@ package com.example.inmia.asesor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +17,10 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
     public static final String EXTRA_CHAT_ID = "extra_chat_id";
 
     private BottomNavigationView bottomNav;
-    private FrameLayout frameNotificaciones;
-    private TextView tvBadgeNotif;
-    private TextView tvSubGreeting;
-    private FrameLayout framePerfil;
-
-    private int totalNotificaciones = 2;
+    private TextView tvChatName;
+    private TextView tvChatStatus;
+    private View btnBackChat;
+    private View btnChatMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,26 +33,29 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_asesor_chat_detail);
 
         bottomNav = findViewById(R.id.bottomNavAsesor);
-        frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
-        tvSubGreeting = findViewById(R.id.tvSubGreeting);
-        framePerfil = findViewById(R.id.framePerfil);
+        tvChatName = findViewById(R.id.tvChatName);
+        tvChatStatus = findViewById(R.id.tvChatStatus);
+        btnBackChat = findViewById(R.id.btnBackChat);
+        btnChatMenu = findViewById(R.id.btnChatMenu);
 
         String chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
         if (chatName != null && !chatName.trim().isEmpty()) {
-            tvSubGreeting.setText("Chat con " + chatName);
+            tvChatName.setText(chatName);
         }
 
-        configurarBadge();
+        if (tvChatStatus != null) {
+            tvChatStatus.setText("Online");
+        }
 
-        frameNotificaciones.setOnClickListener(v -> {
-            startActivity(new Intent(this, AsesorNotificacionesActivity.class));
-            limpiarBadge();
-        });
+        if (btnBackChat != null) {
+            btnBackChat.setOnClickListener(v -> finish());
+        }
 
-        framePerfil.setOnClickListener(v -> {
-            startActivity(new Intent(this, AsesorPerfilActivity.class));
-        });
+        if (btnChatMenu != null) {
+            btnChatMenu.setOnClickListener(v ->
+                Toast.makeText(this, "Opciones", Toast.LENGTH_SHORT).show()
+            );
+        }
 
         bottomNav.setSelectedItemId(R.id.nav_chat);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -83,17 +83,5 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void configurarBadge() {
-        if (totalNotificaciones > 0) {
-            tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
-            tvBadgeNotif.setVisibility(View.VISIBLE);
-        } else {
-            tvBadgeNotif.setVisibility(View.GONE);
-        }
-    }
-
-    private void limpiarBadge() {
-        totalNotificaciones = 0;
-        tvBadgeNotif.setVisibility(View.GONE);
-    }
+    
 }
