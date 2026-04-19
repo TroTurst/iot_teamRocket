@@ -8,27 +8,21 @@
         android:orderInCategory="1"/>
 
     <item
+        android:id="@+id/nav_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="Chat"
+        android:orderInCategory="2"/>
+
+    <item
         android:id="@+id/nav_citas"
         android:icon="@drawable/ic_citas"
         android:title="Citas"
-        android:orderInCategory="2"/>
+        android:orderInCategory="3"/>
 
     <item
         android:id="@+id/nav_separaciones"
         android:icon="@drawable/ic_separaciones"
         android:title="Separaciones"
-        android:orderInCategory="3"/>
-
-    <item
-        android:id="@+id/nav_historial"
-        android:icon="@drawable/ic_historial"
-        android:title="Historial"
         android:orderInCategory="4"/>
-
-    <item
-        android:id="@+id/nav_perfil"
-        android:icon="@drawable/ic_perfil"
-        android:title="Perfil"
-        android:orderInCategory="5"/>
 
 </menu>

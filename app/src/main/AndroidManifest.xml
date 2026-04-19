@@ -63,6 +63,21 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar"/>
 
+        <activity
+            android:name=".asesor.AsesorChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorNotificacionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorCitasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
         <!-- ADMIN -->
         <activity
             android:name=".admin.AdminHomeActivity"

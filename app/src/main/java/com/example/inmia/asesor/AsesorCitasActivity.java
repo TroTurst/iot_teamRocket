@@ -12,13 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+public class AsesorCitasActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
 
-    // Hardcodeado — luego vendrá de Firebase
     private int totalNotificaciones = 2;
 
     @Override
@@ -29,34 +28,32 @@ public class AsesorHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_asesor_home);
+        setContentView(R.layout.activity_asesor_citas);
 
-        bottomNav           = findViewById(R.id.bottomNavAsesor);
+        bottomNav = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
+        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
 
-        // Configurar badge inicial
         configurarBadge();
 
-        // Click en campanita
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
         });
 
-        // Bottom navigation
+        bottomNav.setSelectedItemId(R.id.nav_citas);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
+                startActivity(new Intent(this, AsesorHomeActivity.class));
+                finish();
                 return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, AsesorChatActivity.class));
                 finish();
                 return true;
             } else if (id == R.id.nav_citas) {
-                startActivity(new Intent(this, AsesorCitasActivity.class));
-                finish();
                 return true;
             } else if (id == R.id.nav_separaciones) {
                 Toast.makeText(this, "Separaciones", Toast.LENGTH_SHORT).show();
