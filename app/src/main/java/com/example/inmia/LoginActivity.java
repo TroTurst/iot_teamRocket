@@ -8,6 +8,7 @@ import android.util.Patterns;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.admin.AdminHomeActivity;
+import com.example.inmia.admin.RegistroInmobiliariaActivity;
 import com.example.inmia.asesor.AsesorHomeActivity;
 import com.example.inmia.cliente.ClienteHomeActivity;
 import com.example.inmia.superadmin.SuperAdminHomeActivity;
@@ -85,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 intent = new Intent(this, AsesorHomeActivity.class);
                 break;
             case UserCheck.ROL_ADMIN:
-                intent = new Intent(this, AdminHomeActivity.class);
+                intent = new Intent(this, RegistroInmobiliariaActivity.class);
                 break;
             case UserCheck.ROL_SUPERADMIN:
                 intent = new Intent(this, SuperAdminHomeActivity.class);

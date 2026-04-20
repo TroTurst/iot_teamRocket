@@ -10,6 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inmia">
         <activity
+            android:name=".superadmin.PerfilUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.PerfilAsesorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.RegistroInmobiliariaActivity"
+            android:exported="false" />
+        <activity
             android:name=".cliente.ClienteDetallesCitaActivity2"
             android:exported="false" />
         <activity

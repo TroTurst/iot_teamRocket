@@ -57,7 +57,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         cardSolicitudes.setOnClickListener(v -> irAGestionUsuarios());
 
         // Botón "Ver solicitudes →"
-        btnVerSolicitudes.setOnClickListener(v -> irAGestionUsuarios());
+        btnVerSolicitudes.setOnClickListener(v -> irSolicitudes());
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -85,6 +85,10 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     }
 
     private void irAGestionUsuarios() {
+        startActivity(new Intent(this, GestionUsuariosActivity.class));
+    }
+
+    private void irSolicitudes() {
         startActivity(new Intent(this, SolicitudesActivity.class));
     }
 

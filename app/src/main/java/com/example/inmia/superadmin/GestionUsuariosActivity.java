@@ -76,6 +76,22 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         configurarSwitch(switch3, "Teresa Mertens");
         configurarSwitch(switch4, "Teddy Gallagher");
 
+        // ← CAMBIO: Ver perfil — Cyndy navega, los demás Toast
+        findViewById(R.id.layoutVerPerfil1).setOnClickListener(v ->
+                startActivity(new Intent(this, PerfilUserActivity.class)));
+
+        findViewById(R.id.layoutVerPerfil2).setOnClickListener(v ->
+                Toast.makeText(this, "Perfil no disponible",
+                        Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.layoutVerPerfil3).setOnClickListener(v ->
+                Toast.makeText(this, "Perfil no disponible",
+                        Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.layoutVerPerfil4).setOnClickListener(v ->
+                Toast.makeText(this, "Perfil no disponible",
+                        Toast.LENGTH_SHORT).show());
+
         // Búsqueda
         etBuscar.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -88,7 +104,7 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         // Filtro
         btnFiltro.setOnClickListener(v -> mostrarDialogoFiltro());
 
-        // ← CAMBIO: navega a CrearAdminActivity
+        // Botón Nuevo
         btnNuevo.setOnClickListener(v ->
                 startActivity(new Intent(this, CrearAdminActivity.class)));
 
@@ -123,7 +139,6 @@ public class GestionUsuariosActivity extends AppCompatActivity {
     private void seleccionarTab(String tab) {
         tabActual = tab;
 
-        // Resetear todos los tabs
         tabAdmins.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAdmins.setTextColor(getColor(R.color.inmia_teal_dark));
         tabAsesores.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));

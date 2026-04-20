@@ -26,6 +26,9 @@ public class SolicitudesActivity extends AppCompatActivity {
     // Botones rechazar
     private MaterialButton btnRechazar1, btnRechazar2, btnRechazar3;
 
+    // ← NUEVO: Botones ver perfil
+    private MaterialButton btnVerPerfil1, btnVerPerfil2, btnVerPerfil3;
+
     // Conteo de solicitudes pendientes
     private int totalPendientes = 3;
 
@@ -51,28 +54,60 @@ public class SolicitudesActivity extends AppCompatActivity {
         btnRechazar2   = findViewById(R.id.btnRechazar2);
         btnRechazar3   = findViewById(R.id.btnRechazar3);
 
+        // ← NUEVO: Vincular botones ver perfil
+        btnVerPerfil1  = findViewById(R.id.btnVerPerfil1);
+        btnVerPerfil2  = findViewById(R.id.btnVerPerfil2);
+        btnVerPerfil3  = findViewById(R.id.btnVerPerfil3);
+
         // Botón atrás
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         // ── ACEPTAR solicitudes ──
         btnAceptar1.setOnClickListener(v ->
                 mostrarDialogoHabilitar("María García López", cardSolicitud1));
-
         btnAceptar2.setOnClickListener(v ->
                 mostrarDialogoHabilitar("Carlos Ramos Torres", cardSolicitud2));
-
         btnAceptar3.setOnClickListener(v ->
                 mostrarDialogoHabilitar("Juan Sánchez Pérez", cardSolicitud3));
 
         // ── RECHAZAR solicitudes ──
         btnRechazar1.setOnClickListener(v ->
                 mostrarDialogoRechazar("María García López", cardSolicitud1));
-
         btnRechazar2.setOnClickListener(v ->
                 mostrarDialogoRechazar("Carlos Ramos Torres", cardSolicitud2));
-
         btnRechazar3.setOnClickListener(v ->
                 mostrarDialogoRechazar("Juan Sánchez Pérez", cardSolicitud3));
+
+        // ← NUEVO: VER PERFIL de cada asesor
+        btnVerPerfil1.setOnClickListener(v -> verPerfilAsesor(
+                "María García López",
+                "INMIA San Isidro",
+                "DNI · 45678901",
+                "15/03/1995",
+                "m.garcia@inmia.com",
+                "+51 987 654 321",
+                "Av. Javier Prado 1234, San Isidro"
+        ));
+
+        btnVerPerfil2.setOnClickListener(v -> verPerfilAsesor(
+                "Carlos Ramos Torres",
+                "INMIA Miraflores",
+                "DNI · 32156789",
+                "22/07/1990",
+                "c.ramos@inmia.com",
+                "+51 912 345 678",
+                "Calle Las Flores 567, Miraflores"
+        ));
+
+        btnVerPerfil3.setOnClickListener(v -> verPerfilAsesor(
+                "Juan Sánchez Pérez",
+                "INMIA Surco",
+                "DNI · 78234561",
+                "08/11/1988",
+                "j.sanchez@inmia.com",
+                "+51 956 789 012",
+                "Jr. Los Pinos 890, Surco"
+        ));
 
         // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_usuarios);
@@ -100,15 +135,32 @@ public class SolicitudesActivity extends AppCompatActivity {
         });
     }
 
+    // ── VER PERFIL ──────────────────────────────────────────────────────────
+
+    private void verPerfilAsesor(String nombre, String inmobiliaria,
+                                 String documento, String fechaNac,
+                                 String correo, String telefono,
+                                 String domicilio) {
+        Intent intent = new Intent(this, PerfilAsesorActivity.class);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_NOMBRE,       nombre);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA, inmobiliaria);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOCUMENTO,    documento);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_FECHA_NAC,    fechaNac);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_CORREO,       correo);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_TELEFONO,     telefono);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOMICILIO,    domicilio);
+        startActivity(intent);
+    }
+
+    // ── DIÁLOGOS ─────────────────────────────────────────────────────────────
+
     private void mostrarDialogoHabilitar(String nombreAsesor,
                                          MaterialCardView card) {
         new AlertDialog.Builder(this)
                 .setTitle("¿Habilitar asesor?")
                 .setMessage("¿Estás seguro de habilitar a "
-                        + nombreAsesor
-                        + " como asesor de ventas?")
+                        + nombreAsesor + " como asesor de ventas?")
                 .setPositiveButton("Habilitar", (dialog, which) -> {
-                    // Ocultar la tarjeta de la solicitud
                     card.setVisibility(View.GONE);
                     totalPendientes--;
 
@@ -118,7 +170,6 @@ public class SolicitudesActivity extends AppCompatActivity {
                             nombreAsesor + " ha sido habilitado como asesor",
                             Toast.LENGTH_SHORT).show();
 
-                    // Si no quedan solicitudes, volver a gestión
                     if (totalPendientes == 0) {
                         irAGestionUsuarios();
                     }
@@ -134,7 +185,6 @@ public class SolicitudesActivity extends AppCompatActivity {
                 .setMessage("¿Estás seguro de rechazar la solicitud de "
                         + nombreAsesor + "? Esta acción no se puede deshacer.")
                 .setPositiveButton("Rechazar", (dialog, which) -> {
-                    // Ocultar la tarjeta de la solicitud
                     card.setVisibility(View.GONE);
                     totalPendientes--;
 
@@ -144,7 +194,6 @@ public class SolicitudesActivity extends AppCompatActivity {
                             "Solicitud de " + nombreAsesor + " rechazada",
                             Toast.LENGTH_SHORT).show();
 
-                    // Si no quedan solicitudes, volver a gestión
                     if (totalPendientes == 0) {
                         irAGestionUsuarios();
                     }
@@ -152,6 +201,8 @@ public class SolicitudesActivity extends AppCompatActivity {
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
+
+    // ── NAVEGACIÓN ───────────────────────────────────────────────────────────
 
     private void irAGestionUsuarios() {
         Intent intent = new Intent(this, GestionUsuariosActivity.class);
