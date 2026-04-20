@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.inmia">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="inmia"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Inmia">
+        <activity
+            android:name=".RegisterFotoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.SolicitudesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.CrearAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.PerfilActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.LogsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.RankingCompletoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.ReportesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".superadmin.GestionUsuariosActivity"
+            android:exported="false" /> <!-- SPLASH: Punto de entrada de la app -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Inmia.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- ONBOARDING -->
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- LOGIN -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- FORGOT PASSWORD -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- REGISTER -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- MAIN -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia" /> <!-- CLIENTE -->
+        <activity
+            android:name=".cliente.ClienteHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- ASESOR -->
+        <activity
+            android:name=".asesor.AsesorHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- ADMIN -->
+        <activity
+            android:name=".admin.AdminHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- SUPERADMIN -->
+        <activity
+            android:name=".admin.AdminProyectosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoDetalleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoEditarActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoNuevoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoGaleriaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesoresActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesorDetalleCarlosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesorNuevoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminReportesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminPerfilActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".superadmin.SuperAdminHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+    </application>
+
+</manifest>

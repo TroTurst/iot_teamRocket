@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ── General ── -->
+    <string name="app_name">INMIA</string>
+
+    <!-- ── Onboarding ── -->
+    <string name="onboarding_skip">Saltar</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_start">Empezar</string>
+
+    <string name="onboarding_title_1">Encuentra tu hogar ideal</string>
+    <string name="onboarding_title_2">Explora propiedades</string>
+    <string name="onboarding_title_3">Conecta con agentes</string>
+
+    <string name="onboarding_desc_1">Descubre miles de propiedades en venta y alquiler adaptadas a tus necesidades y presupuesto.</string>
+    <string name="onboarding_desc_2">Filtra por ubicación, precio y características. Visualiza cada detalle antes de decidir.</string>
+    <string name="onboarding_desc_3">Contacta directamente con agentes verificados y agenda visitas desde la app.</string>
+
+    <!-- ── Login ── -->
+    <string name="login_welcome">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión en tu cuenta inmia</string>
+    <string name="login_email_hint">Correo electrónico</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_btn">Iniciar sesión</string>
+    <string name="login_register_btn">Crear una cuenta</string>
+    <string name="login_divider">o</string>
+    <string name="login_terms">Al continuar, aceptas nuestros Términos de Uso y Política de Privacidad.</string>
+
+    <!-- ── Login: errores ── -->
+    <string name="error_email_empty">El correo es obligatorio</string>
+    <string name="error_email_invalid">Ingresa un correo válido</string>
+    <string name="error_password_empty">La contraseña es obligatoria</string>
+    <string name="error_password_short">Mínimo 6 caracteres</string>
+
+    <!-- ── Forgot Password ── -->
+    <string name="forgot_title">¿Olvidaste tu contraseña?</string>
+    <string name="forgot_description">Ingresa tu correo registrado y te enviaremos un enlace para restablecer tu contraseña.</string>
+    <string name="forgot_email_hint">Correo electrónico</string>
+    <string name="forgot_btn_send">Enviar enlace</string>
+    <string name="forgot_btn_back">← Volver al inicio de sesión</string>
+    <string name="forgot_error_empty">Ingresa tu correo</string>
+    <string name="forgot_error_invalid">Correo no válido</string>
+    <string name="forgot_success">Enlace enviado a %1$s</string>
+
+    <!-- ── Content descriptions ── -->
+    <string name="cd_logo">Logo INMIA</string>
+    <string name="cd_forgot_icon">Recuperar contraseña</string>
+
+    <!-- ── ADMIN ── -->
+    <string name="admin_asesor_profile_title">Estas viendo el perfil de uno de tus asesores</string>
+    <string name="admin_project_edit_title">Actualizar datos</string>
+    <string name="admin_project_preview_title">Previsualización</string>
+    <string name="admin_project_confirm">Confirmar edición</string>
+    <string name="admin_project_preview">Previsualizar</string>
+    <string name="admin_project_name_hint">Nombre del proyecto</string>
+    <string name="admin_project_location_hint">Ubicación</string>
+    <string name="admin_project_description_hint">Descripción</string>
+    <string name="admin_project_price_hint">Precio estimado</string>
+    <string name="admin_project_area_hint">Área total</string>
+    <string name="admin_project_bedrooms_hint">Dormitorios</string>
+    <string name="admin_project_bathrooms_hint">Baños</string>
+    <string name="admin_project_parking_hint">Estacionamiento</string>
+    <string name="admin_project_status_hint">Estado</string>
+    <string name="admin_project_gallery_more">Ver %1$d +</string>
+
+    <!-- Error credenciales incorrectas -->
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+
+    <!-- ── SUPERADMIN — Gestión de usuarios ── -->
+    <string name="gestion_usuarios_title">Gestión de usuarios</string>
+    <string name="tab_admins">Admins</string>
+    <string name="tab_asesores">Asesores</string>
+    <string name="tab_clientes">Clientes</string>
+    <string name="buscar_hint">Buscar…</string>
+    <string name="btn_nuevo">+ Nuevo</string>
+    <string name="btn_solicitudes">Solicitudes</string>
+    <string name="ver_perfil">Ver perfil</string>
+    <string name="estado_activo">Activo</string>
+    <string name="estado_inactivo">Inactivo</string>
+    <string name="filtro_todos">Todos</string>
+    <string name="filtro_activos">Activos</string>
+    <string name="filtro_inactivos">Inactivos</string>
+    <string name="dialog_inhabilitar_titulo">¿Estás seguro?</string>
+    <string name="dialog_inhabilitar_mensaje">¿Estás seguro de inhabilitar a este usuario?</string>
+    <string name="dialog_inhabilitar_confirmar">Inhabilitar</string>
+    <string name="dialog_inhabilitar_cancelar">Cancelar</string>
+    <string name="dialog_habilitar_titulo">¿Estás seguro?</string>
+    <string name="dialog_habilitar_mensaje">¿Estás seguro de habilitar a este usuario?</string>
+    <string name="dialog_habilitar_confirmar">Habilitar</string>
+
+    <!-- ── CREAR ADMIN ── -->
+    <string name="crear_admin_titulo">Nuevo administrador</string>
+    <string name="hint_nombres">Nombres</string>
+    <string name="hint_apellidos">Apellidos</string>
+    <string name="hint_tipo_documento">Tipo de documento</string>
+    <string name="hint_num_documento">Número de documento</string>
+    <string name="hint_fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="hint_correo">Correo electrónico</string>
+    <string name="hint_telefono">Teléfono</string>
+    <string name="hint_domicilio">Domicilio</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_confirm_password">Confirmar contraseña</string>
+    <string name="btn_crear_cuenta">Crear cuenta</string>
+    <string name="error_campo_requerido">Este campo es obligatorio</string>
+    <string name="error_passwords_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="error_password_corta">Mínimo 6 caracteres</string>
+    <string name="registro_exitoso">¡Administrador creado exitosamente!</string>
+
+</resources>

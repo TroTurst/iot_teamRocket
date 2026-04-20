@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5FAFA">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ── HEADER GRANDE — estilo MAKE referencia ── -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="260dp"
+                android:background="@drawable/gradient_background">
+
+                <!-- Logo inmia + nombre -->
+                <ImageView
+                    android:id="@+id/imgHeaderLogo"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_logo_inmia"
+                    android:contentDescription="@string/cd_logo"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="48dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvHeaderAppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:letterSpacing="0.2"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
+                    app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
+                    app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
+
+                <!-- Campanita -->
+                <FrameLayout
+                    android:id="@+id/frameNotificaciones"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="44dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imgCampana"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_notifications"
+                        android:contentDescription="Notificaciones"/>
+
+                    <TextView
+                        android:id="@+id/tvBadgeNotif"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:text="5"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:background="@drawable/badge_background"
+                        android:visibility="visible"/>
+
+                </FrameLayout>
+
+                <!-- Bienvenida grande — estilo referencia -->
+                <TextView
+                    android:id="@+id/tvBienvenida"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Seccion: Perfil"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!-- Nombre empresa — placeholder -->
+                <TextView
+                    android:id="@+id/tvNombreEmpresa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ADMINISTRADOR - PERFIL"
+                    android:textColor="@color/inmia_teal_dark"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.15"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvBienvenida"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <!-- Logo grande empresa — placeholder con ícono -->
+                <ImageView
+                    android:id="@+id/imgLogoEmpresa"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_logo_inmia"
+                    android:contentDescription="Logo empresa"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvNombreEmpresa"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- ── FOTOS PROMOCIONALES — 2 imágenes lado a lado ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="-20dp"
+                android:layout_marginBottom="4dp">
+
+                <!-- Foto 1 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/inmia_teal_dark">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="🏢"
+                            android:textSize="40sp"/>
+
+                        <!-- Overlay oscuro inferior -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="bottom"
+                            android:background="#66000000"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_margin="8dp"
+                            android:text="Foto 1"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"/>
+                    </FrameLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Foto 2 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="6dp">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/inmia_teal_light">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="🏊"
+                            android:textSize="40sp"/>
+
+                        <!-- Badge con número de fotos restantes -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|end"
+                            android:layout_margin="8dp"
+                            android:text="10+"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:background="#66000000"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_gravity="bottom"
+                            android:background="#66000000"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_margin="8dp"
+                            android:text="Foto 2"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"/>
+                    </FrameLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- ── SECCIÓN: PROYECTO DESTACADO ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Badge estado -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="En planos"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:background="@drawable/badge_outline"
+                        android:layout_marginBottom="10dp"/>
+
+                    <!-- Nombre proyecto -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Proyecto las nuevas casas 22 a"
+                        android:textColor="@color/inmia_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+
+                    <!-- Descripción -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Proyecto en planos ubicado en zona estratégica en Jesús María, cuenta con diferentes dptos desde los 42 m2."
+                        android:textColor="#7A9E9E"
+                        android:textSize="13sp"
+                        android:lineSpacingMultiplier="1.4"
+                        android:layout_marginTop="6dp"/>
+
+                    <!-- Botón ver más -->
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="14dp"
+                        android:text="Ver más →"
+                        android:textAllCaps="false"
+                        android:textSize="13sp"
+                        android:textColor="@color/inmia_white"
+                        app:backgroundTint="@color/inmia_teal_dark"
+                        app:cornerRadius="20dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── SECCIÓN: RESUMEN RÁPIDO ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <!-- Proyectos -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proyectos"
+                            android:textColor="#7A9E9E"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#E0EEEE"/>
+
+                    <!-- Asesores -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Asesores"
+                            android:textColor="#7A9E9E"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#E0EEEE"/>
+
+                    <!-- Pendientes -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pendientes"
+                            android:textColor="#7A9E9E"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ── BOTTOM NAVIGATION BAR ── -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#FFFFFF"
+        app:menu="@menu/menu_admin"
+        app:itemIconTint="@color/inmia_teal_dark"
+        app:itemTextColor="@color/inmia_teal_dark"
+        app:labelVisibilityMode="labeled"
+        app:elevation="12dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
