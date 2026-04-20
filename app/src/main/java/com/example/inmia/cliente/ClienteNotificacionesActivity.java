@@ -24,6 +24,10 @@ public class ClienteNotificacionesActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
 
         bottomNav.setSelectedItemId(R.id.nav_citas);
+        android.widget.FrameLayout btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -42,6 +46,9 @@ public class ClienteNotificacionesActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ClienteMensajesActivity.class));
                 overridePendingTransition(0, 0);
                 finish();
+                return true;
+            } else if (id == R.id.nav_perfil) {
+                startActivity(new Intent(this, ClientePerfilClienteActivity.class));
                 return true;
             } else if (id == R.id.nav_separaciones) {
                 startActivity(new Intent(this, ClienteSeparacionesActivity.class));

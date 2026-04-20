@@ -19,5 +19,9 @@ public class ClienteTusTarjetasActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.activity_tus_tarjetas_cliente);
+        android.widget.FrameLayout btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
     }
 }

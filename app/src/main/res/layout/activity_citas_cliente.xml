@@ -140,11 +140,14 @@
                 app:layout_constraintTop_toBottomOf="@id/tvStatus1">
 
                 <com.google.android.material.imageview.ShapeableImageView
+
+
                     android:id="@+id/imgCita1"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:scaleType="centerCrop"
                     android:background="#E0E0E0"
+                    android:src="@drawable/onboarding1"
                     app:shapeAppearanceOverlay="@style/RoundedSquare"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -232,6 +235,7 @@
                     android:layout_height="64dp"
                     android:scaleType="centerCrop"
                     android:background="#E0E0E0"
+                    android:src="@drawable/onboarding2"
                     app:shapeAppearanceOverlay="@style/RoundedSquare"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

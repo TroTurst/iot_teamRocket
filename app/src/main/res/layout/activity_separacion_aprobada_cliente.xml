@@ -137,6 +137,7 @@
                     android:layout_height="60dp"
                     android:scaleType="centerCrop"
                     android:background="#D0D0D0"
+                    android:src="@drawable/onboarding1"
                     app:shapeAppearanceOverlay="@style/RoundedSquare" />
 
                 <LinearLayout

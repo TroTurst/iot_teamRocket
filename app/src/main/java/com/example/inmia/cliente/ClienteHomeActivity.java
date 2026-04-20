@@ -81,6 +81,9 @@ public class ClienteHomeActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_chat) {
                     startActivity(new Intent(this, ClienteMensajesActivity.class));
                     return true;
+                } else if (id == R.id.nav_perfil) {
+                    startActivity(new Intent(this, ClientePerfilClienteActivity.class));
+                    return true;
                 } else if (id == R.id.nav_separaciones) {
                     startActivity(new Intent(this, ClienteSeparacionesActivity.class));
                     return true;
@@ -88,6 +91,10 @@ public class ClienteHomeActivity extends AppCompatActivity {
                 return false;
             });
         }
+        btnLocation.setOnClickListener(v -> {
+            Intent intent = new Intent(ClienteHomeActivity.this, ClienteExplorarMapaActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void abrirDetalleProyecto(String nombreProyecto) {

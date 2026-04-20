@@ -21,30 +21,26 @@
             android:layout_height="200dp"
             android:background="@drawable/gradient_background">
 
-            <ImageView
-                android:id="@+id/imgHeaderLogo"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_logo_inmia"
-                android:contentDescription="@string/app_name"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="48dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+            <FrameLayout
+                android:id="@+id/btnBack"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvHeaderAppName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textColor="@color/inmia_text"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-light"
-                android:letterSpacing="0.2"
-                android:layout_marginStart="8dp"
-                app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
-                app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
-                app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Atrás"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/inmia_text" />
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/frameNotificaciones"
@@ -75,7 +71,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
+                app:layout_constraintTop_toBottomOf="@id/btnBack"
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
@@ -99,34 +95,13 @@
             android:paddingTop="32dp"
             android:paddingBottom="60dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btnBackWhite"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="24dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="#F8F9FA"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="#222222" />
-            </com.google.android.material.card.MaterialCardView>
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutRatingSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="0dp"
                 android:paddingHorizontal="24dp"
-                app:layout_constraintTop_toBottomOf="@id/btnBackWhite">
-
+                app:layout_constraintTop_toTopOf="parent">
                 <TextView
                     android:id="@+id/tvBigRating"
                     android:layout_width="wrap_content"

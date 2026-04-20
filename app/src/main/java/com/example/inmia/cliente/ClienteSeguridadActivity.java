@@ -19,5 +19,10 @@ public class ClienteSeguridadActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.activity_seguridad_cliente);
+
+        android.widget.FrameLayout btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
     }
 }

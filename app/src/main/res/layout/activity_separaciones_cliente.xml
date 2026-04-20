@@ -124,6 +124,7 @@
                 android:layout_height="64dp"
                 android:scaleType="centerCrop"
                 android:background="#E0E0E0"
+                android:src="@drawable/onboarding1"
                 app:shapeAppearanceOverlay="@style/RoundedSquare"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -221,6 +222,7 @@
                 android:layout_height="64dp"
                 android:scaleType="centerCrop"
                 android:background="#E0E0E0"
+                android:src="@drawable/onboarding3"
                 app:shapeAppearanceOverlay="@style/RoundedSquare"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

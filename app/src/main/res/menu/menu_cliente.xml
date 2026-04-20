@@ -25,5 +25,11 @@
         android:title="Separaciones"
         android:orderInCategory="4"/>
 
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_perfil"
+        android:title="Perfil"
+        android:orderInCategory="5"/>
+
 
 </menu>

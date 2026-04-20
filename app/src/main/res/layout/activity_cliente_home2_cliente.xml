@@ -333,12 +333,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <View
+                    <ImageView
                         android:id="@+id/imgProject1"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:background="#129F9F"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/onboarding1"
+                        tools:ignore="MissingConstraints" />
 
                     <TextView
                         android:id="@+id/tvProject1Name"
@@ -420,12 +422,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <View
+                    <ImageView
                         android:id="@+id/imgProject2"
                         android:layout_width="match_parent"
                         android:layout_height="82dp"
                         android:background="#CFFEDE"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/onboarding2"
+                        tools:ignore="MissingConstraints" />
 
                     <TextView
                         android:id="@+id/badgeProject2"
@@ -513,12 +517,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <View
+                    <ImageView
                         android:id="@+id/imgProject3"
                         android:layout_width="match_parent"
                         android:layout_height="82dp"
                         android:background="#FFEAEA"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/onboarding3"
+                        tools:ignore="MissingConstraints" />
 
                     <TextView
                         android:id="@+id/badgeProject3"

@@ -169,6 +169,7 @@
             app:layout_constraintTop_toBottomOf="@id/cardSearch">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/chatCarlosMendoza"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="24dp"
@@ -182,7 +183,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_perfil_blanco"
+                    android:src="@drawable/ic_perfil"
                     android:background="#E0E0E0"
                     app:shapeAppearanceOverlay="@style/RoundedCircle"
                     app:layout_constraintStart_toStartOf="parent"
@@ -264,7 +265,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_perfil_blanco"
+                    android:src="@drawable/ic_perfil"
                     android:background="#E0E0E0"
                     app:shapeAppearanceOverlay="@style/RoundedCircle"
                     app:layout_constraintStart_toStartOf="parent"
