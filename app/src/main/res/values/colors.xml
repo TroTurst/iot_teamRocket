@@ -6,4 +6,39 @@
     <color name="inmia_text">#3D7A7A</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores de la pantalla de INICIO -->
+    <color name="home_header_start">#129F9F</color>
+    <color name="home_header_end">#087A82</color>
+
+    <!-- colores de busqueda -->
+    <color name="search_card_bg">#087A82</color>
+    <color name="search_field_bg">#0D5060</color>
+    <color name="search_button_bg">#09AEAE</color>
+
+    <!-- colores de filtro-->
+    <color name="filter_container_bg">#AA087A82</color>
+    <color name="chip_selected_bg">#09AEAE</color>
+    <color name="chip_unselected_bg">#09AEAE</color>
+    <color name="chip_selected_text">#FFFFFF</color>
+    <color name="chip_unselected_text">#0C6B6B</color>
+
+    <!-- Colores de filtro -->
+    <color name="text_subtitle">#0C6B6B</color>
+    <color name="text_featured_title">#18C0C1</color>
+    <color name="text_project_location">#5AACAE</color>
+    <color name="text_project_price">#12ECEE</color>
+
+    <!-- colores de Badges -->
+    <color name="badge_verified_bg">#129F9F</color>
+    <color name="badge_orange_bg">#F59E0B</color>
+    <color name="badge_orange_text">#412402</color>
+    <color name="badge_teal_bg">#18C0C1</color>
+
+    <!-- colores de cartas -->
+    <color name="card_project_bg">#0A3D46</color>
+    <color name="card_project_img_green">#CFFEDE</color>
+    <color name="card_project_img_pink">#FFEAEA</color>
+    <!-- Colores deorativos -->
+    <color name="circle_decoration">#129F9F</color>
 </resources>
