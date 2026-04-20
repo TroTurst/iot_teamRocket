@@ -2,9 +2,7 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,15 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+public class AsesorNotificacionesActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private FrameLayout frameNotificaciones;
-    private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
-
-    // Hardcodeado — luego vendrá de Firebase
-    private int totalNotificaciones = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,31 +23,21 @@ public class AsesorHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_asesor_home);
+        setContentView(R.layout.activity_asesor_notificaciones);
 
-        bottomNav           = findViewById(R.id.bottomNavAsesor);
-        frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
-        framePerfil         = findViewById(R.id.framePerfil);
-
-        // Configurar badge inicial
-        configurarBadge();
-
-        // Click en campanita
-        frameNotificaciones.setOnClickListener(v -> {
-            startActivity(new Intent(this, AsesorNotificacionesActivity.class));
-            limpiarBadge();
-        });
+        bottomNav = findViewById(R.id.bottomNavAsesor);
+        framePerfil = findViewById(R.id.framePerfil);
 
         framePerfil.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
+                startActivity(new Intent(this, AsesorHomeActivity.class));
+                finish();
                 return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, AsesorChatActivity.class));
@@ -72,19 +55,5 @@ public class AsesorHomeActivity extends AppCompatActivity {
 
             return false;
         });
-    }
-
-    private void configurarBadge() {
-        if (totalNotificaciones > 0) {
-            tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
-            tvBadgeNotif.setVisibility(View.VISIBLE);
-        } else {
-            tvBadgeNotif.setVisibility(View.GONE);
-        }
-    }
-
-    private void limpiarBadge() {
-        totalNotificaciones = 0;
-        tvBadgeNotif.setVisibility(View.GONE);
     }
 }

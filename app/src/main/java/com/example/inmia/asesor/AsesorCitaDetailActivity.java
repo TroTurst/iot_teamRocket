@@ -12,14 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+public class AsesorCitaDetailActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
 
-    // Hardcodeado — luego vendrá de Firebase
     private int totalNotificaciones = 2;
 
     @Override
@@ -30,17 +29,15 @@ public class AsesorHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_asesor_home);
+        setContentView(R.layout.activity_asesor_cita_detail);
 
-        bottomNav           = findViewById(R.id.bottomNavAsesor);
+        bottomNav = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
-        framePerfil         = findViewById(R.id.framePerfil);
+        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        framePerfil = findViewById(R.id.framePerfil);
 
-        // Configurar badge inicial
         configurarBadge();
 
-        // Click en campanita
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
@@ -50,11 +47,13 @@ public class AsesorHomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        // Bottom navigation
+        bottomNav.setSelectedItemId(R.id.nav_citas);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
+                startActivity(new Intent(this, AsesorHomeActivity.class));
+                finish();
                 return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, AsesorChatActivity.class));
@@ -72,6 +71,14 @@ public class AsesorHomeActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    public void onHablarCliente(View view) {
+        Toast.makeText(this, "Abrir chat con cliente", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onCancelarCita(View view) {
+        Toast.makeText(this, "Cancelar cita", Toast.LENGTH_SHORT).show();
     }
 
     private void configurarBadge() {

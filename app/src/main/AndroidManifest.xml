@@ -120,30 +120,41 @@
             android:theme="@style/Theme.Inmia.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- ONBOARDING -->
+        </activity>
+
+        <!-- ONBOARDING -->
         <activity
             android:name=".OnboardingActivity"
             android:exported="false"
-            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- LOGIN -->
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- LOGIN -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
-            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- FORGOT PASSWORD -->
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- FORGOT PASSWORD -->
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false"
-            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- REGISTER -->
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- REGISTER -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
-            android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- MAIN -->
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- MAIN -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.Inmia" /> <!-- CLIENTE -->
+            android:theme="@style/Theme.Inmia"/>
+
+        <!-- CLIENTE -->
         <activity
             android:name=".cliente.ClienteHomeActivity"
             android:exported="false"
@@ -186,6 +197,49 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar" />
             android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- ADMIN -->
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorChatDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorNotificacionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorCitasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorCitaDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorSeparacionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorSeparacionDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <activity
+            android:name=".asesor.AsesorPerfilActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar"/>
+
+        <!-- ADMIN -->
         <activity
             android:name=".admin.AdminAsesorNuevoActivity"
             android:exported="false"
