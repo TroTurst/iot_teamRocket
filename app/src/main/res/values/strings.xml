@@ -51,4 +51,42 @@
     <!-- Error credenciales incorrectas -->
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
 
+
+    <!-- INICIO CLIENTE -->
+    <string name="header_background">Fondo del encabezado</string>
+    <string name="verified_projects_lima">Proyectos verificados en Lima</string>
+    <string name="home_main_title">Encuentra tu\nhogar ideal</string>
+    <string name="home_subtitle">Explora proyectos, agenda visitas y separa\ntu inmueble desde un solo lugar.</string>
+
+    <!-- BUSQUEDA -->
+    <string name="search_hint">Zona, proyecto o distrito...</string>
+    <string name="location_button">Ubicación</string>
+    <string name="search">Buscar</string>
+
+    <!-- FITROS -->
+    <string name="filter_all">Todos</string>
+    <string name="filter_presale">Preventa</string>
+    <string name="filter_plans">Planos</string>
+    <string name="filter_sale">Venta</string>
+
+    <!-- PROYECTOS-->
+    <string name="featured_projects">Proyectos destacados</string>
+
+    <!-- PROYECTO 1 - Palm Living -->
+    <string name="project1_name">Palm Living</string>
+    <string name="project1_location">San Isidro, Lima</string>
+    <string name="project1_price">Desde S./85,000</string>
+    <string name="project1_details">Piso 1 al 20  ·  45–90 m²</string>
+
+    <!-- PROYECTO 2 - Verde Living -->
+    <string name="project2_name">Verde Living</string>
+    <string name="project2_location">Miraflores</string>
+    <string name="project2_price">Desde S./120,000</string>
+    <string name="badge_plans">Planos</string>
+
+    <!-- PROYECTO 3 - Park Side -->
+    <string name="project3_name">Park Side</string>
+    <string name="project3_location">Pueblo Libre</string>
+    <string name="project3_price">Desde S./72,000</string>
+    <string name="badge_presale">En preventa</string>
 </resources>
