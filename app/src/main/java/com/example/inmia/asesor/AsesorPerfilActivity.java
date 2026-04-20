@@ -1,27 +1,29 @@
 package com.example.inmia.asesor;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
+import com.example.inmia.superadmin.GestionUsuariosActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AsesorPerfilActivity extends AppCompatActivity {
 
     private FrameLayout frameNotificaciones;
-    private FrameLayout framePerfil;
     private TextView tvBadgeNotif;
-    private ActivityResultLauncher<String> pickPhotoLauncher;
+    private LinearLayout layoutCerrarSesion;
+    private LinearLayout layoutCambiarPassword;
+    private LinearLayout layoutNotificaciones;
+    private BottomNavigationView bottomNav;
 
     private int totalNotificaciones = 2;
 
@@ -35,72 +37,85 @@ public class AsesorPerfilActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_asesor_perfil);
 
-        frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        framePerfil = findViewById(R.id.framePerfil);
-        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        // Vincular vistas
+        frameNotificaciones   = findViewById(R.id.frameNotificaciones);
+        tvBadgeNotif          = findViewById(R.id.tvBadgeNotif);
+        layoutCerrarSesion    = findViewById(R.id.layoutCerrarSesion);
+        layoutCambiarPassword = findViewById(R.id.layoutCambiarPassword);
+        layoutNotificaciones  = findViewById(R.id.layoutNotificaciones);
+        bottomNav             = findViewById(R.id.bottomNavAsesor);
 
         configurarBadge();
 
-        pickPhotoLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    Toast.makeText(this, "Foto seleccionada (no se guardara aun)", Toast.LENGTH_SHORT).show();
-                }
-            }
-        );
-
+        // Campanita
         frameNotificaciones.setOnClickListener(v -> {
-            startActivity(new Intent(this, AsesorNotificacionesActivity.class));
+            Toast.makeText(this,
+                    "Tienes " + totalNotificaciones + " notificaciones",
+                    Toast.LENGTH_SHORT).show();
+            limpiarBadge();
         });
 
-        if (framePerfil != null) {
-            framePerfil.setEnabled(false);
-            framePerfil.setAlpha(0.6f);
-        }
+        // Cambiar contraseña
+        layoutCambiarPassword.setOnClickListener(v ->
+                Toast.makeText(this, "Cambiar contraseña",
+                        Toast.LENGTH_SHORT).show());
+
+        // Notificaciones
+        layoutNotificaciones.setOnClickListener(v ->
+                Toast.makeText(this, "Configurar notificaciones",
+                        Toast.LENGTH_SHORT).show());
+
+        // Cerrar sesión
+        layoutCerrarSesion.setOnClickListener(v ->
+                mostrarDialogoCerrarSesion());
+
+        // Bottom navigation
+        bottomNav.setSelectedItemId(R.id.nav_inicio);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_inicio) {
+                startActivity(new Intent(this, AsesorHomeActivity.class));
+                return true;
+            } else if (id == R.id.nav_chat) {
+                startActivity(new Intent(this, AsesorChatActivity.class));
+                return true;
+            } else if (id == R.id.nav_citas) {
+                startActivity(new Intent(this, AsesorCitasActivity.class));
+                return true;
+            } else if (id == R.id.nav_separaciones) {
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void mostrarDialogoCerrarSesion() {
+        new AlertDialog.Builder(this)
+                .setTitle("Cerrar sesión")
+                .setMessage("¿Estás seguro que deseas cerrar sesión?")
+                .setPositiveButton("Cerrar sesión", (dialog, which) -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void configurarBadge() {
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
-            tvBadgeNotif.setVisibility(android.view.View.VISIBLE);
+            tvBadgeNotif.setVisibility(View.VISIBLE);
         } else {
-            tvBadgeNotif.setVisibility(android.view.View.GONE);
+            tvBadgeNotif.setVisibility(View.GONE);
         }
     }
 
-    public void onSubirFoto(android.view.View view) {
-        showSubirFotoDialog();
-    }
-
-    private void showSubirFotoDialog() {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_subir_foto);
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        }
-
-        FrameLayout backdrop = dialog.findViewById(R.id.dialogBackdrop);
-        TextView btnSeleccionar = dialog.findViewById(R.id.btnSeleccionarFoto);
-        TextView btnCancelar = dialog.findViewById(R.id.btnCancelarFoto);
-
-        if (backdrop != null) {
-            backdrop.setOnClickListener(v -> dialog.dismiss());
-        }
-
-        if (btnSeleccionar != null) {
-            btnSeleccionar.setOnClickListener(v -> {
-                dialog.dismiss();
-                pickPhotoLauncher.launch("image/*");
-            });
-        }
-
-        if (btnCancelar != null) {
-            btnCancelar.setOnClickListener(v -> dialog.dismiss());
-        }
-
-        dialog.show();
+    private void limpiarBadge() {
+        totalNotificaciones = 0;
+        tvBadgeNotif.setVisibility(View.GONE);
     }
 }

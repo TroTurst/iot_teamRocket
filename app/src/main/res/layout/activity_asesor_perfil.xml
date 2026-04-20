@@ -10,29 +10,57 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="96dp">
+        android:paddingBottom="80dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- ── HEADER ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="220dp"
                 android:background="@drawable/gradient_background">
 
+                <!-- Logo -->
+                <ImageView
+                    android:id="@+id/imgHeaderLogo"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_logo_inmia"
+                    android:contentDescription="@string/cd_logo"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="48dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvHeaderAppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:letterSpacing="0.2"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
+                    app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
+                    app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
+
+                <!-- Campanita -->
                 <FrameLayout
                     android:id="@+id/frameNotificaciones"
                     android:layout_width="44dp"
                     android:layout_height="44dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="44dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/framePerfil">
+                    app:layout_constraintEnd_toEndOf="parent">
 
                     <ImageView
                         android:id="@+id/imgCampana"
@@ -59,64 +87,66 @@
 
                 </FrameLayout>
 
+                <!-- Avatar con iniciales -->
                 <FrameLayout
-                    android:id="@+id/framePerfil"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="20dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="@drawable/bg_profile_circle"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/frameAvatar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_perfil"
-                        android:tint="@color/inmia_teal_dark"
-                        android:contentDescription="Perfil"/>
+                    <TextView
+                        android:id="@+id/tvAvatar"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:text="CM"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:background="@drawable/bg_avatar"/>
 
                 </FrameLayout>
 
+                <!-- Nombre -->
                 <TextView
-                    android:id="@+id/tvGreeting"
+                    android:id="@+id/tvNombreUsuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mi perfil"
+                    android:text="Carlos Mendoza"
                     android:textColor="@color/inmia_text"
-                    android:textSize="24sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/frameAvatar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
+                <!-- Rol -->
                 <TextView
-                    android:id="@+id/tvSubGreeting"
+                    android:id="@+id/tvRol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Asesor de Empresa X"
+                    android:text="Asesor de ventas"
                     android:textColor="#5A8A8A"
-                    android:textSize="14sp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/tvGreeting"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:textSize="13sp"
+                    android:layout_marginTop="2dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvNombreUsuario"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- ── CARD: INFORMACIÓN PERSONAL ── -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="-24dp"
+                android:layout_marginTop="20dp"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
+                app:cardElevation="3dp"
                 app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
@@ -125,50 +155,157 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <FrameLayout
-                        android:layout_width="88dp"
-                        android:layout_height="88dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@drawable/bg_profile_circle">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Información personal"
+                        android:textColor="@color/inmia_text"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Correo -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="14dp">
 
                         <ImageView
-                            android:layout_width="42dp"
-                            android:layout_height="42dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_perfil"
-                            android:tint="@color/inmia_teal_dark"
-                            android:contentDescription="Perfil"/>
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_dialog_email"
+                            android:contentDescription="Correo"
+                            app:tint="@color/inmia_teal_dark"/>
 
-                    </FrameLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Correo electrónico"
+                                android:textColor="#A0BFBF"
+                                android:textSize="11sp"/>
+
+                            <TextView
+                                android:id="@+id/tvCorreo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="asesor@inmia.pe"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0"
+                        android:layout_marginBottom="14dp"/>
+
+                    <!-- Teléfono -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Carlos Mendoza"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="12dp"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="14dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_call"
+                            android:contentDescription="Teléfono"
+                            app:tint="@color/inmia_teal_dark"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Teléfono"
+                                android:textColor="#A0BFBF"
+                                android:textSize="11sp"/>
+
+                            <TextView
+                                android:id="@+id/tvTelefono"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="987 654 321"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0"
+                        android:layout_marginBottom="14dp"/>
+
+                    <!-- Oficina -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Asesor inmobiliario"
-                        android:textColor="#7A9E9E"
-                        android:textSize="13sp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="4dp"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_inicio"
+                            android:contentDescription="Oficina"
+                            app:tint="@color/inmia_teal_dark"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Oficina"
+                                android:textColor="#A0BFBF"
+                                android:textSize="11sp"/>
+
+                            <TextView
+                                android:id="@+id/tvOficina"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="San Isidro, Lima"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="2dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ── CARD: CONFIGURACIÓN ── -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="14dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="3dp"
                 app:cardBackgroundColor="#FFFFFF">
 
@@ -176,111 +313,149 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Datos de contacto"
+                        android:text="Configuración"
                         android:textColor="@color/inmia_text"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="12dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="8dp"/>
 
+                    <!-- Cambiar contraseña -->
                     <LinearLayout
+                        android:id="@+id/layoutCambiarPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:orientation="horizontal"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_phone"
-                            android:contentDescription="Telefono" />
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@android:drawable/ic_lock_idle_lock"
+                            android:contentDescription="Contraseña"
+                            app:tint="@color/inmia_teal_dark"/>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:text="Telefono"
-                            android:textColor="#7A9E9E"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="987 654 321"
+                            android:text="Cambiar contraseña"
                             android:textColor="@color/inmia_text"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:layout_marginStart="16dp"/>
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_back"
+                            android:contentDescription="Ir"
+                            android:rotation="180"
+                            app:tint="#A0BFBF"/>
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <View
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="1dp"
+                        android:background="#F0F0F0"
+                        android:layout_marginHorizontal="12dp"/>
+
+                    <!-- Notificaciones -->
+                    <LinearLayout
+                        android:id="@+id/layoutNotificaciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
                         android:orientation="horizontal"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_chat"
-                            android:contentDescription="Correo" />
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/ic_notifications"
+                            android:contentDescription="Notificaciones"
+                            app:tint="@color/inmia_teal_dark"/>
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:text="Correo"
-                            android:textColor="#7A9E9E"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="asesor@inmia.pe"
+                            android:text="Notificaciones"
                             android:textColor="@color/inmia_text"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center_vertical">
+                            android:textSize="14sp"
+                            android:layout_marginStart="16dp"/>
 
                         <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_location"
-                            android:contentDescription="Ubicacion" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:text="Oficina"
-                            android:textColor="#7A9E9E"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="San Isidro, Lima"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_back"
+                            android:contentDescription="Ir"
+                            android:rotation="180"
+                            app:tint="#A0BFBF"/>
 
                     </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ── BOTÓN CERRAR SESIÓN ── -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:id="@+id/layoutCerrarSesion"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="20dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_cerrar_sesion"
+                        android:contentDescription="Cerrar sesión"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Cerrar sesión"
+                        android:textColor="#E53935"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="16dp"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:contentDescription="Cerrar"
+                        android:rotation="180"
+                        app:tint="#E53935"/>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -288,6 +463,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- ── BOTTOM NAVIGATION ── -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavAsesor"
         android:layout_width="match_parent"
