@@ -76,6 +76,46 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- SUPERADMIN -->
         <activity
+            android:name=".admin.AdminProyectosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoDetalleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoEditarActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoNuevoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminProyectoGaleriaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesoresActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesorDetalleCarlosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminAsesorNuevoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminReportesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
+            android:name=".admin.AdminPerfilActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
             android:name=".superadmin.SuperAdminHomeActivity"
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar" />

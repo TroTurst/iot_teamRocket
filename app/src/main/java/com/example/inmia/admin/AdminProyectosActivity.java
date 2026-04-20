@@ -3,7 +3,9 @@ package com.example.inmia.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,13 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AdminHomeActivity extends AppCompatActivity {
+public class AdminProyectosActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
 
-    // Hardcodeado — luego vendrá de Firebase
+    // Hardcodeado - luego vendra de Firebase
     private int totalNotificaciones = 5;
 
     @Override
@@ -29,14 +31,17 @@ public class AdminHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_admin_home);
+        setContentView(R.layout.activity_admin_proyectos);
 
-        bottomNav           = findViewById(R.id.bottomNavAdmin);
+        bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
+        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        EditText etBuscarProyecto = findViewById(R.id.etBuscarProyecto);
+        ImageView btnFiltroMock = findViewById(R.id.btnFiltroMock);
+        View btnDetallesProyectoPrincipal = findViewById(R.id.btnDetallesProyectoPrincipal);
 
         configurarBadge();
-        bottomNav.setSelectedItemId(R.id.nav_inicio);
+        bottomNav.setSelectedItemId(R.id.nav_proyectos);
 
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,
@@ -45,13 +50,32 @@ public class AdminHomeActivity extends AppCompatActivity {
             limpiarBadge();
         });
 
+        etBuscarProyecto.setOnClickListener(v ->
+                Toast.makeText(this, "Busqueda habilitada", Toast.LENGTH_SHORT).show());
+
+        etBuscarProyecto.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                Toast.makeText(this, "Escribe para buscar proyectos", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnFiltroMock.setOnClickListener(v ->
+                Toast.makeText(this, "Filtros proximamente", Toast.LENGTH_SHORT).show());
+
+        findViewById(R.id.btnNuevoProyecto).setOnClickListener(v -> {
+            startActivity(new Intent(this, AdminProyectoNuevoActivity.class));
+        });
+
+        btnDetallesProyectoPrincipal.setOnClickListener(v ->
+                startActivity(new Intent(this, AdminProyectoDetalleActivity.class)));
+
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
+                navegarATab(AdminHomeActivity.class);
                 return true;
             } else if (id == R.id.nav_proyectos) {
-                navegarATab(AdminProyectosActivity.class);
                 return true;
             } else if (id == R.id.nav_asesores) {
                 navegarATab(AdminAsesoresActivity.class);
@@ -89,3 +113,5 @@ public class AdminHomeActivity extends AppCompatActivity {
         finish();
     }
 }
+
+

@@ -48,6 +48,23 @@
     <string name="cd_logo">Logo INMIA</string>
     <string name="cd_forgot_icon">Recuperar contraseña</string>
 
+    <!-- ── ADMIN ── -->
+    <string name="admin_asesor_profile_title">Estas viendo el perfil de uno de tus asesores</string>
+    <string name="admin_project_edit_title">Actualizar datos</string>
+    <string name="admin_project_preview_title">Previsualización</string>
+    <string name="admin_project_confirm">Confirmar edición</string>
+    <string name="admin_project_preview">Previsualizar</string>
+    <string name="admin_project_name_hint">Nombre del proyecto</string>
+    <string name="admin_project_location_hint">Ubicación</string>
+    <string name="admin_project_description_hint">Descripción</string>
+    <string name="admin_project_price_hint">Precio estimado</string>
+    <string name="admin_project_area_hint">Área total</string>
+    <string name="admin_project_bedrooms_hint">Dormitorios</string>
+    <string name="admin_project_bathrooms_hint">Baños</string>
+    <string name="admin_project_parking_hint">Estacionamiento</string>
+    <string name="admin_project_status_hint">Estado</string>
+    <string name="admin_project_gallery_more">Ver %1$d +</string>
+
     <!-- Error credenciales incorrectas -->
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
 
@@ -56,7 +73,7 @@
     <string name="tab_admins">Admins</string>
     <string name="tab_asesores">Asesores</string>
     <string name="tab_clientes">Clientes</string>
-    <string name="buscar_hint">Buscar...</string>
+    <string name="buscar_hint">Buscar…</string>
     <string name="btn_nuevo">+ Nuevo</string>
     <string name="btn_solicitudes">Solicitudes</string>
     <string name="ver_perfil">Ver perfil</string>
