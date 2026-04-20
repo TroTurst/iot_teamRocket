@@ -91,6 +91,9 @@ public class LoginActivity extends AppCompatActivity {
             case UserCheck.ROL_SUPERADMIN:
                 intent = new Intent(this, SuperAdminHomeActivity.class);
                 break;
+            case UserCheck.ROL_ADMIN1:
+                intent = new Intent(this, AdminHomeActivity.class);
+                break;
             default:
                 return;
         }

@@ -8,13 +8,16 @@ public class UserCheck {
     public static final String ROL_ADMIN      = "admin";
     public static final String ROL_SUPERADMIN = "superadmin";
 
+    public static final String ROL_ADMIN1      = "admin1";
+
     // Usuarios hardcodeados — temporales hasta Firebase
     private static final String[][] USUARIOS = {
             // { email, contraseña, rol }
             { "daniel@gmail.com",    "123456", ROL_CLIENTE    },
             { "kiara@gmail.com",     "123456", ROL_ASESOR     },
             { "paul@gmail.com",      "123456", ROL_ADMIN      },
-            { "superadmin@gmail.com", "123456", ROL_SUPERADMIN }
+            { "superadmin@gmail.com", "123456", ROL_SUPERADMIN },
+            { "paul2@gmail.com",      "123456", ROL_ADMIN1 }
     };
 
     /**
