@@ -6,18 +6,24 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Usuario;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
-public class GestionUsuariosActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class GestionUsuariosActivity extends AppCompatActivity
+        implements UsuarioAdapter.OnVerPerfilListener {
 
     // Tabs
     private TextView tabAdmins, tabAsesores, tabClientes;
@@ -28,14 +34,20 @@ public class GestionUsuariosActivity extends AppCompatActivity {
     private TextView tvTituloLista;
     private MaterialButton btnNuevo, btnSolicitudes;
 
-    // Switches hardcodeados
-    private Switch switch1, switch2, switch3, switch4;
+    // RecyclerView
+    private RecyclerView recyclerUsuarios;
+    private UsuarioAdapter adapter;
 
     // Bottom nav
     private BottomNavigationView bottomNav;
 
     // Estado actual del tab
     private String tabActual = "admins";
+
+    // ── Listas hardcodeadas por rol ──────────────────────────────────────────
+    private List<Usuario> listaAdmins;
+    private List<Usuario> listaAsesores;
+    private List<Usuario> listaClientes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +68,17 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         tvTituloLista  = findViewById(R.id.tvTituloLista);
         btnNuevo       = findViewById(R.id.btnNuevo);
         btnSolicitudes = findViewById(R.id.btnSolicitudes);
-        switch1        = findViewById(R.id.switch1);
-        switch2        = findViewById(R.id.switch2);
-        switch3        = findViewById(R.id.switch3);
-        switch4        = findViewById(R.id.switch4);
+        recyclerUsuarios = findViewById(R.id.recyclerUsuarios);
         bottomNav      = findViewById(R.id.bottomNavSuperAdmin);
+
+        // Inicializar datos hardcodeados
+        inicializarDatos();
+
+        // Configurar RecyclerView
+        recyclerUsuarios.setLayoutManager(
+                new LinearLayoutManager(this));
+        adapter = new UsuarioAdapter(this, listaAdmins, this);
+        recyclerUsuarios.setAdapter(adapter);
 
         // Marcar tab activo en el nav
         bottomNav.setSelectedItemId(R.id.nav_usuarios);
@@ -70,33 +88,13 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         tabAsesores.setOnClickListener(v -> seleccionarTab("asesores"));
         tabClientes.setOnClickListener(v -> seleccionarTab("clientes"));
 
-        // Configurar switches con AlertDialog
-        configurarSwitch(switch1, "Cyndy Lillibridge");
-        configurarSwitch(switch2, "John Travolta");
-        configurarSwitch(switch3, "Teresa Mertens");
-        configurarSwitch(switch4, "Teddy Gallagher");
-
-        // ← CAMBIO: Ver perfil — Cyndy navega, los demás Toast
-        findViewById(R.id.layoutVerPerfil1).setOnClickListener(v ->
-                startActivity(new Intent(this, PerfilUserActivity.class)));
-
-        findViewById(R.id.layoutVerPerfil2).setOnClickListener(v ->
-                Toast.makeText(this, "Perfil no disponible",
-                        Toast.LENGTH_SHORT).show());
-
-        findViewById(R.id.layoutVerPerfil3).setOnClickListener(v ->
-                Toast.makeText(this, "Perfil no disponible",
-                        Toast.LENGTH_SHORT).show());
-
-        findViewById(R.id.layoutVerPerfil4).setOnClickListener(v ->
-                Toast.makeText(this, "Perfil no disponible",
-                        Toast.LENGTH_SHORT).show());
-
-        // Búsqueda
+        // Búsqueda en tiempo real
         etBuscar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO: filtrar lista por nombre cuando conectemos Firebase
+            @Override public void beforeTextChanged(CharSequence s,
+                                                    int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s,
+                                                int start, int before, int count) {
+                filtrarPorNombre(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -112,10 +110,9 @@ public class GestionUsuariosActivity extends AppCompatActivity {
         btnSolicitudes.setOnClickListener(v ->
                 startActivity(new Intent(this, SolicitudesActivity.class)));
 
-        // ── BOTTOM NAVIGATION ──
+        // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_inicio) {
                 startActivity(new Intent(this, SuperAdminHomeActivity.class));
                 return true;
@@ -131,92 +128,162 @@ public class GestionUsuariosActivity extends AppCompatActivity {
                 startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
-
             return false;
         });
     }
 
+    // ── Datos hardcodeados ───────────────────────────────────────────────────
+
+    private void inicializarDatos() {
+        // Admins
+        listaAdmins = new ArrayList<>();
+        listaAdmins.add(new Usuario(
+                "Cyndy Lillibridge", "Inmobiliaria Sofia",  "CL", true,  "admin"));
+        listaAdmins.add(new Usuario(
+                "John Travolta",     "Inmobiliaria John",   "JT", true,  "admin"));
+        listaAdmins.add(new Usuario(
+                "Teresa Mertens",    "Inmobiliaria I&M",    "TM", true,  "admin"));
+        listaAdmins.add(new Usuario(
+                "Teddy Gallagher",   "Inmobiliaria Oasis",  "TG", false, "admin"));
+
+        // Asesores
+        listaAsesores = new ArrayList<>();
+        listaAsesores.add(new Usuario(
+                "María García",      "INMIA San Isidro",    "MG", true,  "asesor"));
+        listaAsesores.add(new Usuario(
+                "Carlos Ramos",      "INMIA Miraflores",    "CR", true,  "asesor"));
+        listaAsesores.add(new Usuario(
+                "Juan Sánchez",      "INMIA Surco",         "JS", false, "asesor"));
+
+        // Clientes
+        listaClientes = new ArrayList<>();
+        listaClientes.add(new Usuario(
+                "Ana Torres",        "Sin inmobiliaria",    "AT", true,  "cliente"));
+        listaClientes.add(new Usuario(
+                "Pedro Vargas",      "Sin inmobiliaria",    "PV", true,  "cliente"));
+        listaClientes.add(new Usuario(
+                "Lucía Mendoza",     "Sin inmobiliaria",    "LM", false, "cliente"));
+    }
+
+    // ── Tabs ─────────────────────────────────────────────────────────────────
+
     private void seleccionarTab(String tab) {
         tabActual = tab;
 
-        tabAdmins.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        // Resetear todos los tabs
+        tabAdmins.setBackground(
+                getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAdmins.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabAsesores.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabAsesores.setBackground(
+                getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAsesores.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabClientes.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabClientes.setBackground(
+                getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabClientes.setTextColor(getColor(R.color.inmia_teal_dark));
 
         switch (tab) {
             case "admins":
-                tabAdmins.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
+                tabAdmins.setBackground(
+                        getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAdmins.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText("Lista de administradores (3)");
+                tvTituloLista.setText(
+                        "Lista de administradores (" + listaAdmins.size() + ")");
+                adapter.actualizarLista(listaAdmins);
                 btnNuevo.setVisibility(View.VISIBLE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
 
             case "asesores":
-                tabAsesores.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
+                tabAsesores.setBackground(
+                        getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAsesores.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText("Lista de asesores (3)");
+                tvTituloLista.setText(
+                        "Lista de asesores (" + listaAsesores.size() + ")");
+                adapter.actualizarLista(listaAsesores);
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.VISIBLE);
                 break;
 
             case "clientes":
-                tabClientes.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
+                tabClientes.setBackground(
+                        getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabClientes.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText("Lista de clientes (3)");
+                tvTituloLista.setText(
+                        "Lista de clientes (" + listaClientes.size() + ")");
+                adapter.actualizarLista(listaClientes);
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
         }
     }
 
-    private void configurarSwitch(Switch sw, String nombreUsuario) {
-        sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            String titulo = isChecked
-                    ? getString(R.string.dialog_habilitar_titulo)
-                    : getString(R.string.dialog_inhabilitar_titulo);
-            String mensaje = isChecked
-                    ? getString(R.string.dialog_habilitar_mensaje)
-                    : getString(R.string.dialog_inhabilitar_mensaje);
-            String btnConfirmar = isChecked
-                    ? getString(R.string.dialog_habilitar_confirmar)
-                    : getString(R.string.dialog_inhabilitar_confirmar);
+    // ── Búsqueda ─────────────────────────────────────────────────────────────
 
-            new AlertDialog.Builder(this)
-                    .setTitle(titulo)
-                    .setMessage(mensaje)
-                    .setPositiveButton(btnConfirmar, (dialog, which) -> {
-                        String estado = isChecked ? "habilitado" : "inhabilitado";
-                        Toast.makeText(this,
-                                nombreUsuario + " ha sido " + estado,
-                                Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton(getString(R.string.dialog_inhabilitar_cancelar),
-                            (dialog, which) -> {
-                                sw.setOnCheckedChangeListener(null);
-                                sw.setChecked(!isChecked);
-                                configurarSwitch(sw, nombreUsuario);
-                            })
-                    .setCancelable(false)
-                    .show();
-        });
+    private void filtrarPorNombre(String query) {
+        List<Usuario> listaBase = obtenerListaActual();
+        if (query.isEmpty()) {
+            adapter.actualizarLista(listaBase);
+            return;
+        }
+
+        List<Usuario> filtrada = new ArrayList<>();
+        for (Usuario u : listaBase) {
+            if (u.getNombre().toLowerCase()
+                    .contains(query.toLowerCase())) {
+                filtrada.add(u);
+            }
+        }
+        adapter.actualizarLista(filtrada);
     }
 
+    private List<Usuario> obtenerListaActual() {
+        switch (tabActual) {
+            case "asesores": return listaAsesores;
+            case "clientes": return listaClientes;
+            default:         return listaAdmins;
+        }
+    }
+
+    // ── Filtro por estado ─────────────────────────────────────────────────────
+
     private void mostrarDialogoFiltro() {
-        String[] opciones = {
-                getString(R.string.filtro_todos),
-                getString(R.string.filtro_activos),
-                getString(R.string.filtro_inactivos)
-        };
+        String[] opciones = {"Todos", "Activos", "Inactivos"};
 
         new AlertDialog.Builder(this)
                 .setTitle("Filtrar por estado")
-                .setItems(opciones, (dialog, which) ->
-                        Toast.makeText(this, "Filtro: " + opciones[which],
-                                Toast.LENGTH_SHORT).show())
+                .setItems(opciones, (dialog, which) -> {
+                    List<Usuario> listaBase = obtenerListaActual();
+                    List<Usuario> filtrada  = new ArrayList<>();
+
+                    switch (which) {
+                        case 0: // Todos
+                            adapter.actualizarLista(listaBase);
+                            return;
+                        case 1: // Activos
+                            for (Usuario u : listaBase) {
+                                if (u.isActivo()) filtrada.add(u);
+                            }
+                            break;
+                        case 2: // Inactivos
+                            for (Usuario u : listaBase) {
+                                if (!u.isActivo()) filtrada.add(u);
+                            }
+                            break;
+                    }
+                    adapter.actualizarLista(filtrada);
+                })
                 .show();
+    }
+
+    // ── Ver perfil — callback del adapter ────────────────────────────────────
+
+    @Override
+    public void onVerPerfil(Usuario usuario) {
+        if (usuario.getNombre().equals("Cyndy Lillibridge")) {
+            startActivity(new Intent(this, PerfilUserActivity.class));
+        } else {
+            Toast.makeText(this, "Perfil no disponible",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }

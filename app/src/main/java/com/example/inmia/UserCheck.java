@@ -16,7 +16,7 @@ public class UserCheck {
             { "daniel@gmail.com",    "123456", ROL_CLIENTE    },
             { "kiara@gmail.com",     "123456", ROL_ASESOR     },
             { "paul@gmail.com",      "123456", ROL_ADMIN      },
-            { "superadmin@gmail.com", "123456", ROL_SUPERADMIN },
+            { "inmia@gmail.com", "123456", ROL_SUPERADMIN },
             { "paul2@gmail.com",      "123456", ROL_ADMIN1 }
     };
 

@@ -2,35 +2,28 @@ package com.example.inmia.superadmin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Solicitud;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 
-public class SolicitudesActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
+public class SolicitudesActivity extends AppCompatActivity
+        implements SolicitudAdapter.OnSolicitudListener {
+
+    private RecyclerView recyclerSolicitudes;
+    private SolicitudAdapter adapter;
+    private List<Solicitud> listaSolicitudes;
+    private TextView tvContador;
     private BottomNavigationView bottomNav;
-
-    // Cards de solicitudes
-    private MaterialCardView cardSolicitud1, cardSolicitud2, cardSolicitud3;
-
-    // Botones aceptar
-    private MaterialButton btnAceptar1, btnAceptar2, btnAceptar3;
-
-    // Botones rechazar
-    private MaterialButton btnRechazar1, btnRechazar2, btnRechazar3;
-
-    // ← NUEVO: Botones ver perfil
-    private MaterialButton btnVerPerfil1, btnVerPerfil2, btnVerPerfil3;
-
-    // Conteo de solicitudes pendientes
-    private int totalPendientes = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,77 +36,29 @@ public class SolicitudesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_solicitudes_superadmin);
 
         // Vincular vistas
-        bottomNav      = findViewById(R.id.bottomNavSuperAdmin);
-        cardSolicitud1 = findViewById(R.id.cardSolicitud1);
-        cardSolicitud2 = findViewById(R.id.cardSolicitud2);
-        cardSolicitud3 = findViewById(R.id.cardSolicitud3);
-        btnAceptar1    = findViewById(R.id.btnAceptar1);
-        btnAceptar2    = findViewById(R.id.btnAceptar2);
-        btnAceptar3    = findViewById(R.id.btnAceptar3);
-        btnRechazar1   = findViewById(R.id.btnRechazar1);
-        btnRechazar2   = findViewById(R.id.btnRechazar2);
-        btnRechazar3   = findViewById(R.id.btnRechazar3);
-
-        // ← NUEVO: Vincular botones ver perfil
-        btnVerPerfil1  = findViewById(R.id.btnVerPerfil1);
-        btnVerPerfil2  = findViewById(R.id.btnVerPerfil2);
-        btnVerPerfil3  = findViewById(R.id.btnVerPerfil3);
+        recyclerSolicitudes = findViewById(R.id.recyclerSolicitudes);
+        tvContador          = findViewById(R.id.tvContador);
+        bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
 
         // Botón atrás
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // ── ACEPTAR solicitudes ──
-        btnAceptar1.setOnClickListener(v ->
-                mostrarDialogoHabilitar("María García López", cardSolicitud1));
-        btnAceptar2.setOnClickListener(v ->
-                mostrarDialogoHabilitar("Carlos Ramos Torres", cardSolicitud2));
-        btnAceptar3.setOnClickListener(v ->
-                mostrarDialogoHabilitar("Juan Sánchez Pérez", cardSolicitud3));
+        // Inicializar datos
+        inicializarDatos();
 
-        // ── RECHAZAR solicitudes ──
-        btnRechazar1.setOnClickListener(v ->
-                mostrarDialogoRechazar("María García López", cardSolicitud1));
-        btnRechazar2.setOnClickListener(v ->
-                mostrarDialogoRechazar("Carlos Ramos Torres", cardSolicitud2));
-        btnRechazar3.setOnClickListener(v ->
-                mostrarDialogoRechazar("Juan Sánchez Pérez", cardSolicitud3));
+        // Configurar RecyclerView
+        recyclerSolicitudes.setLayoutManager(
+                new LinearLayoutManager(this));
+        adapter = new SolicitudAdapter(this, listaSolicitudes, this);
+        recyclerSolicitudes.setAdapter(adapter);
 
-        // ← NUEVO: VER PERFIL de cada asesor
-        btnVerPerfil1.setOnClickListener(v -> verPerfilAsesor(
-                "María García López",
-                "INMIA San Isidro",
-                "DNI · 45678901",
-                "15/03/1995",
-                "m.garcia@inmia.com",
-                "+51 987 654 321",
-                "Av. Javier Prado 1234, San Isidro"
-        ));
-
-        btnVerPerfil2.setOnClickListener(v -> verPerfilAsesor(
-                "Carlos Ramos Torres",
-                "INMIA Miraflores",
-                "DNI · 32156789",
-                "22/07/1990",
-                "c.ramos@inmia.com",
-                "+51 912 345 678",
-                "Calle Las Flores 567, Miraflores"
-        ));
-
-        btnVerPerfil3.setOnClickListener(v -> verPerfilAsesor(
-                "Juan Sánchez Pérez",
-                "INMIA Surco",
-                "DNI · 78234561",
-                "08/11/1988",
-                "j.sanchez@inmia.com",
-                "+51 956 789 012",
-                "Jr. Los Pinos 890, Surco"
-        ));
+        // Actualizar contador
+        actualizarContador();
 
         // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_usuarios);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_inicio) {
                 finish();
                 return true;
@@ -130,79 +75,109 @@ public class SolicitudesActivity extends AppCompatActivity {
                 startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
-
             return false;
         });
     }
 
-    // ── VER PERFIL ──────────────────────────────────────────────────────────
+    // ── Datos hardcodeados ───────────────────────────────────────────────────
 
-    private void verPerfilAsesor(String nombre, String inmobiliaria,
-                                 String documento, String fechaNac,
-                                 String correo, String telefono,
-                                 String domicilio) {
+    private void inicializarDatos() {
+        listaSolicitudes = new ArrayList<>();
+        listaSolicitudes.add(new Solicitud(
+                "María García López",
+                "INMIA San Isidro",
+                "MG",
+                "m.garcia@inmia.com",
+                "+51 987 654 321",
+                "Hace 2 horas",
+                "DNI · 45678901",
+                "15/03/1995",
+                "Av. Javier Prado 1234, San Isidro"
+        ));
+        listaSolicitudes.add(new Solicitud(
+                "Carlos Ramos Torres",
+                "INMIA Miraflores",
+                "CR",
+                "c.ramos@inmia.com",
+                "+51 912 345 678",
+                "Hace 5 horas",
+                "DNI · 32156789",
+                "22/07/1990",
+                "Calle Las Flores 567, Miraflores"
+        ));
+        listaSolicitudes.add(new Solicitud(
+                "Juan Sánchez Pérez",
+                "INMIA Surco",
+                "JS",
+                "j.sanchez@inmia.com",
+                "+51 956 789 012",
+                "Ayer 11:30 pm",
+                "DNI · 78234561",
+                "08/11/1988",
+                "Jr. Los Pinos 890, Surco"
+        ));
+    }
+
+    // ── Callbacks del adapter ────────────────────────────────────────────────
+
+    @Override
+    public void onHabilitar(Solicitud solicitud, int position) {
+        adapter.eliminarItem(position);
+        actualizarContador();
+
+        Toast.makeText(this,
+                solicitud.getNombre() + " ha sido habilitado como asesor",
+                Toast.LENGTH_SHORT).show();
+
+        // Si no quedan solicitudes volver a gestión
+        if (listaSolicitudes.isEmpty()) {
+            irAGestionUsuarios();
+        }
+    }
+
+    @Override
+    public void onRechazar(Solicitud solicitud, int position) {
+        adapter.eliminarItem(position);
+        actualizarContador();
+
+        Toast.makeText(this,
+                "Solicitud de " + solicitud.getNombre() + " rechazada",
+                Toast.LENGTH_SHORT).show();
+
+        // Si no quedan solicitudes volver a gestión
+        if (listaSolicitudes.isEmpty()) {
+            irAGestionUsuarios();
+        }
+    }
+
+    @Override
+    public void onVerPerfil(Solicitud solicitud) {
         Intent intent = new Intent(this, PerfilAsesorActivity.class);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_NOMBRE,       nombre);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA, inmobiliaria);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_DOCUMENTO,    documento);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_FECHA_NAC,    fechaNac);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_CORREO,       correo);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_TELEFONO,     telefono);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_DOMICILIO,    domicilio);
+        intent.putExtra(PerfilAsesorActivity.EXTRA_NOMBRE,
+                solicitud.getNombre());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA,
+                solicitud.getInmobiliaria());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOCUMENTO,
+                solicitud.getDocumento());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_FECHA_NAC,
+                solicitud.getFechaNac());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_CORREO,
+                solicitud.getCorreo());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_TELEFONO,
+                solicitud.getTelefono());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOMICILIO,
+                solicitud.getDomicilio());
         startActivity(intent);
     }
 
-    // ── DIÁLOGOS ─────────────────────────────────────────────────────────────
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private void mostrarDialogoHabilitar(String nombreAsesor,
-                                         MaterialCardView card) {
-        new AlertDialog.Builder(this)
-                .setTitle("¿Habilitar asesor?")
-                .setMessage("¿Estás seguro de habilitar a "
-                        + nombreAsesor + " como asesor de ventas?")
-                .setPositiveButton("Habilitar", (dialog, which) -> {
-                    card.setVisibility(View.GONE);
-                    totalPendientes--;
-
-                    // TODO: actualizar estado en Firebase
-
-                    Toast.makeText(this,
-                            nombreAsesor + " ha sido habilitado como asesor",
-                            Toast.LENGTH_SHORT).show();
-
-                    if (totalPendientes == 0) {
-                        irAGestionUsuarios();
-                    }
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+    private void actualizarContador() {
+        int total = listaSolicitudes.size();
+        tvContador.setText(total + (total == 1
+                ? " solicitud pendiente"
+                : " solicitudes pendientes"));
     }
-
-    private void mostrarDialogoRechazar(String nombreAsesor,
-                                        MaterialCardView card) {
-        new AlertDialog.Builder(this)
-                .setTitle("¿Rechazar solicitud?")
-                .setMessage("¿Estás seguro de rechazar la solicitud de "
-                        + nombreAsesor + "? Esta acción no se puede deshacer.")
-                .setPositiveButton("Rechazar", (dialog, which) -> {
-                    card.setVisibility(View.GONE);
-                    totalPendientes--;
-
-                    // TODO: actualizar estado en Firebase
-
-                    Toast.makeText(this,
-                            "Solicitud de " + nombreAsesor + " rechazada",
-                            Toast.LENGTH_SHORT).show();
-
-                    if (totalPendientes == 0) {
-                        irAGestionUsuarios();
-                    }
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
-    }
-
-    // ── NAVEGACIÓN ───────────────────────────────────────────────────────────
 
     private void irAGestionUsuarios() {
         Intent intent = new Intent(this, GestionUsuariosActivity.class);
