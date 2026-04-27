@@ -8,33 +8,39 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
-public class ClienteCitasActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
-    private MaterialButton btnDetalles1;
-    private MaterialButton btnDetalles2;
+
+public class ClienteCitasActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.activity_citas_cliente);
 
-        inicializarVistas();
-        configurarNavegacion();
-        configurarMenuInferior();
+        RecyclerView rvCitas = findViewById(R.id.rvCitas);
+        rvCitas.setLayoutManager(new LinearLayoutManager(this));
+
+        List<Cita> misCitas = new ArrayList<>();
+        misCitas.add(new Cita("En proceso", "Palm Living", "San Isidro, Lima", "GALEON INMOBILIARIA"));
+        misCitas.add(new Cita("Cancelado", "Catalina Sky", "Callao, Lima", "GALEON INMOBILIARIA"));
+        misCitas.add(new Cita("En proceso", "Verde Living", "Miraflores, Lima", "INMOBILIARIA SUR"));
+
+        CitasAdapter adapter = new CitasAdapter(misCitas);
+        rvCitas.setAdapter(adapter);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
-
         bottomNav.setSelectedItemId(R.id.nav_citas);
 
         bottomNav.setOnItemSelectedListener(item -> {
@@ -46,7 +52,6 @@ public class ClienteCitasActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_citas) {
-                startActivity(new Intent(this, ClienteCitasActivity.class));
                 return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, ClienteMensajesActivity.class));
@@ -64,60 +69,5 @@ public class ClienteCitasActivity extends AppCompatActivity {
             }
             return false;
         });
-
-    }
-    private void inicializarVistas() {
-        btnDetalles1 = findViewById(R.id.btnDetalles1);
-        btnDetalles2 = findViewById(R.id.btnDetalles2);
-    }
-    private void configurarNavegacion() {
-        if (btnDetalles1 != null) {
-            btnDetalles1.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteDetallesCitaActivity2.class);
-                intent.putExtra("NOMBRE_PROYECTO", "Palm Living");
-                startActivity(intent);
-            });
-        }
-
-        if (btnDetalles2 != null) {
-            btnDetalles2.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteDetallesCitaActivity2.class);
-                intent.putExtra("NOMBRE_PROYECTO", "Catalaina Sky");
-                startActivity(intent);
-            });
-        }
-    }
-    private void configurarMenuInferior() {
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
-        if (bottomNav != null) {
-            bottomNav.setSelectedItemId(R.id.nav_citas);
-
-            bottomNav.setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-
-                if (id == R.id.nav_inicio) {
-                    startActivity(new Intent(this, ClienteHomeActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_citas) {
-                    return true;
-                } else if (id == R.id.nav_chat) {
-                    startActivity(new Intent(this, ClienteMensajesActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_perfil) {
-                    startActivity(new Intent(this, ClientePerfilClienteActivity.class));
-                    return true;
-                } else if (id == R.id.nav_separaciones) {
-                    startActivity(new Intent(this, ClienteSeparacionesActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                }
-                return false;
-            });
-        }
     }
 }

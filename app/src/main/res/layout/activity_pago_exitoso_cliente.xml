@@ -4,250 +4,193 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5FAFA"> <androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:fillViewport="true"
-    android:paddingBottom="80dp"> <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:background="#F5FAFA">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@drawable/gradient_background">
-
-        <ImageView
-            android:id="@+id/imgHeaderLogo"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/ic_logo_inmia"
-            android:contentDescription="@string/app_name"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="48dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <TextView
-            android:id="@+id/tvHeaderAppName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/inmia_text"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-light"
-            android:letterSpacing="0.2"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
-            app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
-            app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
-
-        <FrameLayout
-            android:id="@+id/frameNotificaciones"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="44dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:id="@+id/imgCampana"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_notifications"
-                android:contentDescription="Notificaciones"/>
-
-            <TextView
-                android:id="@+id/tvBadgeNotif"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="2dp"
-                android:text="0"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:background="@drawable/badge_background"
-                android:visibility="gone"/>
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/tvGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="¡Pago Exitoso!"
-            android:textColor="@color/inmia_text"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <TextView
-            android:id="@+id/tvSubGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tu separación ha sido procesada"
-            android:textColor="#5A8A8A"
-            android:textSize="14sp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintTop_toBottomOf="@id/tvGreeting"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-20dp"
-        android:background="@drawable/bg_blanco_redondeado_arriba"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="32dp"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         android:paddingBottom="40dp">
 
-        <TextView
-            android:id="@+id/tvComprobanteLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Comprobante de transacción"
-            android:textColor="#999999"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardTicket"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="#EEEEEE"
-            app:strokeWidth="1dp"
-            app:layout_constraintTop_toBottomOf="@id/tvComprobanteLabel">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@drawable/gradient_background"
+                android:paddingTop="32dp"
+                android:paddingBottom="48dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¡Pago Exitoso!"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="20dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tvSubGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tu separación ha sido procesada"
+                    android:textColor="#5A8A8A"
+                    android:textSize="14sp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/bg_blanco_redondeado_arriba"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="32dp"
+                android:paddingBottom="40dp">
+
+                <TextView
+                    android:id="@+id/tvComprobanteLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Comprobante de transacción"
+                    android:textColor="#999999"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTicket"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:paddingTop="24dp"
-                    android:paddingBottom="16dp"
-                    android:background="#FAFAFA">
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#EEEEEE"
+                    app:strokeWidth="1dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvComprobanteLabel">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Monto Pagado"
-                        android:textColor="#888888"
-                        android:textSize="12sp" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="S/. 2,500.00"
-                        android:textColor="#222222"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium" />
-                </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:paddingTop="24dp"
+                            android:paddingBottom="16dp"
+                            android:background="#FAFAFA">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@drawable/bg_linea_punteada"
-                    android:layout_marginHorizontal="16dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monto Pagado"
+                                android:textColor="#888888"
+                                android:textSize="12sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="S/. 2,500.00"
+                                android:textColor="#222222"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Referencia" android:textColor="#888888" android:textSize="12sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="#TRX-9845123" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
-                    </LinearLayout>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginHorizontal="16dp"/>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Fecha y hora" android:textColor="#888888" android:textSize="12sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="19 Abr 2026, 12:08 PM" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
-                    </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Método de pago" android:textColor="#888888" android:textSize="12sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mastercard •••• 4832" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
-                    </LinearLayout>
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+                                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Referencia" android:textColor="#888888" android:textSize="12sp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="#TRX-9845123" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
+                            </LinearLayout>
 
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Concepto" android:textColor="#888888" android:textSize="12sp" />
-                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="end">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Separación Palm Living" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dpto 502" android:textColor="@color/inmia_teal_dark" android:textSize="10sp" android:textStyle="bold" />
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+                                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Fecha y hora" android:textColor="#888888" android:textSize="12sp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="19 Abr 2026, 12:08 PM" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+                                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Método de pago" android:textColor="#888888" android:textSize="12sp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mastercard •••• 4832" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Concepto" android:textColor="#888888" android:textSize="12sp" />
+                                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="end">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Separación Palm Living" android:textColor="#222222" android:textSize="12sp" android:textStyle="bold" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dpto 502" android:textColor="@color/inmia_teal_dark" android:textSize="10sp" android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDescargarComprobante"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="32dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="Descargar Comprobante"
-            android:textAllCaps="false"
-            android:textColor="@color/inmia_teal_dark"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:backgroundTint="#E0F7F6"
-            app:cornerRadius="12dp"
-            app:elevation="0dp"
-            app:icon="@drawable/ic_download"
-            app:iconTint="@color/inmia_teal_dark"
-            app:iconGravity="textStart"
-            app:layout_constraintTop_toBottomOf="@id/cardTicket" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDescargarComprobante"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="32dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Descargar Comprobante"
+                    android:textAllCaps="false"
+                    android:textColor="@color/inmia_teal_dark"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#E0F7F6"
+                    app:cornerRadius="12dp"
+                    app:elevation="0dp"
+                    app:iconTint="@color/inmia_teal_dark"
+                    app:iconGravity="textStart"
+                    app:layout_constraintTop_toBottomOf="@id/cardTicket" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVolverInicio"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="Volver al Inicio"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:backgroundTint="#0A3D46"
-            app:cornerRadius="12dp"
-            app:layout_constraintTop_toBottomOf="@id/btnDescargarComprobante" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVolverInicio"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Volver al Inicio"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#0A3D46"
+                    app:cornerRadius="12dp"
+                    app:layout_constraintTop_toBottomOf="@id/btnDescargarComprobante" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
-</androidx.core.widget.NestedScrollView>
-
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

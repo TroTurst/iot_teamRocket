@@ -3,19 +3,17 @@ package com.example.inmia.cliente;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteSeparacionesActivity extends AppCompatActivity {
-    private MaterialButton btnDetalles1;
-    private MaterialButton btnDetalles2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,65 +23,46 @@ public class ClienteSeparacionesActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_separaciones_cliente);
 
-        inicializarVistas();
-        configurarNavegacion();
-        configurarMenuInferior();
-    }
+        RecyclerView rvSeparaciones = findViewById(R.id.rvSeparaciones);
+        rvSeparaciones.setLayoutManager(new LinearLayoutManager(this));
 
-    private void inicializarVistas() {
-        btnDetalles1 = findViewById(R.id.btnDetalles1);
-        btnDetalles2 = findViewById(R.id.btnDetalles2);
-    }
+        List<Separacion> misSeparaciones = new ArrayList<>();
+        misSeparaciones.add(new Separacion("En espera de Aprobación", "Palm Living", "San Isidro, Lima", "GALEON INMOBILIARIA", R.drawable.onboarding1));
+        misSeparaciones.add(new Separacion("No aprobada", "Catalina Sky", "Callao, Lima", "GALEON INMOBILIARIA", R.drawable.onboarding3));
+        misSeparaciones.add(new Separacion("Aprobada", "Verde Living", "Miraflores, Lima", "INMOBILIARIA SUR", R.drawable.onboarding2));
 
-    private void configurarNavegacion() {
-        if (btnDetalles1 != null) {
-            btnDetalles1.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteSeparacionAprobadaActivity.class);
-                intent.putExtra("NOMBRE_PROYECTO", "Palm Living");
-                startActivity(intent);
-            });
-        }
+        SeparacionAdapter adapter = new SeparacionAdapter(misSeparaciones);
+        rvSeparaciones.setAdapter(adapter);
 
-        if (btnDetalles2 != null) {
-            btnDetalles2.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteSeparacionAprobadaActivity.class);
-                intent.putExtra("NOMBRE_PROYECTO", "Catalina Sky");
-                startActivity(intent);
-            });
-        }
-    }
-
-    private void configurarMenuInferior() {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
-        if (bottomNav != null) {
-            bottomNav.setSelectedItemId(R.id.nav_separaciones);
 
-            bottomNav.setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
+        bottomNav.setSelectedItemId(R.id.nav_separaciones);
 
-                if (id == R.id.nav_inicio) {
-                    startActivity(new Intent(this, ClienteHomeActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_citas) {
-                    startActivity(new Intent(this, ClienteCitasActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_chat) {
-                    startActivity(new Intent(this, ClienteMensajesActivity.class));
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                } else if (id == R.id.nav_perfil) {
-                    startActivity(new Intent(this, ClientePerfilClienteActivity.class));
-                    return true;
-                } else if (id == R.id.nav_separaciones) {
-                    return true;
-                }
-                return false;
-            });
-        }
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_inicio) {
+                startActivity(new Intent(this, ClienteHomeActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (id == R.id.nav_citas) {
+                startActivity(new Intent(this, ClienteCitasActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (id == R.id.nav_chat) {
+                startActivity(new Intent(this, ClienteMensajesActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (id == R.id.nav_perfil) {
+                startActivity(new Intent(this, ClientePerfilClienteActivity.class));
+                return true;
+            } else if (id == R.id.nav_separaciones) {
+                return true; // Ya estamos aquí
+            }
+            return false;
+        });
     }
 }

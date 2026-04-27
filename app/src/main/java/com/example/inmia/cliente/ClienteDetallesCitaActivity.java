@@ -2,18 +2,14 @@ package com.example.inmia.cliente;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 
 public class ClienteDetallesCitaActivity extends AppCompatActivity {
-
-    private MaterialButton btnHablarAsesor;
-    private MaterialButton btnVolverInicio;
-    private MaterialCardView btnBackWhite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,20 +18,14 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        setContentView(R.layout.activity_detalles_cita_cliente2);
 
-        setContentView(R.layout.activity_detalles_cita_cliente);
+        FrameLayout btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
-        inicializarVistas();
-
-        configurarNavegacion();
-    }
-    private void inicializarVistas() {
-        btnHablarAsesor = findViewById(R.id.btnHablarAsesor);
-        btnVolverInicio = findViewById(R.id.btnVolverInicio);
-        btnBackWhite = findViewById(R.id.btnBackWhite);
-    }
-
-    private void configurarNavegacion() {
+        MaterialButton btnHablarAsesor = findViewById(R.id.btnHablarAsesor);
         if (btnHablarAsesor != null) {
             btnHablarAsesor.setOnClickListener(v -> {
                 Intent intent = new Intent(this, ClienteChatActivity.class);
@@ -43,17 +33,9 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
             });
         }
 
-        if (btnVolverInicio != null) {
-            btnVolverInicio.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteHomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
-        }
-
-        if (btnBackWhite != null) {
-            btnBackWhite.setOnClickListener(v -> {
+        MaterialButton btnCancelarCita = findViewById(R.id.btnCancelarCita);
+        if (btnCancelarCita != null) {
+            btnCancelarCita.setOnClickListener(v -> {
                 finish();
             });
         }

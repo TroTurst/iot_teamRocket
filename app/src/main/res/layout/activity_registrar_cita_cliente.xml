@@ -4,337 +4,351 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5FAFA"> <androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:fillViewport="true"
-    android:paddingBottom="40dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:background="#F5FAFA">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="40dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@drawable/gradient_background">
-
-            <FrameLayout
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="Atrás"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/inmia_text" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameNotificaciones"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="44dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_notifications"/>
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registrar Cita"
-                android:textColor="@color/inmia_text"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/btnBack"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <TextView
-                android:id="@+id/tvSubGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Agenda tu visita al proyecto"
-                android:textColor="#5A8A8A"
-                android:textSize="14sp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
-                app:layout_constraintStart_toStartOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-20dp"
-            android:background="@drawable/bg_blanco_redondeado_arriba"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="40dp">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                android:background="@drawable/gradient_background"
+                android:paddingBottom="48dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Proyecto seleccionado"
-                    android:textColor="@color/inmia_teal_dark"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card_light_cyan"
-                    android:padding="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="24dp">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:scaleType="centerCrop"
-                        android:background="#D0D0D0"
-                        android:src="@drawable/onboarding1"
-                        app:shapeAppearanceOverlay="@style/RoundedSquare" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Palm Living" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="San Isidro, Lima · En venta" android:textColor="#18C0C1" android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/btnCambiarProyecto"
-                        android:layout_width="wrap_content"
-                        android:layout_height="28dp"
-                        android:background="@drawable/bg_tipologia_active"
-                        android:gravity="center"
-                        android:paddingHorizontal="12dp"
-                        android:text="Cambiar"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Selecciona la fecha"
-                    android:textColor="@color/inmia_teal_dark"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="&lt; Noviembre 2026 &gt;" android:gravity="center"
-                    android:textColor="#222222"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="#F8FAFA"
-                    android:paddingVertical="8dp"
-                    android:layout_marginBottom="16dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="L" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="M" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="X" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="J" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="V" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="S" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="D" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
-                </LinearLayout>
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:stretchColumns="*"
-                    android:layout_marginBottom="24dp">
-                    <TableRow android:layout_marginBottom="16dp">
-                        <TextView android:gravity="center" android:text="28" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="29" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="30" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="31" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="1" android:textColor="#222222" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="2" android:textColor="#222222" android:textSize="13sp"/>
-                        <TextView android:gravity="center" android:text="3" android:textColor="#222222" android:textSize="13sp"/>
-                    </TableRow>
-                    <TableRow android:layout_marginBottom="16dp">
-                        <TextView android:layout_height="32dp" android:gravity="center" android:text="4" android:textColor="#222222" android:textSize="13sp"/>
-                        <TextView android:layout_height="32dp" android:gravity="center" android:text="5" android:textColor="#222222" android:textSize="13sp"/>
-                        <TextView android:layout_height="32dp" android:gravity="center" android:text="6" android:textColor="#222222" android:textSize="13sp"/>
-                        <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
-                            <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_teal" android:gravity="center" android:text="7" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp"/>
-                        </FrameLayout>
-                        <TextView android:layout_height="32dp" android:gravity="center" android:text="8" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
-                            <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_light_teal" android:gravity="center" android:text="9" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        </FrameLayout>
-                        <TextView android:layout_height="32dp" android:gravity="center" android:text="10" android:textColor="#222222" android:textSize="13sp"/>
-                    </TableRow>
-                </TableLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Selecciona el horario disponible"
-                    android:textColor="@color/inmia_teal_dark"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Disponibles para el 7 de Noviembre"
-                    android:textColor="#18C0C1"
-                    android:textSize="10sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:id="@+id/btnHora1"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_time_active"
-                        android:gravity="center"
-                        android:text="10:00 AM"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/btnHora2"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_time_inactive"
-                        android:gravity="center"
-                        android:text="11:00 AM"
-                        android:textColor="#18C0C1"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/btnHora3"
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_time_inactive"
-                        android:gravity="center"
-                        android:text="12:00 PM"
-                        android:textColor="#18C0C1"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Asesor asignado"
-                    android:textColor="@color/inmia_teal_dark"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
+                <FrameLayout
+                    android:id="@+id/btnBack"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginBottom="8dp"/>
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Atrás"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="@color/inmia_text" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registrar Cita"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintTop_toTopOf="@id/btnBack"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"/>
+
+                <TextView
+                    android:id="@+id/tvSubGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Agenda tu visita al proyecto"
+                    android:textColor="#5A8A8A"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                    app:layout_constraintStart_toStartOf="@id/tvGreeting"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/bg_blanco_redondeado_arriba"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="32dp"
+                android:paddingBottom="40dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card_light_cyan"
-                    android:padding="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="32dp">
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardBackgroundColor="@color/inmia_teal_dark"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/foto_perfil" />
-                    </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Proyecto seleccionado"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Carlos Mendoza" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor de Ventas Especializado" android:textColor="#18C0C1" android:textSize="11sp" />
+                        android:background="@drawable/bg_card_light_cyan"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="24dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:scaleType="centerCrop"
+                            android:background="#D0D0D0"
+                            android:src="@drawable/onboarding1"
+                            app:shapeAppearanceOverlay="@style/RoundedSquare" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Palm Living" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="San Isidro, Lima · En venta" android:textColor="#18C0C1" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/btnCambiarProyecto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="28dp"
+                            android:background="@drawable/bg_tipologia_active"
+                            android:gravity="center"
+                            android:paddingHorizontal="12dp"
+                            android:text="Cambiar"
+                            android:textColor="#FFFFFF"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Selecciona la fecha"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_arrow_back"
+                            app:tint="#222222"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Noviembre 2026"
+                            android:textColor="#222222"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_arrow_back"
+                            android:rotation="180"
+                            app:tint="#222222"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="#F8FAFA"
+                        android:paddingVertical="8dp"
+                        android:layout_marginBottom="16dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="L" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="M" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="X" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="J" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="V" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="S" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="D" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stretchColumns="*"
+                        android:layout_marginBottom="24dp">
+                        <TableRow android:layout_marginBottom="16dp">
+                            <TextView android:gravity="center" android:text="28" android:textColor="#D0D0D0" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="29" android:textColor="#D0D0D0" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="30" android:textColor="#D0D0D0" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="31" android:textColor="#D0D0D0" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="1" android:textColor="#222222" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="2" android:textColor="#222222" android:textSize="13sp"/>
+                            <TextView android:gravity="center" android:text="3" android:textColor="#222222" android:textSize="13sp"/>
+                        </TableRow>
+                        <TableRow android:layout_marginBottom="16dp">
+                            <TextView android:layout_height="32dp" android:gravity="center" android:text="4" android:textColor="#222222" android:textSize="13sp"/>
+                            <TextView android:layout_height="32dp" android:gravity="center" android:text="5" android:textColor="#222222" android:textSize="13sp"/>
+                            <TextView android:layout_height="32dp" android:gravity="center" android:text="6" android:textColor="#222222" android:textSize="13sp"/>
+                            <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
+                                <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_teal" android:gravity="center" android:text="7" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp"/>
+                            </FrameLayout>
+                            <TextView android:layout_height="32dp" android:gravity="center" android:text="8" android:textColor="#18C0C1" android:textSize="13sp"/>
+                            <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
+                                <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_light_teal" android:gravity="center" android:text="9" android:textColor="#18C0C1" android:textSize="13sp"/>
+                            </FrameLayout>
+                            <TextView android:layout_height="32dp" android:gravity="center" android:text="10" android:textColor="#222222" android:textSize="13sp"/>
+                        </TableRow>
+                    </TableLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Selecciona el horario disponible"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Disponibles para el 7 de Noviembre"
+                        android:textColor="#18C0C1"
+                        android:textSize="10sp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:id="@+id/btnHora1"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_time_active"
+                            android:gravity="center"
+                            android:text="10:00 AM"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/btnHora2"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_time_inactive"
+                            android:gravity="center"
+                            android:text="11:00 AM"
+                            android:textColor="#18C0C1"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/btnHora3"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_time_inactive"
+                            android:gravity="center"
+                            android:text="12:00 PM"
+                            android:textColor="#18C0C1"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Asesor asignado"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_card_light_cyan"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="32dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            app:cardBackgroundColor="@color/inmia_teal_dark"
+                            app:cardCornerRadius="24dp"
+                            app:cardElevation="0dp">
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/foto_perfil" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Carlos Mendoza" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor de Ventas Especializado" android:textColor="#18C0C1" android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnConfirmarCita"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Confirmar Cita"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/inmia_teal_dark"
+                        app:cornerRadius="16dp" />
+
                 </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnConfirmarCita"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="Confirmar Cita"
-                    android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/inmia_teal_dark"
-                    app:cornerRadius="16dp" />
-
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
