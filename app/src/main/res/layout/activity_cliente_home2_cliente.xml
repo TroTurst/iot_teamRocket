@@ -224,82 +224,73 @@
                 android:id="@+id/scrollFilters"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginTop="12dp"
                 android:scrollbars="none"
-                android:fillViewport="true"
+                android:clipToPadding="false"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardSearch">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupFilters"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_filter_container"
-                    android:padding="6dp"
-                    android:gravity="start|center_vertical"
-                    android:orientation="horizontal">
+                    app:chipSpacingHorizontal="8dp"
+                    app:singleSelection="true"
+                    app:singleLine="true">
 
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipGroupFilters"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAll"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:chipSpacing="8dp"
-                        app:singleSelection="true"
-                        app:singleLine="true">
+                        android:checked="true"
+                        android:text="@string/filter_all"
+                        android:textColor="@color/chip_text_color"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipCornerRadius="12dp"
+                        app:ensureMinTouchTargetSize="false" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipAll"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:text="@string/filter_all"
-                            android:textColor="@color/chip_text_color"
-                            android:textSize="12sp"
-                            app:chipBackgroundColor="@color/chip_background_color"
-                            app:chipCornerRadius="12dp"
-                            app:ensureMinTouchTargetSize="false" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPreventa"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/filter_presale"
+                        android:textColor="@color/chip_text_color"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipCornerRadius="12dp"
+                        app:ensureMinTouchTargetSize="false" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipPreventa"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/filter_presale"
-                            android:textColor="@color/chip_text_color"
-                            android:textSize="12sp"
-                            app:chipBackgroundColor="@color/chip_background_color"
-                            app:chipCornerRadius="12dp"
-                            app:ensureMinTouchTargetSize="false" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPlanos"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/filter_plans"
+                        android:textColor="@color/chip_text_color"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipCornerRadius="12dp"
+                        app:ensureMinTouchTargetSize="false" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipPlanos"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/filter_plans"
-                            android:textColor="@color/chip_text_color"
-                            android:textSize="12sp"
-                            app:chipBackgroundColor="@color/chip_background_color"
-                            app:chipCornerRadius="12dp"
-                            app:ensureMinTouchTargetSize="false" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipVenta"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/filter_sale"
+                        android:textColor="@color/chip_text_color"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipCornerRadius="12dp"
+                        app:ensureMinTouchTargetSize="false" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipVenta"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/filter_sale"
-                            android:textColor="@color/chip_text_color"
-                            android:textSize="12sp"
-                            app:chipBackgroundColor="@color/chip_background_color"
-                            app:chipCornerRadius="12dp"
-                            app:ensureMinTouchTargetSize="false" />
-
-                    </com.google.android.material.chip.ChipGroup>
-                </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
             <TextView
@@ -317,283 +308,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/scrollFilters" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardProject1"
-                android:layout_width="207dp"
-                android:layout_height="256dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
-                app:cardBackgroundColor="#0A3D46"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProyectos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/tvFeaturedTitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvFeaturedTitle">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imgProject1"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:background="#129F9F"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/onboarding1"
-                        tools:ignore="MissingConstraints" />
-
-                    <TextView
-                        android:id="@+id/tvProject1Name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Palm Living"
-                        android:textColor="@android:color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/imgProject1" />
-
-                    <TextView
-                        android:id="@+id/tvProject1Location"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="12dp"
-                        android:text="San Isidro, Lima"
-                        android:textColor="#5AACAE"
-                        android:textSize="11sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject1Name" />
-
-                    <TextView
-                        android:id="@+id/tvProject1Price"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="12dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Desde S./85,000"
-                        android:textColor="#12ECEE"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject1Location" />
-
-                    <TextView
-                        android:id="@+id/tvProject1Details"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginEnd="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:text="Piso 1 al 20  ·  45–90 m²"
-                        android:textColor="#5AACAE"
-                        android:textSize="10sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject1Price" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardProject2"
-                android:layout_width="130dp"
-                android:layout_height="133dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="18dp"
-                app:cardBackgroundColor="#0A3D46"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:layout_constraintStart_toEndOf="@id/cardProject1"
-                app:layout_constraintTop_toBottomOf="@id/tvFeaturedTitle">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imgProject2"
-                        android:layout_width="match_parent"
-                        android:layout_height="82dp"
-                        android:background="#CFFEDE"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/onboarding2"
-                        tools:ignore="MissingConstraints" />
-
-                    <TextView
-                        android:id="@+id/badgeProject2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_badge_orange"
-                        android:fontFamily="sans-serif-medium"
-                        android:paddingStart="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="8dp"
-                        android:paddingBottom="4dp"
-                        android:text="Planos"
-                        android:textColor="#412402"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvProject2Name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginEnd="9dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Verde Living"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/imgProject2" />
-
-                    <TextView
-                        android:id="@+id/tvProject2Location"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginEnd="9dp"
-                        android:text="Miraflores"
-                        android:textColor="#5AACAE"
-                        android:textSize="10sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject2Name" />
-
-                    <TextView
-                        android:id="@+id/tvProject2Price"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginEnd="9dp"
-                        android:layout_marginBottom="9dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Desde S./120,000"
-                        android:textColor="#12ECEE"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject2Location" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardProject3"
-                android:layout_width="130dp"
-                android:layout_height="134dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="7dp"
-                app:cardBackgroundColor="#0A3D46"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:layout_constraintStart_toEndOf="@id/cardProject1"
-                app:layout_constraintTop_toBottomOf="@id/cardProject2">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/imgProject3"
-                        android:layout_width="match_parent"
-                        android:layout_height="82dp"
-                        android:background="#FFEAEA"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/onboarding3"
-                        tools:ignore="MissingConstraints" />
-
-                    <TextView
-                        android:id="@+id/badgeProject3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="9dp"
-                        android:background="@drawable/bg_badge_teal"
-                        android:fontFamily="sans-serif-medium"
-                        android:paddingStart="8dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="8dp"
-                        android:paddingBottom="4dp"
-                        android:text="En preventa"
-                        android:textColor="@android:color/white"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvProject3Name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginEnd="9dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Park Side"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/imgProject3" />
-
-                    <TextView
-                        android:id="@+id/tvProject3Location"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginEnd="9dp"
-                        android:text="Pueblo Libre"
-                        android:textColor="#5AACAE"
-                        android:textSize="10sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject3Name" />
-
-                    <TextView
-                        android:id="@+id/tvProject3Price"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginEnd="9dp"
-                        android:layout_marginBottom="9dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Desde S./72,000"
-                        android:textColor="#12ECEE"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvProject3Location" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_proyecto_admin"
+                tools:itemCount="6"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

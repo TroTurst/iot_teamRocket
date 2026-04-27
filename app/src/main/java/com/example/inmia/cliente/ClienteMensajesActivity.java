@@ -2,17 +2,17 @@ package com.example.inmia.cliente;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.asesor.ChatThread;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClienteMensajesActivity extends AppCompatActivity {
 
@@ -24,17 +24,18 @@ public class ClienteMensajesActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_mensajes_cliente);
 
-        ConstraintLayout chatCarlos = findViewById(R.id.chatCarlosMendoza);
-        if (chatCarlos != null) {
-            chatCarlos.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteChatActivity.class);
-                startActivity(intent);
-            });
-        }
+        RecyclerView rvMensajes = findViewById(R.id.rvMensajes);
+        rvMensajes.setLayoutManager(new LinearLayoutManager(this));
+
+        List<ChatThread> misChats = new ArrayList<>();
+        misChats.add(new ChatThread("1", "Carlos Mendoza", "XD", "12:05 PM", R.drawable.ic_perfil));
+        misChats.add(new ChatThread("2", "Maria Perez", "La visita guiada es a las 4pm...", "9:28 AM", R.drawable.ic_perfil));
+
+        ChatAdapter adapter = new ChatAdapter(misChats);
+        rvMensajes.setAdapter(adapter);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
-
-        bottomNav.setSelectedItemId(R.id.nav_citas);
+        bottomNav.setSelectedItemId(R.id.nav_chat);
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -50,9 +51,6 @@ public class ClienteMensajesActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(this, ClienteMensajesActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
                 return true;
             } else if (id == R.id.nav_perfil) {
                 startActivity(new Intent(this, ClientePerfilClienteActivity.class));
@@ -65,7 +63,5 @@ public class ClienteMensajesActivity extends AppCompatActivity {
             }
             return false;
         });
-
-
     }
 }

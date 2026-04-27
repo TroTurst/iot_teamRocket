@@ -41,7 +41,7 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
     @NonNull
     @Override
     public ProyectoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_proyecto, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_proyecto_admin, parent, false);
         return new ProyectoViewHolder(view);
     }
 

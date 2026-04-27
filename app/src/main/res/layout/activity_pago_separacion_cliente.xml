@@ -4,183 +4,186 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5FAFA"> <androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:fillViewport="true"
-    android:paddingBottom="40dp">
+    android:background="#F5FAFA">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="40dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@drawable/gradient_background">
-
-            <FrameLayout
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="Atrás"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/inmia_text" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameNotificaciones"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="44dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_notifications"/>
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pago de Separación"
-                android:textColor="@color/inmia_text"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/btnBack"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <TextView
-                android:id="@+id/tvSubGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Seguro · Encriptado SSL"
-                android:textColor="#5A8A8A"
-                android:textSize="14sp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
-                app:layout_constraintStart_toStartOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-20dp"
-            android:background="@drawable/bg_blanco_redondeado_arriba"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="24dp"
-            android:paddingBottom="40dp">
-
-            <LinearLayout
-                android:id="@+id/layoutSummary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:scaleType="centerCrop"
-                    android:background="#D0D0D0"
-                    android:src="@drawable/onboarding1"
-                    app:shapeAppearanceOverlay="@style/RoundedSquare" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Palm Living" android:textColor="#222222" android:textSize="14sp" android:textStyle="bold" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dpto 502 · Piso 8" android:textColor="#888888" android:textSize="11sp" />
-                </LinearLayout>
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S/. 2,500.00" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-            </LinearLayout>
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cardVisual"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bg_tarjeta_pago"
-                android:padding="20dp"
-                app:layout_constraintTop_toBottomOf="@id/layoutSummary">
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_background"
+                android:paddingBottom="48dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <View android:id="@+id/chip" android:layout_width="36dp" android:layout_height="24dp" android:background="@drawable/bg_chip_tarjeta" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="•••• •••• •••• 4832" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" app:layout_constraintTop_toBottomOf="@id/chip" app:layout_constraintBottom_toTopOf="@+id/tvCardNameVisual" />
-                <TextView android:id="@+id/tvCardNameVisual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CARLOS A. MENDOZA" android:textColor="#FFFFFF" android:textSize="12sp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" />
+                <FrameLayout
+                    android:id="@+id/btnBack"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Atrás"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="@color/inmia_text" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pago de Separación"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintTop_toTopOf="@id/btnBack"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"/>
+
+                <TextView
+                    android:id="@+id/tvSubGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seguro · Encriptado SSL"
+                    android:textColor="#5A8A8A"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                    app:layout_constraintStart_toStartOf="@id/tvGreeting"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/formLayout"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/cardVisual">
+                android:layout_marginTop="-30dp"
+                android:background="@drawable/bg_blanco_redondeado_arriba"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="32dp"
+                android:paddingBottom="40dp">
 
-                <EditText android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="Número de tarjeta" android:textSize="14sp" android:layout_marginBottom="12dp"/>
-                <EditText android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="Nombre en la tarjeta" android:textSize="14sp" android:layout_marginBottom="12dp"/>
+                <LinearLayout
+                    android:id="@+id/layoutSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="2">
-                    <EditText android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="MM/YY" android:layout_marginEnd="6dp"/>
-                    <EditText android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="CVV" android:inputType="numberPassword"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:scaleType="centerCrop"
+                        android:background="#D0D0D0"
+                        android:src="@drawable/onboarding1"
+                        app:shapeAppearanceOverlay="@style/RoundedSquare" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Palm Living" android:textColor="#222222" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dpto 502 · Piso 8" android:textColor="#888888" android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S/. 2,500.00" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
                 </LinearLayout>
-            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/bannerTimer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/bg_timer_box"
-                android:padding="16dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/formLayout">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tiempo restante: 6:24" android:textColor="#D97706" android:textSize="12sp" android:textStyle="bold" />
-                <ProgressBar style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="8dp" android:progress="60" android:progressTint="#F59E0B" />
-            </LinearLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cardVisual"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_tarjeta_pago"
+                    android:padding="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/layoutSummary">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPagar"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Pagar S/. 2,500.00"
-                android:textAllCaps="false"
-                android:textStyle="bold"
-                app:backgroundTint="@color/inmia_teal_dark"
-                app:cornerRadius="12dp"
-                app:icon="@drawable/ic_lock"
-                app:iconGravity="textStart"
-                app:iconTint="#F2C94C"
-                app:layout_constraintTop_toBottomOf="@id/bannerTimer" />
+                    <View android:id="@+id/chip" android:layout_width="36dp" android:layout_height="24dp" android:background="@drawable/bg_chip_tarjeta" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="•••• •••• •••• 4832" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:letterSpacing="0.1" app:layout_constraintTop_toBottomOf="@id/chip" app:layout_constraintBottom_toTopOf="@+id/tvCardNameVisual" />
+                    <TextView android:id="@+id/tvCardNameVisual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CARLOS A. MENDOZA" android:textColor="#FFFFFF" android:textSize="12sp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+                <LinearLayout
+                    android:id="@+id/formLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/cardVisual">
+
+                    <EditText android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="Número de tarjeta" android:inputType="number" android:textSize="14sp" android:layout_marginBottom="16dp"/>
+                    <EditText android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="Nombre en la tarjeta" android:inputType="textPersonName" android:textSize="14sp" android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="2">
+                        <EditText android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="MM/YY" android:inputType="date" android:layout_marginEnd="8dp"/>
+                        <EditText android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:background="@drawable/bg_input_gray" android:paddingHorizontal="16dp" android:hint="CVV" android:inputType="numberPassword" android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bannerTimer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:background="@drawable/bg_timer_box"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/formLayout">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_timer" app:tint="#D97706" android:layout_marginEnd="8dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tiempo restante para completar el pago:" android:textColor="#D97706" android:textSize="12sp" />
+                        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="6:24" android:textColor="#D97706" android:textSize="14sp" android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="6dp" android:progress="60" android:progressTint="#F59E0B" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPagar"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="32dp"
+                    android:text="Pagar S/. 2,500.00"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/inmia_teal_dark"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_lock"
+                    app:iconGravity="textStart"
+                    app:iconTint="#F2C94C"
+                    app:layout_constraintTop_toBottomOf="@id/bannerTimer" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

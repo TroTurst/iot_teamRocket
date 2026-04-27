@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp">
+
+    <TextView
+        android:id="@+id/tvStatusCita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="En proceso"
+        android:textColor="#18C0C1"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgCita"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        android:background="#E0E0E0"
+        android:src="@drawable/onboarding1"
+        app:shapeAppearanceOverlay="@style/RoundedSquare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvStatusCita" />
+
+    <TextView
+        android:id="@+id/tvNameCita"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Palm Living"
+        android:textColor="#222222"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/imgCita"
+        app:layout_constraintTop_toTopOf="@id/imgCita"
+        app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
+
+    <TextView
+        android:id="@+id/tvLocationCita"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:text="San Isidro, Lima"
+        android:textColor="#777777"
+        android:textSize="10sp"
+        app:layout_constraintStart_toEndOf="@id/imgCita"
+        app:layout_constraintTop_toBottomOf="@id/tvNameCita"
+        app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
+
+    <TextView
+        android:id="@+id/tvCompanyCita"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="GALEON INMOBILIARIA"
+        android:textColor="#18C0C1"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/imgCita"
+        app:layout_constraintTop_toBottomOf="@id/tvLocationCita"
+        app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDetallesCita"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Detalles"
+        android:textAllCaps="false"
+        android:textSize="10sp"
+        app:backgroundTint="#18C0C1"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/imgCita"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgCita" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
