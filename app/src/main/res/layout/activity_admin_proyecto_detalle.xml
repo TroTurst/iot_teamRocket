@@ -40,7 +40,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="Volver"
+                        android:contentDescription="@string/admin_back"
                         android:padding="10dp"
                         android:src="@android:drawable/ic_media_previous" />
                 </FrameLayout>
@@ -67,7 +67,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center"
-                            android:contentDescription="Notificaciones"
+                            android:contentDescription="@string/admin_notifications"
                             android:src="@drawable/ic_notifications" />
 
                         <TextView
@@ -79,7 +79,7 @@
                             android:layout_marginEnd="2dp"
                             android:background="@drawable/badge_background"
                             android:gravity="center"
-                            android:text="5"
+                            android:text="@string/app_name"
                             android:textColor="#FFFFFF"
                             android:textSize="10sp"
                             android:textStyle="bold" />
@@ -98,7 +98,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:contentDescription="Editar"
+                            android:contentDescription="@string/admin_edit"
                             android:padding="9dp"
                             android:src="@android:drawable/ic_menu_edit" />
                     </FrameLayout>
@@ -113,7 +113,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="Proyecto las casas 22"
+                    android:text="@string/app_name"
                     android:textColor="@color/inmia_text"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -137,7 +137,7 @@
                         android:id="@+id/imgHeroProyecto"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="Proyecto principal"
+                        android:contentDescription="@string/admin_project_main_image"
                         android:scaleType="centerCrop"
                         android:src="@drawable/onboarding1" />
                 </com.google.android.material.card.MaterialCardView>
@@ -164,7 +164,7 @@
                         android:id="@+id/tvNombreProyecto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Palm Living"
+                        android:text="@string/project1_name"
                         android:textColor="#1D2735"
                         android:textSize="24sp"
                         android:textStyle="bold" />
@@ -179,7 +179,7 @@
                         <ImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:contentDescription="Ubicacion"
+                            android:contentDescription="@string/admin_location"
                             android:src="@android:drawable/ic_menu_mylocation"
                             app:tint="@color/inmia_teal_dark" />
 
@@ -188,7 +188,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="San Isidro, Lima"
+                                android:text="@string/project1_location"
                             android:textColor="@color/inmia_teal_dark"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -198,7 +198,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Moderno departamento con vista panorámica a la ciudad, acabados de primera y amplios espacios. Incluye estacionamiento y depósito."
+                        android:text="@string/onboarding_desc_1"
                         android:textColor="#5F8F8F"
                         android:textSize="13sp"
                         android:lineSpacingMultiplier="1.35" />
@@ -212,7 +212,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Precio estimado"
+                                android:text="@string/admin_label_estimated_price"
                             android:textColor="#7A9E9E"
                             android:textSize="12sp" />
 
@@ -221,7 +221,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="S/ 648,000"
+                                android:text="@string/project1_price"
                             android:textColor="@color/inmia_text"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -255,127 +255,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Tipologia"
+                        android:text="@string/admin_tipologia_title"
                         android:textColor="@color/inmia_text"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
-                    <LinearLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewTipologias"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
+                        android:nestedScrollingEnabled="false" />
 
-                        <TextView
-                            android:id="@+id/btnTipologia45"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:background="@drawable/badge_outline"
-                            android:gravity="center"
-                            android:text="45 m² · 1d"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:clickable="true"
-                            android:focusable="true" />
-
-                        <TextView
-                            android:id="@+id/btnTipologia65"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:background="@drawable/badge_outline"
-                            android:gravity="center"
-                            android:text="65 m² · 2d"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="13sp"
-                            android:clickable="true"
-                            android:focusable="true" />
-
-                        <TextView
-                            android:id="@+id/btnTipologia90"
-                            android:layout_width="0dp"
-                            android:layout_height="40dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/badge_outline"
-                            android:gravity="center"
-                            android:text="90 m² · 3d"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="13sp"
-                            android:clickable="true"
-                            android:focusable="true" />
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="20dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lo que este lugar ofrece"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingBottom="10dp">
-
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• Cocina" android:textColor="#3D7A7A" android:textSize="13sp" />
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• Wifi" android:textColor="#3D7A7A" android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingBottom="10dp">
-
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• Zona de trabajo" android:textColor="#3D7A7A" android:textSize="13sp" />
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• TV" android:textColor="#3D7A7A" android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• Apto para fumadores" android:textColor="#3D7A7A" android:textSize="13sp" />
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="• Cámaras de seguridad" android:textColor="#3D7A7A" android:textSize="13sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
+                    <!-- ── FICHA DEL PROYECTO (todos los campos) ── -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="18dp"
-                        android:text="Datos del departamento"
+                        android:text="@string/admin_project_sheet_title"
                         android:textColor="@color/inmia_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -400,21 +297,190 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_label_inmobiliaria"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvInmobiliariaProyecto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_label_reference"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvReferenciaProyecto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_label_age"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvAntiguedadProyecto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_label_release"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvFechaLanzamientoProyecto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_label_project_status"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvEstadoGeneralProyecto"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:text="@string/admin_label_features"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chipGroupProyectoFeatures"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                app:singleLine="false"
+                                app:chipSpacingHorizontal="8dp"
+                                app:chipSpacingVertical="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:text="@string/admin_label_extras"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chipGroupProyectoExtras"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                app:singleLine="false"
+                                app:chipSpacingHorizontal="8dp"
+                                app:chipSpacingVertical="8dp" />
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Datos del departamento (para bindear: area/dormitorios/baños/estacionamiento/precio/estado) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        app:cardBackgroundColor="#F8FBFB"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E0EEEE"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
 
                                 <TextView
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Área total"
+                                    android:text="@string/admin_project_area_hint"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvAreaProyecto"
+                                    android:id="@+id/tvAreaProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="84 m²"
+                                    android:text="-"
                                     android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -430,16 +496,16 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Dormitorios"
+                                    android:text="@string/admin_project_bedrooms_hint"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvDormitoriosProyecto"
+                                    android:id="@+id/tvDormitoriosProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="2"
+                                    android:text="-"
                                     android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -455,16 +521,16 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Baños"
+                                    android:text="@string/admin_project_bathrooms_hint"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvBanosProyecto"
+                                    android:id="@+id/tvBanosProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="2"
+                                    android:text="-"
                                     android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -480,16 +546,16 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Estacionamiento"
+                                    android:text="@string/admin_project_parking_hint"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvEstacionamientoProyecto"
+                                    android:id="@+id/tvEstacionamientoProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="1 incluido"
+                                    android:text="-"
                                     android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -505,16 +571,16 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Precio estimado"
+                                    android:text="@string/admin_label_estimated_price"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvPrecioEstimadoProyecto"
+                                    android:id="@+id/tvPrecioEstimadoProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="S/ 648,000"
+                                    android:text="-"
                                     android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -530,20 +596,183 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Estado"
+                                    android:text="@string/admin_project_status_hint"
                                     android:textColor="#7A9E9E"
                                     android:textSize="12sp" />
 
                                 <TextView
-                                            android:id="@+id/tvEstadoProyecto"
+                                    android:id="@+id/tvEstadoProyecto"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Disponible"
-                                    android:textColor="#0AAE5A"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- ── FICHA DE LA TIPOLOGÍA (todos los campos) ── -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:text="@string/admin_tipologia_sheet_title"
+                        android:textColor="@color/inmia_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:cardBackgroundColor="#F8FBFB"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E0EEEE"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_tipologia_label_name"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvTipologiaNombre"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_tipologia_label_energy"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvTipologiaCertificado"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_tipologia_label_floor"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvTipologiaTipoPiso"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_tipologia_label_ventilation"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvTipologiaVentilacion"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/admin_tipologia_label_finishes"
+                                    android:textColor="#7A9E9E"
+                                    android:textSize="12sp" />
+                                <TextView
+                                    android:id="@+id/tvTipologiaAcabados"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="-"
+                                    android:textColor="#1D2735"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:text="@string/admin_tipologia_label_amenities"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chipGroupTipologiaFeatures"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                app:singleLine="false"
+                                app:chipSpacingHorizontal="8dp"
+                                app:chipSpacingVertical="8dp" />
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
@@ -563,7 +792,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:contentDescription="Mapa"
+                    android:contentDescription="@string/header_background"
                     android:scaleType="centerCrop"
                     android:src="@drawable/images_2" />
             </com.google.android.material.card.MaterialCardView>

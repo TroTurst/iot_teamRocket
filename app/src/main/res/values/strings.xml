@@ -50,6 +50,32 @@
 
     <!-- ── ADMIN ── -->
     <string name="admin_asesor_profile_title">Estas viendo el perfil de uno de tus asesores</string>
+    <string name="admin_back">Volver</string>
+    <string name="admin_edit">Editar</string>
+    <string name="admin_notifications">Notificaciones</string>
+    <string name="admin_project_main_image">Imagen principal del proyecto</string>
+    <string name="admin_location">Ubicación</string>
+
+    <!-- Detalle proyecto (Admin) -->
+    <string name="admin_tipologia_title">Tipología</string>
+    <string name="admin_project_sheet_title">Ficha del proyecto</string>
+    <string name="admin_tipologia_sheet_title">Ficha de la tipología</string>
+
+    <string name="admin_label_estimated_price">Precio estimado</string>
+    <string name="admin_label_inmobiliaria">Inmobiliaria</string>
+    <string name="admin_label_reference">Referencia</string>
+    <string name="admin_label_age">Antigüedad</string>
+    <string name="admin_label_release">Lanzamiento</string>
+    <string name="admin_label_project_status">Estado del proyecto</string>
+    <string name="admin_label_features">Características</string>
+    <string name="admin_label_extras">Extras</string>
+
+    <string name="admin_tipologia_label_name">Nombre</string>
+    <string name="admin_tipologia_label_energy">Cert. energético</string>
+    <string name="admin_tipologia_label_floor">Tipo de piso</string>
+    <string name="admin_tipologia_label_ventilation">Ventilación</string>
+    <string name="admin_tipologia_label_finishes">Acabados</string>
+    <string name="admin_tipologia_label_amenities">Amenities / features</string>
     <string name="admin_project_edit_title">Actualizar datos</string>
     <string name="admin_project_preview_title">Previsualización</string>
     <string name="admin_project_confirm">Confirmar edición</string>

@@ -10,9 +10,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.models.Proyecto;
+import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AdminProyectosActivity extends AppCompatActivity {
 
@@ -38,7 +47,25 @@ public class AdminProyectosActivity extends AppCompatActivity {
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         EditText etBuscarProyecto = findViewById(R.id.etBuscarProyecto);
         ImageView btnFiltroMock = findViewById(R.id.btnFiltroMock);
-        View btnDetallesProyectoPrincipal = findViewById(R.id.btnDetallesProyectoPrincipal);
+
+        // NUEVO: Inicializar RecyclerView
+        RecyclerView recyclerViewProyectos = findViewById(R.id.recyclerViewProyectos);
+
+        // Configurar LayoutManager (vertical scrolling)
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerViewProyectos.setLayoutManager(layoutManager);
+
+        // Crear lista de proyectos con datos mock (fuente única compartida con el detalle)
+        List<Proyecto> proyectos = AdminProyectoRepositoryMock.getProyectos();
+
+        // Crear y asignar adapter
+        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, proyectos);
+        recyclerViewProyectos.setAdapter(adapter);
+
+        // Botón nueva proyecto
+        findViewById(R.id.btnNuevoProyecto).setOnClickListener(v -> {
+            startActivity(new Intent(this, AdminProyectoNuevoActivity.class));
+        });
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_proyectos);
@@ -66,8 +93,6 @@ public class AdminProyectosActivity extends AppCompatActivity {
             startActivity(new Intent(this, AdminProyectoNuevoActivity.class));
         });
 
-        btnDetallesProyectoPrincipal.setOnClickListener(v ->
-                startActivity(new Intent(this, AdminProyectoDetalleActivity.class)));
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -112,6 +137,8 @@ public class AdminProyectosActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    // Datos mock se obtienen desde AdminProyectoRepositoryMock
 }
 
 
