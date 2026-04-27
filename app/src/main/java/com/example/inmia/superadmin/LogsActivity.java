@@ -7,24 +7,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.superadmin.adapter.LogAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Calendar;
 
 public class LogsActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerLogs;
+    private LogAdapter adapter;
+    private List<Log> listaCompleta;
 
     private MaterialCardView cardFechaInicio, cardFechaFin;
     private TextView tvFechaInicio, tvFechaFin;
     private MaterialButton btnAplicarFiltro;
     private BottomNavigationView bottomNav;
 
-    // Guardar fechas seleccionadas
+    // Fechas del rango
     private int diaInicio = -1, mesInicio = -1, anioInicio = -1;
-    private int diaFin = -1,    mesFin = -1,    anioFin = -1;
+    private int diaFin    = -1, mesFin    = -1, anioFin    = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,7 @@ public class LogsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_logs_superadmin);
 
         // Vincular vistas
+        recyclerLogs     = findViewById(R.id.recyclerLogs);
         cardFechaInicio  = findViewById(R.id.cardFechaInicio);
         cardFechaFin     = findViewById(R.id.cardFechaFin);
         tvFechaInicio    = findViewById(R.id.tvFechaInicio);
@@ -44,26 +55,35 @@ public class LogsActivity extends AppCompatActivity {
         btnAplicarFiltro = findViewById(R.id.btnAplicarFiltro);
         bottomNav        = findViewById(R.id.bottomNavSuperAdmin);
 
+        // Inicializar datos
+        inicializarDatos();
+
+        // Configurar RecyclerView
+        recyclerLogs.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new LogAdapter(this, listaCompleta);
+        recyclerLogs.setAdapter(adapter);
 
         // DatePicker fecha inicio
-        cardFechaInicio.setOnClickListener(v -> mostrarDatePicker(true));
+        cardFechaInicio.setOnClickListener(v ->
+                mostrarDatePicker(true));
 
         // DatePicker fecha fin
-        cardFechaFin.setOnClickListener(v -> mostrarDatePicker(false));
+        cardFechaFin.setOnClickListener(v ->
+                mostrarDatePicker(false));
 
-        // Botón aplicar filtro
+        // Aplicar filtro
         btnAplicarFiltro.setOnClickListener(v -> aplicarFiltro());
 
         // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_logs);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_inicio) {
-                finish();
+                startActivity(new Intent(this, SuperAdminHomeActivity.class));
                 return true;
             } else if (id == R.id.nav_usuarios) {
-                startActivity(new Intent(this, GestionUsuariosActivity.class));
+                startActivity(new Intent(this,
+                        GestionUsuariosActivity.class));
                 return true;
             } else if (id == R.id.nav_reportes) {
                 startActivity(new Intent(this, ReportesActivity.class));
@@ -74,23 +94,52 @@ public class LogsActivity extends AppCompatActivity {
                 startActivity(new Intent(this, PerfilActivity.class));
                 return true;
             }
-
             return false;
         });
     }
 
+    // ── Datos hardcodeados ───────────────────────────────────────────────────
+
+    private void inicializarDatos() {
+        listaCompleta = new ArrayList<>();
+
+        listaCompleta.add(new Log(
+                "George Córdova se ha unido a la aplicación",
+                "Hoy 3:59 pm",
+                Log.TIPO_USUARIO));
+
+        listaCompleta.add(new Log(
+                "El administrador Jhon Travolta ha solicitado habilitar "
+                        + "como asesor a Guiliana Sánchez",
+                "Ayer 11:39 pm",
+                Log.TIPO_ADMIN));
+
+        listaCompleta.add(new Log(
+                "Jonás Vélez ha hecho una reserva a la inmobiliaria Sofia",
+                "27/03/2026 2:39 am",
+                Log.TIPO_RESERVA));
+
+        listaCompleta.add(new Log(
+                "María García se ha registrado como asesor de ventas",
+                "26/03/2026 10:15 am",
+                Log.TIPO_USUARIO));
+
+        listaCompleta.add(new Log(
+                "Carlos Rodríguez separó un departamento en Catalina Sky",
+                "25/03/2026 8:00 pm",
+                Log.TIPO_RESERVA));
+    }
+
+    // ── DatePicker ───────────────────────────────────────────────────────────
+
     private void mostrarDatePicker(boolean esFechaInicio) {
         Calendar calendar = Calendar.getInstance();
-        int anioActual = calendar.get(Calendar.YEAR);
-        int mesActual  = calendar.get(Calendar.MONTH);
-        int diaActual  = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePicker = new DatePickerDialog(
                 this,
                 (view, anio, mes, dia) -> {
-                    // Formato DD/MM/YYYY
-                    String fechaFormateada = String.format("%02d/%02d/%04d",
-                            dia, mes + 1, anio);
+                    String fechaFormateada = String.format(
+                            "%02d/%02d/%04d", dia, mes + 1, anio);
 
                     if (esFechaInicio) {
                         diaInicio  = dia;
@@ -108,29 +157,31 @@ public class LogsActivity extends AppCompatActivity {
                                 getColor(R.color.inmia_text));
                     }
                 },
-                anioActual, mesActual, diaActual
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        // Si ya hay fecha de inicio seleccionada y estamos
-        // eligiendo fecha fin, no permitir fecha anterior
+        // Fecha fin no puede ser anterior a fecha inicio
         if (!esFechaInicio && diaInicio != -1) {
             Calendar minDate = Calendar.getInstance();
             minDate.set(anioInicio, mesInicio, diaInicio);
-            datePicker.getDatePicker().setMinDate(minDate.getTimeInMillis());
+            datePicker.getDatePicker()
+                    .setMinDate(minDate.getTimeInMillis());
         }
 
         datePicker.show();
     }
 
+    // ── Filtro por rango ─────────────────────────────────────────────────────
+
     private void aplicarFiltro() {
-        // Validar que ambas fechas estén seleccionadas
         if (diaInicio == -1) {
             Toast.makeText(this,
                     "Selecciona la fecha de inicio",
                     Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (diaFin == -1) {
             Toast.makeText(this,
                     "Selecciona la fecha de fin",
@@ -138,12 +189,14 @@ public class LogsActivity extends AppCompatActivity {
             return;
         }
 
+        // TODO: filtrar por rango real cuando conectemos Firebase
+        // Por ahora muestra todos los logs como resultado del filtro
+        adapter.actualizarLista(listaCompleta);
+
         String desde = tvFechaInicio.getText().toString();
         String hasta = tvFechaFin.getText().toString();
-
-        // TODO: filtrar logs desde Firebase por rango de fechas
         Toast.makeText(this,
-                "Filtrando del " + desde + " al " + hasta,
+                "Mostrando logs del " + desde + " al " + hasta,
                 Toast.LENGTH_SHORT).show();
     }
 }

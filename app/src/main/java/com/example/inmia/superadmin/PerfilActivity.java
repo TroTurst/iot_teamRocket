@@ -55,7 +55,7 @@ public class PerfilActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.nav_inicio) {
-                finish();
+                startActivity(new Intent(this, SuperAdminHomeActivity.class));
                 return true;
             } else if (id == R.id.nav_usuarios) {
                 startActivity(new Intent(this, GestionUsuariosActivity.class));
