@@ -33,7 +33,7 @@ public class SolicitudesActivity extends AppCompatActivity
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_solicitudes_superadmin);
+        setContentView(R.layout.sa_activity_solicitudes);
 
         // Vincular vistas
         recyclerSolicitudes = findViewById(R.id.recyclerSolicitudes);

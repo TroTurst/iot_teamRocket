@@ -16,7 +16,7 @@ public class PerfilUserActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_perfil_user);
+        setContentView(R.layout.sa_activity_perfil_user);
 
         // Botón atrás
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
