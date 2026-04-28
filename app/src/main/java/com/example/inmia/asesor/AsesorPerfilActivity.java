@@ -2,10 +2,7 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,19 +10,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
-import com.example.inmia.superadmin.GestionUsuariosActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AsesorPerfilActivity extends AppCompatActivity {
 
-    private FrameLayout frameNotificaciones;
-    private TextView tvBadgeNotif;
+    // ← ELIMINADO: frameNotificaciones, tvBadgeNotif, totalNotificaciones
     private LinearLayout layoutCerrarSesion;
     private LinearLayout layoutCambiarPassword;
     private LinearLayout layoutNotificaciones;
     private BottomNavigationView bottomNav;
-
-    private int totalNotificaciones = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +31,13 @@ public class AsesorPerfilActivity extends AppCompatActivity {
         setContentView(R.layout.activity_asesor_perfil);
 
         // Vincular vistas
-        frameNotificaciones   = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif          = findViewById(R.id.tvBadgeNotif);
         layoutCerrarSesion    = findViewById(R.id.layoutCerrarSesion);
         layoutCambiarPassword = findViewById(R.id.layoutCambiarPassword);
         layoutNotificaciones  = findViewById(R.id.layoutNotificaciones);
         bottomNav             = findViewById(R.id.bottomNavAsesor);
 
-        configurarBadge();
-
-        // Campanita
-        frameNotificaciones.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Tienes " + totalNotificaciones + " notificaciones",
-                    Toast.LENGTH_SHORT).show();
-            limpiarBadge();
-        });
+        // ← ELIMINADO: configurarBadge()
+        // ← ELIMINADO: frameNotificaciones.setOnClickListener
 
         // Cambiar contraseña
         layoutCambiarPassword.setOnClickListener(v ->
@@ -105,17 +89,6 @@ public class AsesorPerfilActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void configurarBadge() {
-        if (totalNotificaciones > 0) {
-            tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
-            tvBadgeNotif.setVisibility(View.VISIBLE);
-        } else {
-            tvBadgeNotif.setVisibility(View.GONE);
-        }
-    }
-
-    private void limpiarBadge() {
-        totalNotificaciones = 0;
-        tvBadgeNotif.setVisibility(View.GONE);
-    }
+    // ← ELIMINADO: configurarBadge()
+    // ← ELIMINADO: limpiarBadge()
 }
