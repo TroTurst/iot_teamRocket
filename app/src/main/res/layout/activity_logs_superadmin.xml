@@ -17,203 +17,203 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ── HEADER con botón atrás ── -->
-            <!-- ── HEADER — sin botón atrás, título centrado ── -->
+            <!-- ── HEADER — dentro del scroll ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background"
+                android:background="@drawable/gradient_background2"
                 android:paddingTop="48dp"
-                android:paddingBottom="24dp"
+                android:paddingBottom="40dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp">
 
-                <!-- Logo -->
-
-
-
-
-                <!-- Título centrado -->
                 <TextView
                     android:id="@+id/tvTitulo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Logs de eventos"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#FFFFFF"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
-                    android:layout_marginTop="16dp"
-
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ── FILTRO POR RANGO DE FECHA ── -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- ── CONTENIDO — esquinas redondeadas con overlap ── -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="4dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="#FFFFFF">
+                android:orientation="vertical"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:paddingTop="8dp">
 
-                <LinearLayout
+                <!-- ── FILTRO POR RANGO DE FECHA ── -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="4dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="3dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Filtrar por rango de fecha"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="12dp"/>
-
-                    <!-- Fila: fecha inicio + fecha fin -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                        <!-- Fecha inicio -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardFechaInicio"
-                            android:layout_width="0dp"
-                            android:layout_height="48dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="@color/inmia_teal_dark"
-                            app:strokeWidth="1.5dp"
-                            app:cardBackgroundColor="#FFFFFF">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="12dp">
-
-                                <TextView
-                                    android:id="@+id/tvFechaInicio"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="DD/MM/YYYY"
-                                    android:textColor="#A0BFBF"
-                                    android:textSize="13sp"/>
-
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_today"
-                                    android:contentDescription="Calendario"
-                                    app:tint="@color/inmia_teal_dark"/>
-
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <!-- Separador -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="→"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="16sp"
-                            android:layout_marginHorizontal="4dp"/>
+                            android:text="Filtrar por rango de fecha"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp"/>
 
-                        <!-- Fecha fin -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardFechaFin"
-                            android:layout_width="0dp"
-                            android:layout_height="48dp"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="@color/inmia_teal_dark"
-                            app:strokeWidth="1.5dp"
-                            app:cardBackgroundColor="#FFFFFF">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="12dp">
+                            <!-- Fecha inicio -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardFechaInicio"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeColor="@color/inmia_teal_dark"
+                                app:strokeWidth="1.5dp"
+                                app:cardBackgroundColor="#FFFFFF">
 
-                                <TextView
-                                    android:id="@+id/tvFechaFin"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="DD/MM/YYYY"
-                                    android:textColor="#A0BFBF"
-                                    android:textSize="13sp"/>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="12dp">
 
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_today"
-                                    android:contentDescription="Calendario"
-                                    app:tint="@color/inmia_teal_dark"/>
+                                    <TextView
+                                        android:id="@+id/tvFechaInicio"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="DD/MM/YYYY"
+                                        android:textColor="#A0BFBF"
+                                        android:textSize="13sp"/>
 
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:src="@android:drawable/ic_menu_today"
+                                        android:contentDescription="Calendario"
+                                        app:tint="@color/inmia_teal_dark"/>
+
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <!-- Separador -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="→"
+                                android:textColor="@color/inmia_teal_dark"
+                                android:textSize="16sp"
+                                android:layout_marginHorizontal="4dp"/>
+
+                            <!-- Fecha fin -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardFechaFin"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeColor="@color/inmia_teal_dark"
+                                app:strokeWidth="1.5dp"
+                                app:cardBackgroundColor="#FFFFFF">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="12dp">
+
+                                    <TextView
+                                        android:id="@+id/tvFechaFin"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="DD/MM/YYYY"
+                                        android:textColor="#A0BFBF"
+                                        android:textSize="13sp"/>
+
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:src="@android:drawable/ic_menu_today"
+                                        android:contentDescription="Calendario"
+                                        app:tint="@color/inmia_teal_dark"/>
+
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                        <!-- Botón aplicar filtro -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAplicarFiltro"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="12dp"
+                            android:text="Aplicar filtro"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            android:textColor="@color/inmia_white"
+                            app:backgroundTint="@color/inmia_teal_dark"
+                            app:cornerRadius="10dp"/>
 
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Botón aplicar filtro -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAplicarFiltro"
-                        android:layout_width="match_parent"
-                        android:layout_height="44dp"
-                        android:layout_marginTop="12dp"
-                        android:text="Aplicar filtro"
-                        android:textAllCaps="false"
-                        android:textSize="14sp"
-                        android:textColor="@color/inmia_white"
-                        app:backgroundTint="@color/inmia_teal_dark"
-                        app:cornerRadius="10dp"/>
+                <!-- ── LISTA DE LOGS — RecyclerView ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Eventos recientes"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="12dp"/>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerLogs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingBottom="8dp"
+                    android:nestedScrollingEnabled="false"/>
 
-
-
-            <!-- ── LISTA DE LOGS — RecyclerView ── -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Eventos recientes"
-                android:textColor="@color/inmia_text"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="12dp"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerLogs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingBottom="8dp"
-                android:nestedScrollingEnabled="false"/>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

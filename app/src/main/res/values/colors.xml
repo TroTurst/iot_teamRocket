@@ -1,49 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="inmia_teal_dark">#4A9E9E</color>
-    <color name="inmia_teal_light">#A8D8D8</color>
+
+    <!-- ── COLORES PRINCIPALES INMIA ── -->
+    <color name="inmia_teal_dark">#1B8D50</color>
+    <color name="inmia_teal_light">#A8D8BC</color>
     <color name="inmia_white">#FFFFFF</color>
-    <color name="inmia_text">#3D7A7A</color>
+    <color name="inmia_text">#145C35</color>
     <color name="inmia_success">#2EB872</color>
     <color name="inmia_danger">#E53935</color>
     <color name="inmia_info">#3A8DD8</color>
     <color name="inmia_warning">#F0A500</color>
-    <color name="inmia_line">#D9E5E5</color>
+    <color name="inmia_line">#C8E6D5</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <!-- Colores de la pantalla de INICIO -->
-    <color name="home_header_start">#129F9F</color>
-    <color name="home_header_end">#087A82</color>
+    <color name="home_header_start">#1B8D50</color>
+    <color name="home_header_end">#0F5C33</color>
 
-    <!-- colores de busqueda -->
-    <color name="search_card_bg">#087A82</color>
-    <color name="search_field_bg">#0D5060</color>
-    <color name="search_button_bg">#09AEAE</color>
-
-    <!-- colores de filtro-->
-    <color name="filter_container_bg">#AA087A82</color>
-    <color name="chip_selected_bg">#09AEAE</color>
-    <color name="chip_unselected_bg">#09AEAE</color>
-    <color name="chip_selected_text">#FFFFFF</color>
-    <color name="chip_unselected_text">#0C6B6B</color>
+    <!-- Colores de búsqueda -->
+    <color name="search_card_bg">#0F5C33</color>
+    <color name="search_field_bg">#0A3D22</color>
+    <color name="search_button_bg">#25B865</color>
 
     <!-- Colores de filtro -->
-    <color name="text_subtitle">#0C6B6B</color>
-    <color name="text_featured_title">#18C0C1</color>
-    <color name="text_project_location">#5AACAE</color>
-    <color name="text_project_price">#12ECEE</color>
+    <color name="filter_container_bg">#AA0F5C33</color>
+    <color name="chip_selected_bg">#1B8D50</color>
+    <color name="chip_unselected_bg">#A8D8BC</color>
+    <color name="chip_selected_text">#FFFFFF</color>
+    <color name="chip_unselected_text">#145C35</color>
 
-    <!-- colores de Badges -->
-    <color name="badge_verified_bg">#129F9F</color>
+    <!-- Colores de texto -->
+    <color name="text_subtitle">#145C35</color>
+    <color name="text_featured_title">#1B8D50</color>
+    <color name="text_project_location">#4AAB78</color>
+    <color name="text_project_price">#25B865</color>
+
+    <!-- Colores de Badges -->
+    <color name="badge_verified_bg">#1B8D50</color>
     <color name="badge_orange_bg">#F59E0B</color>
     <color name="badge_orange_text">#412402</color>
-    <color name="badge_teal_bg">#18C0C1</color>
+    <color name="badge_teal_bg">#25B865</color>
 
-    <!-- colores de cartas -->
-    <color name="card_project_bg">#0A3D46</color>
-    <color name="card_project_img_green">#CFFEDE</color>
+    <!-- Colores de cartas -->
+    <color name="card_project_bg">#0A3D22</color>
+    <color name="card_project_img_green">#C8F5DC</color>
     <color name="card_project_img_pink">#FFEAEA</color>
-    <!-- Colores deorativos -->
-    <color name="circle_decoration">#129F9F</color>
+
+    <!-- Colores decorativos -->
+    <color name="circle_decoration">#1B8D50</color>
+
 </resources>
