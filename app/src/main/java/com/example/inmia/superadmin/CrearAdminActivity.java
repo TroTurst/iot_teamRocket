@@ -46,7 +46,7 @@ public class CrearAdminActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_crear_admin);
+        setContentView(R.layout.sa_activity_crear_admin);
 
         // Vincular vistas — datos personales
         tilNombres         = findViewById(R.id.tilNombres);

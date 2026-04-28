@@ -67,7 +67,7 @@ public class ReportesActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_reportes_superadmin);
+        setContentView(R.layout.sa_activity_reportes);
 
         // Vincular vistas
         bottomNav  = findViewById(R.id.bottomNavSuperAdmin);

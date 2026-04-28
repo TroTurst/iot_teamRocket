@@ -34,7 +34,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_home_superadmin);
+        setContentView(R.layout.sa_activity_home_superadmin);
 
         bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);

@@ -27,7 +27,7 @@ public class PerfilActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_perfil_superadmin);
+        setContentView(R.layout.sa_activity_perfil);
 
         bottomNav            = findViewById(R.id.bottomNavSuperAdmin);
         layoutCerrarSesion   = findViewById(R.id.layoutCerrarSesion);

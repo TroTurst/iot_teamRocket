@@ -44,7 +44,7 @@ public class LogsActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_logs_superadmin);
+        setContentView(R.layout.sa_activity_logs);
 
         // Vincular vistas
         recyclerLogs     = findViewById(R.id.recyclerLogs);

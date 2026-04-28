@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- ── HEADER — dentro del scroll ── -->
+            <!-- ── HEADER — solo título ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/headerGestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/gradient_background2"
-                android:paddingTop="48dp"
-                android:paddingBottom="50dp"
+                android:paddingTop="28dp"
+                android:paddingBottom="40dp"
                 android:paddingHorizontal="20dp">
 
                 <TextView
@@ -32,25 +32,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/gestion_usuarios_title"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- ── CONTENIDO — esquinas redondeadas con overlap ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:paddingTop="16dp">
+
+                <!-- ── TABS — encima del buscador ── -->
                 <LinearLayout
                     android:id="@+id/layoutTabs"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
-                    android:background="#FFFFFF"
-                    android:padding="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/tvTitulo"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@color/inmia_teal_pale"
+                    android:padding="4dp">
 
                     <TextView
                         android:id="@+id/tabAdmins"
@@ -96,16 +109,6 @@
                         android:focusable="true"/>
 
                 </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- ── CONTENIDO — esquinas redondeadas con overlap ── -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="-24dp"
-                android:background="@drawable/bg_content_rounded"
-                android:paddingTop="8dp">
 
                 <!-- ── BARRA: BÚSQUEDA + FILTRO ── -->
                 <LinearLayout
@@ -113,7 +116,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingHorizontal="20dp"
-                    android:paddingTop="16dp"
                     android:paddingBottom="8dp"
                     android:gravity="center_vertical">
 
@@ -244,8 +246,8 @@
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         app:menu="@menu/menu_superadmin"
-        app:itemIconTint="@color/inmia_teal_dark"
-        app:itemTextColor="@color/inmia_teal_dark"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:elevation="12dp"/>
 

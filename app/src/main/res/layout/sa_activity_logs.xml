@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/gradient_background2"
-                android:paddingTop="48dp"
+                android:paddingTop="28dp"
                 android:paddingBottom="40dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp">
@@ -226,8 +226,8 @@
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         app:menu="@menu/menu_superadmin"
-        app:itemIconTint="@color/inmia_teal_dark"
-        app:itemTextColor="@color/inmia_teal_dark"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:elevation="12dp"/>
 
