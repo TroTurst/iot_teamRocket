@@ -8,9 +8,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AsesorHomeActivity extends AppCompatActivity {
 
@@ -18,6 +23,8 @@ public class AsesorHomeActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
+    private RecyclerView recyclerHomeCitas;
+    private HomeCitaAdapter homeCitaAdapter;
 
     // Hardcodeado — luego vendrá de Firebase
     private int totalNotificaciones = 2;
@@ -36,6 +43,7 @@ public class AsesorHomeActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
         framePerfil         = findViewById(R.id.framePerfil);
+        recyclerHomeCitas    = findViewById(R.id.recyclerHomeCitas);
 
         // Configurar badge inicial
         configurarBadge();
@@ -49,6 +57,10 @@ public class AsesorHomeActivity extends AppCompatActivity {
         framePerfil.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
+
+        homeCitaAdapter = new HomeCitaAdapter(buildMockHomeCitas());
+        recyclerHomeCitas.setLayoutManager(new LinearLayoutManager(this));
+        recyclerHomeCitas.setAdapter(homeCitaAdapter);
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -72,6 +84,27 @@ public class AsesorHomeActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    private List<HomeCita> buildMockHomeCitas() {
+        List<HomeCita> citas = new ArrayList<>();
+        citas.add(new HomeCita(
+            "10:00",
+            "AM",
+            "Juan Perez",
+            "Edificio Catalina Sky",
+            "Pendiente",
+            false
+        ));
+        citas.add(new HomeCita(
+            "02:00",
+            "PM",
+            "Maria Garcia",
+            "Condominio Pueblo Libre",
+            "Confirmada",
+            true
+        ));
+        return citas;
     }
 
     private void configurarBadge() {

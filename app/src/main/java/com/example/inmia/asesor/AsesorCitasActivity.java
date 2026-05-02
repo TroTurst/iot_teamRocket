@@ -10,16 +10,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class AsesorCitasActivity extends AppCompatActivity {
+public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAdapter.Listener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
@@ -29,6 +33,8 @@ public class AsesorCitasActivity extends AppCompatActivity {
     private AutoCompleteTextView dropdownEstado;
     private AutoCompleteTextView dropdownProyecto;
     private AutoCompleteTextView dropdownHorario;
+    private RecyclerView recyclerCitas;
+    private CitaItemAdapter citaAdapter;
 
     private int totalNotificaciones = 2;
 
@@ -50,10 +56,15 @@ public class AsesorCitasActivity extends AppCompatActivity {
         dropdownEstado = findViewById(R.id.dropdownEstado);
         dropdownProyecto = findViewById(R.id.dropdownProyecto);
         dropdownHorario = findViewById(R.id.dropdownHorario);
+        recyclerCitas = findViewById(R.id.recyclerCitas);
 
         configurarBadge();
         configurarDropdowns();
         configurarCalendario();
+
+        citaAdapter = new CitaItemAdapter(buildMockCitas(), this);
+        recyclerCitas.setLayoutManager(new LinearLayoutManager(this));
+        recyclerCitas.setAdapter(citaAdapter);
 
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
@@ -104,6 +115,43 @@ public class AsesorCitasActivity extends AppCompatActivity {
 
     public void openCitaDetalle(View view) {
         startActivity(new Intent(this, AsesorCitaDetailActivity.class));
+    }
+
+    @Override
+    public void onCitaSelected(CitaItem item) {
+        startActivity(new Intent(this, AsesorCitaDetailActivity.class));
+    }
+
+    private List<CitaItem> buildMockCitas() {
+        List<CitaItem> citas = new ArrayList<>();
+        citas.add(new CitaItem(
+            "Confirmada",
+            R.color.inmia_success,
+            1f,
+            "Los Alamos",
+            "Juan Perez",
+            "Surco, Primavera 123",
+            "Fecha y hora 12/05/2026 - 10:30AM"
+        ));
+        citas.add(new CitaItem(
+            "Pendiente",
+            R.color.inmia_teal_dark,
+            1f,
+            "Catalina Sky",
+            "Maria Garcia",
+            "Miraflores, Av. Benavides 410",
+            "Fecha y hora 14/05/2026 - 4:00PM"
+        ));
+        citas.add(new CitaItem(
+            "Terminada",
+            R.color.inmia_text,
+            0.7f,
+            "Pueblo Libre",
+            "Carlos Ruiz",
+            "Pueblo Libre, Av. Bolivar 512",
+            "Fecha y hora 10/05/2026 - 11:30AM"
+        ));
+        return citas;
     }
 
     private void configurarDropdowns() {
