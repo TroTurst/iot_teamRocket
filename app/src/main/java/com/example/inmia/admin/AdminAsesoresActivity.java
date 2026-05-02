@@ -10,9 +10,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.admin.data.AdminAsesorRepositoryMock;
+import com.example.inmia.models.Asesor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class AdminAsesoresActivity extends AppCompatActivity {
 
@@ -40,7 +46,16 @@ public class AdminAsesoresActivity extends AppCompatActivity {
         View btnNuevoAsesor = findViewById(R.id.btnNuevoAsesor);
         EditText etBuscarAsesor = findViewById(R.id.etBuscarAsesor);
         ImageView btnFiltroAsesores = findViewById(R.id.btnFiltroAsesores);
-        View btnDetallesCarlos = findViewById(R.id.btnDetallesCarlos);
+
+        RecyclerView recyclerViewAsesores = findViewById(R.id.recyclerViewAsesores);
+        recyclerViewAsesores.setLayoutManager(new LinearLayoutManager(this));
+        List<Asesor> asesores = AdminAsesorRepositoryMock.getAsesores();
+        AdminAsesorAdapter adapter = new AdminAsesorAdapter(this, asesores, asesor -> {
+            Intent intent = new Intent(this, AdminAsesorDetalleCarlosActivity.class);
+            intent.putExtra("asesor_id", asesor.getId());
+            startActivity(intent);
+        });
+        recyclerViewAsesores.setAdapter(adapter);
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_asesores);
@@ -68,9 +83,6 @@ public class AdminAsesoresActivity extends AppCompatActivity {
 
         btnFiltroAsesores.setOnClickListener(v ->
                 Toast.makeText(this, "Filtros de asesores proximamente", Toast.LENGTH_SHORT).show());
-
-        btnDetallesCarlos.setOnClickListener(v ->
-                startActivity(new Intent(this, AdminAsesorDetalleCarlosActivity.class)));
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -116,5 +128,3 @@ public class AdminAsesoresActivity extends AppCompatActivity {
         finish();
     }
 }
-
-

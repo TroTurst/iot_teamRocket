@@ -66,7 +66,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="Atras"
+                        android:contentDescription="@string/admin_back"
                         android:padding="10dp"
                         android:src="@android:drawable/ic_media_previous" />
                 </com.google.android.material.card.MaterialCardView>
@@ -88,11 +88,12 @@
                     app:layout_constraintTop_toBottomOf="@id/imgHeaderLogo" />
 
                 <TextView
+                    android:id="@+id/tvNombreHeaderCarlos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="6dp"
-                    android:text="Carlos Mendoza"
+                    android:text="@string/admin_asesor_nombre_demo"
                     android:textColor="@color/inmia_teal_dark"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -131,9 +132,10 @@
                             app:cardElevation="0dp">
 
                             <ImageView
+                                android:id="@+id/imgFotoCarlos"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:contentDescription="Foto Carlos Mendoza"
+                                android:contentDescription="@string/admin_asesor_foto_cd"
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/avatar_asesor_1" />
                         </com.google.android.material.card.MaterialCardView>
@@ -146,27 +148,39 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tvNombreCarlos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Carlos Mendoza"
+                                android:text="@string/admin_asesor_nombre_demo"
                                 android:textColor="@color/inmia_text"
                                 android:textSize="24sp"
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/tvRolCarlos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Asesor inmobiliario"
+                                android:text="@string/admin_asesor_rol_demo"
                                 android:textColor="#6F8F8F"
                                 android:textSize="13sp" />
 
                             <TextView
+                                android:id="@+id/tvEmailCarlos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="carlosmendoza@casa.com"
+                                android:text="@string/admin_asesor_email_demo"
                                 android:textColor="@color/inmia_teal_dark"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/tvTelefonoCarlos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/admin_asesor_telefono_demo"
+                                android:textColor="#6F8F8F"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -197,16 +211,17 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="DNI"
+                                    android:text="@string/admin_asesor_dni_label"
                                     android:textColor="#7D9B9B"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvDniCarlos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="12345678"
+                                    android:text="@string/admin_asesor_dni_demo"
                                     android:textColor="#1D2735"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -233,16 +248,17 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Estado"
+                                    android:text="@string/admin_asesor_estado_label"
                                     android:textColor="#7D9B9B"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvEstadoCarlos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="Activo"
+                                    android:text="@string/admin_asesor_estado_activo"
                                     android:textColor="#1D2735"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -254,16 +270,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="18dp"
-                        android:text="Zona de trabajo"
+                        android:text="@string/admin_asesor_zona_label"
                         android:textColor="@color/inmia_teal_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvZonaTrabajoCarlos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="San Juan de Lurigancho"
+                        android:text="@string/admin_asesor_zona_demo"
                         android:textColor="#6F8F8F"
                         android:textSize="13sp" />
 
@@ -277,7 +294,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:contentDescription="Mapa de zonas"
+                            android:contentDescription="@string/admin_asesor_mapa_cd"
                             android:scaleType="centerCrop"
                             android:src="@drawable/images_2" />
                     </com.google.android.material.card.MaterialCardView>
@@ -308,16 +325,17 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Citas"
+                                    android:text="@string/admin_asesor_citas_label"
                                     android:textColor="#7D9B9B"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvCitasCarlos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="23"
+                                    android:text="@string/admin_asesor_citas_demo"
                                     android:textColor="#1D2735"
                                     android:textSize="20sp"
                                     android:textStyle="bold" />
@@ -344,22 +362,152 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Ventas"
+                                    android:text="@string/admin_asesor_ventas_label"
                                     android:textColor="#7D9B9B"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvVentasCarlos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="2"
+                                    android:text="@string/admin_asesor_ventas_demo"
                                     android:textColor="#1D2735"
                                     android:textSize="20sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="#F8FBFB"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E0EEEE"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/admin_asesor_meta_ventas_label"
+                                android:textColor="#7D9B9B"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvMetaVentasCarlos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/admin_asesor_meta_ventas_demo"
+                                android:textColor="#1D2735"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            app:cardBackgroundColor="#F8FBFB"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="#E0EEEE"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/admin_asesor_meta_citas_label"
+                                    android:textColor="#7D9B9B"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvMetaCitasCarlos"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="@string/admin_asesor_meta_citas_demo"
+                                    android:textColor="#1D2735"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            app:cardBackgroundColor="#F8FBFB"
+                            app:cardCornerRadius="14dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="#E0EEEE"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/admin_asesor_meta_ganancias_label"
+                                    android:textColor="#7D9B9B"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvMetaGananciasCarlos"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="@string/admin_asesor_meta_ganancias_demo"
+                                    android:textColor="#1D2735"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAsignarMetasCarlos"
+                        android:layout_width="match_parent"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/admin_asesor_btn_metas"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        app:backgroundTint="@color/inmia_teal_dark"
+                        app:cornerRadius="21dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -373,7 +521,7 @@
                             android:layout_height="40dp"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:text="Citas"
+                            android:text="@string/admin_asesor_btn_citas"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="13sp"
@@ -386,12 +534,45 @@
                             android:layout_height="40dp"
                             android:layout_weight="1"
                             android:layout_marginStart="6dp"
-                            android:text="Proyectos"
+                            android:text="@string/admin_asesor_btn_proyectos"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="13sp"
                             app:backgroundTint="@color/inmia_teal_dark"
                             app:cornerRadius="20dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutCitasCarlos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/admin_asesor_historial_citas"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/admin_asesor_historial_citas_desc"
+                            android:textColor="#6F8F8F"
+                            android:textSize="12sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewCitasCarlos"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -405,7 +586,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Proyectos activos"
+                            android:text="@string/admin_asesor_proyectos_activos"
                             android:textColor="@color/inmia_text"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -414,174 +595,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Estos son los proyectos donde Carlos Mendoza está participando actualmente"
+                            android:text="@string/admin_asesor_proyectos_activos_desc"
                             android:textColor="#6F8F8F"
                             android:textSize="12sp" />
 
-                        <com.google.android.material.card.MaterialCardView
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewProyectosCarlos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            app:cardBackgroundColor="#F8FBFB"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="#E0EEEE"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="14dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Proyecto Las Casas 22"
-                                    android:textColor="#1D2735"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Miraflores, Lima"
-                                    android:textColor="#6F8F8F"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:text="Estado: activo · Tipología 65 m²"
-                                    android:textColor="@color/inmia_teal_dark"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnDetallesProyectoCarlos1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:layout_marginTop="12dp"
-                                    android:text="Detalles"
-                                    android:textAllCaps="false"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="13sp"
-                                    app:backgroundTint="@color/inmia_teal_dark"
-                                    app:cornerRadius="20dp" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            app:cardBackgroundColor="#F8FBFB"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="#E0EEEE"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="14dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Proyecto Palm Living"
-                                    android:textColor="#1D2735"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="San Isidro, Lima"
-                                    android:textColor="#6F8F8F"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:text="Estado: activo · Tipología 45 m²"
-                                    android:textColor="@color/inmia_teal_dark"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnDetallesProyectoCarlos2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:layout_marginTop="12dp"
-                                    android:text="Detalles"
-                                    android:textAllCaps="false"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="13sp"
-                                    app:backgroundTint="@color/inmia_teal_dark"
-                                    app:cornerRadius="20dp" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            app:cardBackgroundColor="#F8FBFB"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="#E0EEEE"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="14dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Proyecto Vista Verde"
-                                    android:textColor="#1D2735"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Surco, Lima"
-                                    android:textColor="#6F8F8F"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:text="Estado: activo · Tipología 90 m²"
-                                    android:textColor="@color/inmia_teal_dark"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnDetallesProyectoCarlos3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="40dp"
-                                    android:layout_marginTop="12dp"
-                                    android:text="Detalles"
-                                    android:textAllCaps="false"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="13sp"
-                                    app:backgroundTint="@color/inmia_teal_dark"
-                                    app:cornerRadius="20dp" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never" />
                     </LinearLayout>
 
                 </LinearLayout>

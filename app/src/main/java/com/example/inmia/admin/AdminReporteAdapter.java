@@ -61,6 +61,7 @@ public class AdminReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             mejor.tvVentas.setText(String.valueOf(item.getMejorVentas()));
             mejor.tvCitas.setText(String.valueOf(item.getMejorCitas()));
             mejor.tvGanancias.setText(item.getMejorGanancias());
+            mejor.tvIngresos.setText(item.getMejorGanancias());
             return;
         }
         EstadoViewHolder estado = (EstadoViewHolder) holder;
@@ -92,6 +93,7 @@ public class AdminReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private final TextView tvVentas;
         private final TextView tvCitas;
         private final TextView tvGanancias;
+        private final TextView tvIngresos;
 
         MejorViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +101,7 @@ public class AdminReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             tvVentas = itemView.findViewById(R.id.tvMejorAsesorVentas);
             tvCitas = itemView.findViewById(R.id.tvMejorAsesorCitas);
             tvGanancias = itemView.findViewById(R.id.tvMejorAsesorGanancias);
+            tvIngresos = itemView.findViewById(R.id.tvMejorAsesorIngresos);
         }
     }
 
@@ -115,4 +118,3 @@ public class AdminReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 }
-

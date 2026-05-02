@@ -1,11 +1,13 @@
 package com.example.inmia.admin;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -36,6 +38,27 @@ public class AdminCitasAdapter extends RecyclerView.Adapter<AdminCitasAdapter.Ci
         holder.tvHora.setText(cita.getHora());
         holder.tvProyecto.setText(cita.getProyecto());
         holder.tvEstado.setText(cita.getEstado());
+
+        int estadoColor = resolveEstadoColor(holder.itemView, cita.getEstado());
+        holder.tvEstado.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
+        holder.tvEstado.setBackgroundTintList(ColorStateList.valueOf(estadoColor));
+    }
+
+    private int resolveEstadoColor(View itemView, String estado) {
+        String normalized = estado != null ? estado.toLowerCase() : "";
+        if (normalized.contains("confirmada")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_success);
+        }
+        if (normalized.contains("en proceso")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_warning);
+        }
+        if (normalized.contains("completada")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_info);
+        }
+        if (normalized.contains("cancelada")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_danger);
+        }
+        return ContextCompat.getColor(itemView.getContext(), R.color.inmia_teal_dark);
     }
 
     @Override
@@ -43,7 +66,7 @@ public class AdminCitasAdapter extends RecyclerView.Adapter<AdminCitasAdapter.Ci
         return citas != null ? citas.size() : 0;
     }
 
-    static class CitaViewHolder extends RecyclerView.ViewHolder {
+    public static class CitaViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvCliente;
         private final TextView tvFecha;
         private final TextView tvHora;
@@ -60,4 +83,3 @@ public class AdminCitasAdapter extends RecyclerView.Adapter<AdminCitasAdapter.Ci
         }
     }
 }
-

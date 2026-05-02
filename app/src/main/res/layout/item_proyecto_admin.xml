@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:contentDescription="Foto del proyecto"/>
+                android:contentDescription="@string/admin_proyecto_foto_cd"/>
 
             <!-- OVERLAY OSCURO EN LA PARTE INFERIOR -->
             <View
@@ -44,8 +44,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="12dp"
-                android:text="En planos"
-                android:textColor="#000000"
+                android:text="@string/admin_proyecto_estado_demo"
+                android:textColor="@color/inmia_white"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:paddingHorizontal="10dp"
@@ -66,7 +66,7 @@
                 android:id="@+id/tvNombreProyecto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Proyecto Las Nuevas Casas 22a"
+                android:text="@string/admin_proyecto_nombre_demo"
                 android:textColor="@color/inmia_text"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -85,7 +85,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_logo_inmia"
-                    android:contentDescription="Inmobiliaria"
+                    android:contentDescription="@string/admin_proyecto_inmobiliaria_cd"
                     android:tint="@color/inmia_teal_dark"/>
 
                 <TextView
@@ -93,7 +93,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Nombre Inmobiliaria"
+                    android:text="@string/admin_proyecto_inmobiliaria_demo"
                     android:textColor="@color/inmia_teal_dark"
                     android:textSize="12sp"
                     android:layout_marginStart="6dp"
@@ -113,7 +113,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@android:drawable/ic_menu_mylocation"
-                    android:contentDescription="Ubicación"
+                    android:contentDescription="@string/admin_proyecto_ubicacion_cd"
                     android:tint="#7A9E9E"/>
 
                 <TextView
@@ -121,7 +121,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Santa Catalina, Lima"
+                    android:text="@string/admin_proyecto_ubicacion_demo"
                     android:textColor="#7A9E9E"
                     android:textSize="12sp"
                     android:layout_marginStart="6dp"
@@ -141,7 +141,7 @@
                     android:id="@+id/tvPetFriendly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🐾 Pet Friendly • 🛗 Ascensor • ⚡ A • 🏖️ Terraza"
+                    android:text="@string/admin_proyecto_features_demo"
                     android:textSize="11sp"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="6dp"
@@ -151,12 +151,11 @@
                     android:ellipsize="end"
                     android:visibility="gone"/>
 
-                <!-- SEGUNDO BADGE - ASCENSOR (OCULTO, AHORA EN PETFRIENDLY) -->
                 <TextView
                     android:id="@+id/tvAscensor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🛗 Con ascensor"
+                    android:text="@string/admin_proyecto_features_demo"
                     android:textSize="11sp"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="4dp"
@@ -191,7 +190,7 @@
                         android:id="@+id/tvArea"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="45 m²"
+                        android:text="@string/admin_proyecto_area_demo"
                         android:textColor="@color/inmia_text"
                         android:textSize="13sp"
                         android:textStyle="bold"/>
@@ -199,7 +198,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Área"
+                        android:text="@string/admin_proyecto_area_label"
                         android:textColor="#A0BFBF"
                         android:textSize="10sp"
                         android:layout_marginTop="2dp"/>
@@ -217,7 +216,7 @@
                         android:id="@+id/tvDormitorios"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1d"
+                        android:text="@string/admin_proyecto_dormitorios_demo"
                         android:textColor="@color/inmia_text"
                         android:textSize="13sp"
                         android:textStyle="bold"/>
@@ -225,7 +224,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dormitorios"
+                        android:text="@string/admin_proyecto_dormitorios_label"
                         android:textColor="#A0BFBF"
                         android:textSize="10sp"
                         android:layout_marginTop="2dp"/>
@@ -243,7 +242,7 @@
                         android:id="@+id/tvBanos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1b"
+                        android:text="@string/admin_proyecto_banos_demo"
                         android:textColor="@color/inmia_text"
                         android:textSize="13sp"
                         android:textStyle="bold"/>
@@ -251,7 +250,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Baños"
+                        android:text="@string/admin_proyecto_banos_label"
                         android:textColor="#A0BFBF"
                         android:textSize="10sp"
                         android:layout_marginTop="2dp"/>
@@ -282,7 +281,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Precio"
+                        android:text="@string/admin_proyecto_precio_label"
                         android:textColor="#A0BFBF"
                         android:textSize="10sp"/>
 
@@ -290,7 +289,7 @@
                         android:id="@+id/tvPrecio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S/ 420,000"
+                        android:text="@string/admin_proyecto_precio_demo"
                         android:textColor="@color/inmia_teal_dark"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -302,7 +301,7 @@
                     android:id="@+id/tvNumTipologias"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+3 tipologías"
+                    android:text="@string/admin_proyecto_tipologias_demo"
                     android:textColor="@color/inmia_teal_dark"
                     android:textSize="11sp"
                     android:paddingHorizontal="12dp"

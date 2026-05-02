@@ -43,7 +43,7 @@ public class AdminAsesorAdapter extends RecyclerView.Adapter<AdminAsesorAdapter.
     public void onBindViewHolder(@NonNull AsesorViewHolder holder, int position) {
         Asesor asesor = asesores.get(position);
         holder.tvNombre.setText(asesor.getNombre());
-        holder.tvEspecialidad.setText(asesor.getEspecialidad());
+        holder.tvDistrito.setText(asesor.getDistrito());
         if (asesor.getFotoResId() != 0) {
             holder.imgAvatar.setImageResource(asesor.getFotoResId());
         }
@@ -69,16 +69,15 @@ public class AdminAsesorAdapter extends RecyclerView.Adapter<AdminAsesorAdapter.
     static class AsesorViewHolder extends RecyclerView.ViewHolder {
         private final ImageView imgAvatar;
         private final TextView tvNombre;
-        private final TextView tvEspecialidad;
+        private final TextView tvDistrito;
         private final MaterialButton btnDetalles;
 
         AsesorViewHolder(@NonNull View itemView) {
             super(itemView);
             imgAvatar = itemView.findViewById(R.id.imgAvatar);
             tvNombre = itemView.findViewById(R.id.tvNombreAsesor);
-            tvEspecialidad = itemView.findViewById(R.id.tvEspecialidadAsesor);
+            tvDistrito = itemView.findViewById(R.id.tvDistritoAsesor);
             btnDetalles = itemView.findViewById(R.id.btnDetalles);
         }
     }
 }
-

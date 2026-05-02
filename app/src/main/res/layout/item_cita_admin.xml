@@ -21,8 +21,11 @@
             android:id="@+id/tvEstadoCita"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Confirmada"
-            android:textColor="@color/inmia_teal_dark"
+            android:background="@drawable/bg_cita_estado"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="@string/admin_cita_estado_demo"
+            android:textColor="@color/inmia_white"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -31,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Proyecto"
+            android:text="@string/admin_cita_proyecto_demo"
             android:textColor="#1D2735"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -41,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Cliente"
+            android:text="@string/admin_cita_cliente_demo"
             android:textColor="#6F8F8F"
             android:textSize="12sp" />
 
@@ -55,7 +58,9 @@
                 android:id="@+id/tvFechaCita"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12/05/2026"
+                android:drawableStart="@android:drawable/ic_menu_my_calendar"
+                android:drawablePadding="6dp"
+                android:text="@string/admin_cita_fecha_demo"
                 android:textColor="#1D2735"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -65,10 +70,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="10:00"
+                android:drawableStart="@android:drawable/ic_menu_recent_history"
+                android:drawablePadding="6dp"
+                android:text="@string/admin_cita_hora_demo"
                 android:textColor="#6F8F8F"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
-
