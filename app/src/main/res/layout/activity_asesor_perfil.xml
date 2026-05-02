@@ -19,8 +19,10 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:background="@drawable/gradient_background">
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_background2"
+                android:paddingTop="48dp"
+                android:paddingBottom="40dp">
 
                 <FrameLayout
                     android:id="@+id/frameNotificaciones"
@@ -87,7 +89,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mi perfil"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="@color/inmia_white"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -101,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Asesor de Empresa X"
-                    android:textColor="#5A8A8A"
+                    android:textColor="@color/inmia_white"
                     android:textSize="14sp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
@@ -110,11 +112,18 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:orientation="vertical"
+                android:paddingTop="16dp">
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="-24dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp"
                 app:cardBackgroundColor="#FFFFFF">
@@ -285,6 +294,8 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -295,8 +306,8 @@
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         app:menu="@menu/menu_asesor"
-        app:itemIconTint="@color/inmia_teal_dark"
-        app:itemTextColor="@color/inmia_teal_dark"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:elevation="12dp"/>
 

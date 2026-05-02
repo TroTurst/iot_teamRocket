@@ -7,9 +7,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AsesorChatDetailActivity extends AppCompatActivity {
 
@@ -21,6 +26,7 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
     private TextView tvChatStatus;
     private View btnBackChat;
     private View btnChatMenu;
+    private RecyclerView recyclerChatMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,7 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         tvChatStatus = findViewById(R.id.tvChatStatus);
         btnBackChat = findViewById(R.id.btnBackChat);
         btnChatMenu = findViewById(R.id.btnChatMenu);
+        recyclerChatMessages = findViewById(R.id.recyclerChatMessages);
 
         String chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
         if (chatName != null && !chatName.trim().isEmpty()) {
@@ -56,6 +63,10 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Opciones", Toast.LENGTH_SHORT).show()
             );
         }
+
+        ChatMessageAdapter adapter = new ChatMessageAdapter(buildMockMessages());
+        recyclerChatMessages.setLayoutManager(new LinearLayoutManager(this));
+        recyclerChatMessages.setAdapter(adapter);
 
         bottomNav.setSelectedItemId(R.id.nav_chat);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -83,5 +94,23 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         });
     }
 
-    
+    private List<ChatMessage> buildMockMessages() {
+        List<ChatMessage> messages = new ArrayList<>();
+        messages.add(new ChatMessage(
+            "Hola, quiero info del proyecto Catalina Sky",
+            "10:02",
+            false
+        ));
+        messages.add(new ChatMessage(
+            "Hola, claro. Te envio las opciones disponibles",
+            "10:03",
+            true
+        ));
+        messages.add(new ChatMessage(
+            "Gracias, tambien quiero agendar visita",
+            "10:04",
+            false
+        ));
+        return messages;
+    }
 }
