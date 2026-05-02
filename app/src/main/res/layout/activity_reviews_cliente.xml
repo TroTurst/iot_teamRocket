@@ -4,297 +4,284 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5FAFA"> <androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:fillViewport="true"
-    android:paddingBottom="40dp">
+    android:background="#F5FAFA">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="40dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@drawable/gradient_background">
-
-            <FrameLayout
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="Atrás"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/inmia_text" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/frameNotificaciones"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="44dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_notifications"/>
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reseñas"
-                android:textColor="@color/inmia_text"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/btnBack"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <TextView
-                android:id="@+id/tvSubGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Opiniones de la comunidad"
-                android:textColor="#5A8A8A"
-                android:textSize="14sp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tvGreeting"
-                app:layout_constraintStart_toStartOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-20dp"
-            android:background="@drawable/bg_blanco_redondeado_arriba"
-            android:paddingTop="32dp"
-            android:paddingBottom="60dp">
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutRatingSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:paddingHorizontal="24dp"
-                app:layout_constraintTop_toTopOf="parent">
+                android:background="@drawable/gradient_background2"
+                android:paddingTop="48dp"
+                android:paddingBottom="48dp">
+
+                <FrameLayout
+                    android:id="@+id/btnBack"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Atrás"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="#FFFFFF" />
+                </FrameLayout>
+
                 <TextView
-                    android:id="@+id/tvBigRating"
+                    android:id="@+id/tvGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3.9"
-                    android:textColor="#222222"
-                    android:textSize="48sp"
+                    android:text="Reseñas"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <LinearLayout
-                    android:id="@+id/llStars"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvBigRating">
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" />
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
-                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#E0E0E0" android:layout_marginStart="2dp"/>
-                </LinearLayout>
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintTop_toTopOf="@id/btnBack"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"/>
 
                 <TextView
-                    android:id="@+id/tvBasedOn"
+                    android:id="@+id/tvSubGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Basado en 40 reseñas"
-                    android:textColor="#999999"
+                    android:text="Opiniones de la comunidad"
+                    android:textColor="#FFFFFF"
+                    android:alpha="0.85"
                     android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/llStars" />
+                    android:layout_marginTop="2dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvGreeting"
+                    app:layout_constraintStart_toStartOf="@id/tvGreeting"/>
 
-                <LinearLayout
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="5" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="85" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="4" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="60" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="3" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="15" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
-                        <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="2" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="20" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                        <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="1" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="10" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
-                    </LinearLayout>
-                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/tvReviewsTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="Reseñas (40)"
-                android:textColor="#222222"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutRatingSummary" />
-
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/tvReviewsTitle">
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:paddingTop="32dp"
+                android:paddingBottom="60dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutRatingSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
                     android:paddingHorizontal="24dp"
-                    android:paddingVertical="12dp">
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/imgAvatar1"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:scaleType="centerCrop"
-                        android:background="#E0E0E0"
-                        app:shapeAppearanceOverlay="@style/RoundedCircle"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tvBigRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3.9"
+                        android:textColor="#222222"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-                    <TextView
-                        android:id="@+id/tvName1"
+
+                    <LinearLayout
+                        android:id="@+id/llStars"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Kim Borrdy"
-                        android:textColor="#222222"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@id/imgAvatar1"
-                        app:layout_constraintTop_toTopOf="@id/imgAvatar1" />
+                        android:orientation="horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvBigRating">
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" />
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#F2C94C" android:layout_marginStart="2dp"/>
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_star" app:tint="#E0E0E0" android:layout_marginStart="2dp"/>
+                    </LinearLayout>
+
                     <TextView
-                        android:id="@+id/tvScore1"
+                        android:id="@+id/tvBasedOn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4.5"
-                        android:textColor="#222222"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvName1" />
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:text="Amazing! The room is better than expected."
+                        android:layout_marginTop="8dp"
+                        android:text="Basado en 40 reseñas"
                         android:textColor="#999999"
                         android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@id/imgAvatar1"
-                        app:layout_constraintTop_toBottomOf="@id/tvName1"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/llStars" />
+
+                    <LinearLayout
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                            <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="5" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="85" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                            <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="4" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="60" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                            <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="3" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="15" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                            <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="2" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="20" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                            <TextView android:layout_width="10dp" android:layout_height="wrap_content" android:text="1" android:textSize="10sp" android:textColor="#999999" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:layout_width="match_parent" android:layout_height="wrap_content" android:progress="10" app:indicatorColor="@color/inmia_teal_dark" app:trackColor="#E0E0E0" app:trackCornerRadius="2dp" app:trackThickness="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginHorizontal="24dp"/>
+                <TextView
+                    android:id="@+id/tvReviewsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="32dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Reseñas (40)"
+                    android:textColor="#222222"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layoutRatingSummary" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="24dp"
-                    android:paddingVertical="12dp">
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/imgAvatar2"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:scaleType="centerCrop"
-                        android:background="#E0E0E0"
-                        app:shapeAppearanceOverlay="@style/RoundedCircle"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                    <TextView
-                        android:id="@+id/tvName2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Mirai Kamazuki"
-                        android:textColor="#222222"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@id/imgAvatar2"
-                        app:layout_constraintTop_toTopOf="@id/imgAvatar2" />
-                    <TextView
-                        android:id="@+id/tvScore2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5.0"
-                        android:textColor="#222222"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvName2" />
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:text="The service is on point, and I really like the facilities. Good job!"
-                        android:textColor="#999999"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toEndOf="@id/imgAvatar2"
-                        app:layout_constraintTop_toBottomOf="@id/tvName2"
-                        app:layout_constraintEnd_toEndOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/tvReviewsTitle">
 
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="12dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/imgAvatar1"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerCrop"
+                            android:background="#E0E0E0"
+                            app:shapeAppearanceOverlay="@style/RoundedCircle"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                        <TextView
+                            android:id="@+id/tvName1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Kim Borrdy"
+                            android:textColor="#222222"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/imgAvatar1"
+                            app:layout_constraintTop_toTopOf="@id/imgAvatar1" />
+                        <TextView
+                            android:id="@+id/tvScore1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4.5"
+                            android:textColor="#222222"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tvName1" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="4dp"
+                            android:text="Amazing! The room is better than expected."
+                            android:textColor="#999999"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toEndOf="@id/imgAvatar1"
+                            app:layout_constraintTop_toBottomOf="@id/tvName1"
+                            app:layout_constraintEnd_toEndOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginHorizontal="24dp"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="12dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/imgAvatar2"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerCrop"
+                            android:background="#E0E0E0"
+                            app:shapeAppearanceOverlay="@style/RoundedCircle"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                        <TextView
+                            android:id="@+id/tvName2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Mirai Kamazuki"
+                            android:textColor="#222222"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@id/imgAvatar2"
+                            app:layout_constraintTop_toTopOf="@id/imgAvatar2" />
+                        <TextView
+                            android:id="@+id/tvScore2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5.0"
+                            android:textColor="#222222"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tvName2" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="4dp"
+                            android:text="The service is on point, and I really like the facilities. Good job!"
+                            android:textColor="#999999"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toEndOf="@id/imgAvatar2"
+                            app:layout_constraintTop_toBottomOf="@id/tvName2"
+                            app:layout_constraintEnd_toEndOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
