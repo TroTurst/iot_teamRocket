@@ -319,17 +319,6 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- ── NUEVOS USUARIOS ── -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nuevos usuarios este mes"
-                    android:textColor="@color/inmia_text"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="12dp"/>
-
                 <!-- ── SECCIÓN: NUEVOS USUARIOS ESTE MES ── -->
                 <TextView
                     android:layout_width="wrap_content"
