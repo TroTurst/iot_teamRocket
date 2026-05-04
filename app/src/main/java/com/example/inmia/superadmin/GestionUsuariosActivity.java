@@ -134,35 +134,85 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
     // ── Datos hardcodeados ───────────────────────────────────────────────────
 
+    // ── Listas con datos completos ───────────────────────────────────────────
+
     private void inicializarDatos() {
         // Admins
         listaAdmins = new ArrayList<>();
         listaAdmins.add(new Usuario(
-                "Cyndy Lillibridge", "Inmobiliaria Sofia",  "CL", true,  "admin"));
+                "Cyndy Lillibridge", "Inmobiliaria Sofia", "CL", true, "admin",
+                "DNI · 87654321", "12/05/1988",
+                "cyndy@inmiasofia.com", "+51 994 123 456",
+                "Av. Santa Cruz 890, Miraflores"));
         listaAdmins.add(new Usuario(
-                "John Travolta",     "Inmobiliaria John",   "JT", true,  "admin"));
+                "John Travolta", "Inmobiliaria John", "JT", true, "admin",
+                "DNI · 12345678", "20/08/1985",
+                "john@inmiajohn.com", "+51 987 111 222",
+                "Jr. Los Olivos 123, San Borja"));
         listaAdmins.add(new Usuario(
-                "Teresa Mertens",    "Inmobiliaria I&M",    "TM", true,  "admin"));
+                "Teresa Mertens", "Inmobiliaria I&M", "TM", true, "admin",
+                "DNI · 23456789", "05/03/1990",
+                "teresa@inmiaiym.com", "+51 976 333 444",
+                "Av. Arequipa 456, Lince"));
         listaAdmins.add(new Usuario(
-                "Teddy Gallagher",   "Inmobiliaria Oasis",  "TG", false, "admin"));
+                "Teddy Gallagher", "Inmobiliaria Oasis", "TG", false, "admin",
+                "DNI · 34567890", "18/11/1982",
+                "teddy@inmiaoasis.com", "+51 965 555 666",
+                "Calle Lima 789, Pueblo Libre"));
 
         // Asesores
         listaAsesores = new ArrayList<>();
         listaAsesores.add(new Usuario(
-                "María García",      "INMIA San Isidro",    "MG", true,  "asesor"));
+                "María García", "INMIA San Isidro", "MG", true, "asesor",
+                "DNI · 45678901", "15/03/1995",
+                "m.garcia@inmia.com", "+51 987 654 321",
+                "Av. Javier Prado 1234, San Isidro"));
         listaAsesores.add(new Usuario(
-                "Carlos Ramos",      "INMIA Miraflores",    "CR", true,  "asesor"));
+                "Carlos Ramos", "INMIA Miraflores", "CR", true, "asesor",
+                "DNI · 32156789", "22/07/1990",
+                "c.ramos@inmia.com", "+51 912 345 678",
+                "Calle Las Flores 567, Miraflores"));
         listaAsesores.add(new Usuario(
-                "Juan Sánchez",      "INMIA Surco",         "JS", false, "asesor"));
+                "Juan Sánchez", "INMIA Surco", "JS", false, "asesor",
+                "DNI · 78234561", "08/11/1988",
+                "j.sanchez@inmia.com", "+51 956 789 012",
+                "Jr. Los Pinos 890, Surco"));
 
         // Clientes
         listaClientes = new ArrayList<>();
         listaClientes.add(new Usuario(
-                "Ana Torres",        "Sin inmobiliaria",    "AT", true,  "cliente"));
+                "Ana Torres", "Sin inmobiliaria", "AT", true, "cliente",
+                "DNI · 56789012", "30/06/1998",
+                "ana.torres@gmail.com", "+51 945 111 222",
+                "Av. Brasil 321, Jesús María"));
         listaClientes.add(new Usuario(
-                "Pedro Vargas",      "Sin inmobiliaria",    "PV", true,  "cliente"));
+                "Pedro Vargas", "Sin inmobiliaria", "PV", true, "cliente",
+                "DNI · 67890123", "14/02/1993",
+                "pedro.vargas@gmail.com", "+51 934 333 444",
+                "Calle Colón 654, Barranco"));
         listaClientes.add(new Usuario(
-                "Lucía Mendoza",     "Sin inmobiliaria",    "LM", false, "cliente"));
+                "Lucía Mendoza", "Sin inmobiliaria", "LM", false, "cliente",
+                "DNI · 89012345", "25/09/2000",
+                "lucia.mendoza@gmail.com", "+51 923 555 666",
+                "Jr. Cusco 987, Cercado"));
+    }
+
+// ── Ver perfil — navegar con datos completos ──────────────────────────────
+
+    @Override
+    public void onVerPerfil(Usuario usuario) {
+        Intent intent = new Intent(this, PerfilUserActivity.class);
+        intent.putExtra(PerfilUserActivity.EXTRA_NOMBRE,       usuario.getNombre());
+        intent.putExtra(PerfilUserActivity.EXTRA_EMPRESA,      usuario.getEmpresa());
+        intent.putExtra(PerfilUserActivity.EXTRA_INICIALES,    usuario.getIniciales());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOCUMENTO,    usuario.getDocumento());
+        intent.putExtra(PerfilUserActivity.EXTRA_FECHA_NAC,    usuario.getFechaNacimiento());
+        intent.putExtra(PerfilUserActivity.EXTRA_CORREO,       usuario.getCorreo());
+        intent.putExtra(PerfilUserActivity.EXTRA_TELEFONO,     usuario.getTelefono());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO,    usuario.getDomicilio());
+        intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,       usuario.isActivo());
+        intent.putExtra(PerfilUserActivity.EXTRA_ROL,          usuario.getRol());
+        startActivity(intent);
     }
 
     // ── Tabs ─────────────────────────────────────────────────────────────────
@@ -273,17 +323,5 @@ public class GestionUsuariosActivity extends AppCompatActivity
                     adapter.actualizarLista(filtrada);
                 })
                 .show();
-    }
-
-    // ── Ver perfil — callback del adapter ────────────────────────────────────
-
-    @Override
-    public void onVerPerfil(Usuario usuario) {
-        if (usuario.getNombre().equals("Cyndy Lillibridge")) {
-            startActivity(new Intent(this, PerfilUserActivity.class));
-        } else {
-            Toast.makeText(this, "Perfil no disponible",
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 }
