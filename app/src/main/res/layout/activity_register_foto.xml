@@ -21,9 +21,9 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background"
+                android:background="@drawable/gradient_background2"
                 android:paddingTop="48dp"
-                android:paddingBottom="24dp"
+                android:paddingBottom="40dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp">
 
@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Crear cuenta"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -62,10 +62,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Paso 2 de 2"
-                    android:textColor="#5A8A8A"
+                    android:textColor="#CCFFFFFF"
                     android:textSize="12sp"
                     android:layout_marginTop="12dp"
-                    app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+                    app:layout_constraintTop_toBottomOf="@id/btnBack"
                     app:layout_constraintStart_toStartOf="parent"/>
 
                 <!-- Barra de progreso al 100% -->
@@ -84,229 +84,236 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ── SECCIÓN: FOTO DE PERFIL ── -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- ── CONTENIDO — overlap redondeado ── -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="#FFFFFF">
+                android:orientation="vertical"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:paddingTop="20dp">
 
-                <LinearLayout
+                <!-- ── SECCIÓN: FOTO DE PERFIL ── -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp"
-                    android:gravity="center">
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="3dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Foto de perfil"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="20dp"/>
-
-                    <!-- Círculo de foto -->
-                    <FrameLayout
-                        android:id="@+id/frameFoto"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless">
-
-                        <!-- Fondo circular placeholder -->
-                        <ImageView
-                            android:id="@+id/imgFoto"
-                            android:layout_width="110dp"
-                            android:layout_height="110dp"
-                            android:src="@drawable/ic_perfil"
-                            android:contentDescription="Foto de perfil"
-                            android:background="@drawable/registro_bg_foto_placeholder"
-                            android:padding="24dp"
-                            app:tint="@color/inmia_teal_dark"/>
-
-                        <!-- Ícono de cámara abajo a la derecha -->
-                        <FrameLayout
-                            android:layout_width="34dp"
-                            android:layout_height="34dp"
-                            android:layout_gravity="bottom|end"
-                            android:background="@drawable/btn_rounded">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@android:drawable/ic_menu_camera"
-                                android:contentDescription="Cámara"/>
-
-                        </FrameLayout>
-                    </FrameLayout>
-
-                    <!-- Texto guía -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Toca para subir tu foto"
-                        android:textColor="#7A9E9E"
-                        android:textSize="13sp"
-                        android:layout_marginTop="12dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="JPG o PNG, máximo 5MB"
-                        android:textColor="#A0BFBF"
-                        android:textSize="11sp"
-                        android:layout_marginTop="4dp"/>
-
-                    <!-- Botones de selección -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="20dp">
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
 
-                        <!-- Desde cámara -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnCamara"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="44dp"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:text="Cámara"
-                            android:textAllCaps="false"
-                            android:textSize="13sp"
-                            android:textColor="@color/inmia_teal_dark"
-                            app:strokeColor="@color/inmia_teal_dark"
-                            app:strokeWidth="1.5dp"
-                            app:cornerRadius="12dp"
-                            app:icon="@android:drawable/ic_menu_camera"
-                            app:iconTint="@color/inmia_teal_dark"
-                            app:iconGravity="start"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Foto de perfil"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="20dp"/>
 
-                        <!-- Desde galería -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnGaleria"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="44dp"
-                            android:layout_weight="1"
-                            android:text="Galería"
-                            android:textAllCaps="false"
+                        <!-- Círculo de foto -->
+                        <FrameLayout
+                            android:id="@+id/frameFoto"
+                            android:layout_width="110dp"
+                            android:layout_height="110dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <ImageView
+                                android:id="@+id/imgFoto"
+                                android:layout_width="110dp"
+                                android:layout_height="110dp"
+                                android:src="@drawable/ic_perfil"
+                                android:contentDescription="Foto de perfil"
+                                android:background="@drawable/registro_bg_foto_placeholder"
+                                android:padding="24dp"
+                                app:tint="@color/inmia_teal_dark"/>
+
+                            <FrameLayout
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:layout_gravity="bottom|end"
+                                android:background="@drawable/btn_rounded">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@android:drawable/ic_menu_camera"
+                                    android:contentDescription="Cámara"/>
+
+                            </FrameLayout>
+                        </FrameLayout>
+
+                        <!-- Texto guía -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Toca para subir tu foto"
+                            android:textColor="#7A9E9E"
                             android:textSize="13sp"
-                            android:textColor="@color/inmia_teal_dark"
-                            app:strokeColor="@color/inmia_teal_dark"
-                            app:strokeWidth="1.5dp"
-                            app:cornerRadius="12dp"
-                            app:icon="@android:drawable/ic_menu_gallery"
-                            app:iconTint="@color/inmia_teal_dark"
-                            app:iconGravity="start"/>
+                            android:layout_marginTop="12dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="JPG o PNG, máximo 5MB"
+                            android:textColor="#A0BFBF"
+                            android:textSize="11sp"
+                            android:layout_marginTop="4dp"/>
+
+                        <!-- Botones cámara / galería -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="20dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCamara"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                android:text="Cámara"
+                                android:textAllCaps="false"
+                                android:textSize="13sp"
+                                android:textColor="@color/inmia_teal_dark"
+                                app:strokeColor="@color/inmia_teal_dark"
+                                app:strokeWidth="1.5dp"
+                                app:cornerRadius="12dp"
+                                app:icon="@android:drawable/ic_menu_camera"
+                                app:iconTint="@color/inmia_teal_dark"
+                                app:iconGravity="start"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnGaleria"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:layout_weight="1"
+                                android:text="Galería"
+                                android:textAllCaps="false"
+                                android:textSize="13sp"
+                                android:textColor="@color/inmia_teal_dark"
+                                app:strokeColor="@color/inmia_teal_dark"
+                                app:strokeWidth="1.5dp"
+                                app:cornerRadius="12dp"
+                                app:icon="@android:drawable/ic_menu_gallery"
+                                app:iconTint="@color/inmia_teal_dark"
+                                app:iconGravity="start"/>
+
+                        </LinearLayout>
 
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- ── SECCIÓN: SEGURIDAD ── -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <LinearLayout
+                <!-- ── SECCIÓN: SEGURIDAD ── -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="3dp"
+                    app:cardBackgroundColor="#FFFFFF">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Seguridad"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="16dp"/>
-
-                    <!-- Contraseña -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilPassword"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="14dp"
-                        android:hint="Contraseña"
-                        app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                        app:startIconTint="@color/inmia_teal_dark"
-                        app:passwordToggleEnabled="true"
-                        app:passwordToggleTint="@color/inmia_teal_dark"
-                        app:boxStrokeColor="@color/inmia_teal_dark"
-                        app:hintTextColor="@color/inmia_teal_dark"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etPassword"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Seguridad"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Contraseña -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilPassword"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPassword"
-                            android:imeOptions="actionNext"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_marginBottom="14dp"
+                            android:hint="Contraseña"
+                            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                            app:startIconTint="@color/inmia_teal_dark"
+                            app:passwordToggleEnabled="true"
+                            app:passwordToggleTint="@color/inmia_teal_dark"
+                            app:boxStrokeColor="@color/inmia_teal_dark"
+                            app:hintTextColor="@color/inmia_teal_dark"
+                            app:boxCornerRadiusTopStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusBottomEnd="12dp">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"
+                                android:imeOptions="actionNext"/>
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Confirmar contraseña -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilConfirmPassword"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Confirmar contraseña"
-                        app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                        app:startIconTint="@color/inmia_teal_dark"
-                        app:passwordToggleEnabled="true"
-                        app:passwordToggleTint="@color/inmia_teal_dark"
-                        app:boxStrokeColor="@color/inmia_teal_dark"
-                        app:hintTextColor="@color/inmia_teal_dark"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etConfirmPassword"
+                        <!-- Confirmar contraseña -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilConfirmPassword"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPassword"
-                            android:imeOptions="actionDone"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:hint="Confirmar contraseña"
+                            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                            app:startIconTint="@color/inmia_teal_dark"
+                            app:passwordToggleEnabled="true"
+                            app:passwordToggleTint="@color/inmia_teal_dark"
+                            app:boxStrokeColor="@color/inmia_teal_dark"
+                            app:hintTextColor="@color/inmia_teal_dark"
+                            app:boxCornerRadiusTopStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusBottomEnd="12dp">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etConfirmPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textPassword"
+                                android:imeOptions="actionDone"/>
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-            <!-- ── BOTÓN CREAR CUENTA ── -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCrearCuenta"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="20dp"
-                android:text="Crear cuenta"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@color/inmia_white"
-                app:backgroundTint="@color/inmia_teal_dark"
-                app:cornerRadius="14dp"
-                app:elevation="4dp"/>
+                <!-- ── BOTÓN CREAR CUENTA ── -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCrearCuenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="Crear cuenta"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@color/inmia_white"
+                    app:backgroundTint="@color/inmia_teal_dark"
+                    app:cornerRadius="14dp"
+                    app:elevation="4dp"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
