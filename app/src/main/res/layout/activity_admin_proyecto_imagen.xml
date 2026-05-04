@@ -7,7 +7,7 @@
     android:background="#111111">
 
     <FrameLayout
-        android:id="@+id/btnCerrarGaleria"
+        android:id="@+id/btnCerrarImagen"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
@@ -29,23 +29,23 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/tvTituloGaleria"
+        android:id="@+id/tvTituloImagen"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="12dp"
         android:gravity="center"
-        android:text="Galería"
+        android:text="Imagen"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/tvContadorGaleria"
-        app:layout_constraintStart_toEndOf="@id/btnCerrarGaleria"
+        app:layout_constraintEnd_toStartOf="@id/tvContadorImagen"
+        app:layout_constraintStart_toEndOf="@id/btnCerrarImagen"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvContadorGaleria"
+        android:id="@+id/tvContadorImagen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"
@@ -56,16 +56,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewGaleria"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerImagenes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="24dp"
-        android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTituloGaleria" />
+        app:layout_constraintTop_toBottomOf="@id/tvTituloImagen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

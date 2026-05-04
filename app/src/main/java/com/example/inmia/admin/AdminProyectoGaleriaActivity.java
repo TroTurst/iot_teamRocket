@@ -6,7 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 
@@ -15,7 +16,7 @@ public class AdminProyectoGaleriaActivity extends AppCompatActivity {
     public static final String EXTRA_TITLE = "extra_title";
     public static final String EXTRA_IMAGES = "extra_images";
 
-    private ViewPager2 viewPager;
+    private RecyclerView recyclerView;
     private TextView tvTituloGaleria;
     private TextView tvContador;
     private View btnCerrar;
@@ -30,7 +31,7 @@ public class AdminProyectoGaleriaActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_proyecto_galeria);
 
-        viewPager = findViewById(R.id.viewPagerGaleria);
+        recyclerView = findViewById(R.id.recyclerViewGaleria);
         tvTituloGaleria = findViewById(R.id.tvTituloGaleria);
         tvContador = findViewById(R.id.tvContadorGaleria);
         btnCerrar = findViewById(R.id.btnCerrarGaleria);
@@ -46,22 +47,26 @@ public class AdminProyectoGaleriaActivity extends AppCompatActivity {
         }
 
         tvTituloGaleria.setText(titulo);
-        tvContador.setText("1/" + imagenes.length);
+        tvContador.setText("Total: " + imagenes.length);
+        final String tituloFinal = titulo;
+        final int[] imagenesFinal = imagenes;
 
-        AdminProyectoGaleriaAdapter adapter = new AdminProyectoGaleriaAdapter(imagenes);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(0, false);
-
-        int finalTotal = imagenes.length;
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                tvContador.setText((position + 1) + "/" + finalTotal);
-            }
-        });
+        AdminProyectoGaleriaAdapter adapter = new AdminProyectoGaleriaAdapter(
+                imagenesFinal,
+                (imageRes, position) -> abrirImagenCompleta(imagenesFinal, position, tituloFinal)
+        );
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setHasFixedSize(true);
 
         btnCerrar.setOnClickListener(v -> finish());
     }
-}
 
+    private void abrirImagenCompleta(int[] imagenes, int selectedIndex, String titulo) {
+        Intent intent = new Intent(this, AdminProyectoImagenActivity.class);
+        intent.putExtra(AdminProyectoImagenActivity.EXTRA_IMAGES, imagenes);
+        intent.putExtra(AdminProyectoImagenActivity.EXTRA_SELECTED_INDEX, selectedIndex);
+        intent.putExtra(AdminProyectoImagenActivity.EXTRA_TITLE, titulo);
+        startActivity(intent);
+    }
+}

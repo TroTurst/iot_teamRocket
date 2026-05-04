@@ -146,6 +146,11 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
         return proyectos != null ? proyectos.size() : 0;
     }
 
+    public void setProyectos(List<Proyecto> proyectos) {
+        this.proyectos = proyectos;
+        notifyDataSetChanged();
+    }
+
     /**
      * ViewHolder que representa cada item de proyecto en la lista
      */
