@@ -2,7 +2,6 @@ package com.example.inmia.superadmin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -36,7 +35,7 @@ public class PerfilAsesorActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        setContentView(R.layout.activity_perfil_asesor_superadmin);
+        setContentView(R.layout.sa_activity_perfil_asesor);
 
         // Vincular vistas
         tvNombreAsesor    = findViewById(R.id.tvNombreAsesor);
