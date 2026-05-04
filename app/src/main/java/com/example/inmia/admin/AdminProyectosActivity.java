@@ -16,11 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
 import com.example.inmia.models.Proyecto;
-import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AdminProyectosActivity extends AppCompatActivity {
@@ -31,6 +28,8 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
     // Hardcodeado - luego vendra de Firebase
     private int totalNotificaciones = 5;
+
+    private AdminProyectoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +57,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
         // Crear lista de proyectos con datos mock (fuente única compartida con el detalle)
         List<Proyecto> proyectos = AdminProyectoRepositoryMock.getProyectos();
 
-        // Crear y asignar adapter
-        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, proyectos);
+        adapter = new AdminProyectoAdapter(this, proyectos);
         recyclerViewProyectos.setAdapter(adapter);
 
         // Botón nueva proyecto
@@ -117,6 +115,14 @@ public class AdminProyectosActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            adapter.setProyectos(AdminProyectoRepositoryMock.getProyectos());
+        }
+    }
+
     private void configurarBadge() {
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
@@ -140,5 +146,3 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
     // Datos mock se obtienen desde AdminProyectoRepositoryMock
 }
-
-

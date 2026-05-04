@@ -6,7 +6,6 @@ import com.example.inmia.models.Tipologia;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,9 +21,15 @@ public final class AdminProyectoRepositoryMock {
 
     public static List<Proyecto> getProyectos() {
         if (cache == null) {
-            cache = Collections.unmodifiableList(crearProyectosMock());
+            cache = new ArrayList<>(crearProyectosMock());
         }
         return cache;
+    }
+
+    public static void addProyecto(Proyecto proyecto) {
+        if (proyecto == null) return;
+        List<Proyecto> proyectos = getProyectos();
+        proyectos.add(0, proyecto);
     }
 
     public static Proyecto getProyectoById(String id) {
@@ -167,5 +172,3 @@ public final class AdminProyectoRepositoryMock {
         return proyectos;
     }
 }
-
-

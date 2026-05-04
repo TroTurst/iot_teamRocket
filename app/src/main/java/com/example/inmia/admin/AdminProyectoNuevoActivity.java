@@ -12,9 +12,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
+import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.models.Proyecto;
+import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
@@ -42,6 +50,23 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private TextInputEditText etBanos;
     private TextInputEditText etEstacionamiento;
     private TextInputEditText etEstado;
+    private TextInputEditText etInmobiliaria;
+
+    private SwitchMaterial switchPetFriendly;
+    private SwitchMaterial switchConAscensor;
+
+    private TextInputEditText etCertificadoEnergetico;
+    private SwitchMaterial switchPatio;
+    private SwitchMaterial switchTerraza;
+    private SwitchMaterial switchBalcon;
+    private SwitchMaterial switchAireAcondicionado;
+    private SwitchMaterial switchCocinaIntegrada;
+    private SwitchMaterial switchAmueblado;
+    private SwitchMaterial switchPersianas;
+    private TextInputEditText etClosets;
+    private TextInputEditText etTipoPiso;
+    private TextInputEditText etVentilacion;
+    private TextInputEditText etTipoAcabados;
 
     private ImageView imgPreviewHero;
     private ImageView imgMini1;
@@ -96,6 +121,23 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         etBanos = findViewById(R.id.etBanosProyecto);
         etEstacionamiento = findViewById(R.id.etEstacionamientoProyecto);
         etEstado = findViewById(R.id.etEstadoProyecto);
+        etInmobiliaria = findViewById(R.id.etInmobiliariaProyecto);
+
+        switchPetFriendly = findViewById(R.id.switchPetFriendly);
+        switchConAscensor = findViewById(R.id.switchConAscensor);
+
+        etCertificadoEnergetico = findViewById(R.id.etCertificadoEnergetico);
+        switchPatio = findViewById(R.id.switchPatio);
+        switchTerraza = findViewById(R.id.switchTerraza);
+        switchBalcon = findViewById(R.id.switchBalcon);
+        switchAireAcondicionado = findViewById(R.id.switchAireAcondicionado);
+        switchCocinaIntegrada = findViewById(R.id.switchCocinaIntegrada);
+        switchAmueblado = findViewById(R.id.switchAmueblado);
+        switchPersianas = findViewById(R.id.switchPersianas);
+        etClosets = findViewById(R.id.etClosets);
+        etTipoPiso = findViewById(R.id.etTipoPiso);
+        etVentilacion = findViewById(R.id.etVentilacion);
+        etTipoAcabados = findViewById(R.id.etTipoAcabados);
 
         imgPreviewHero = findViewById(R.id.imgPreviewHeroProyecto);
         imgMini1 = findViewById(R.id.imgMini1);
@@ -161,6 +203,11 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         });
         btnConfirmar.setOnClickListener(v -> {
             actualizarPrevisualizacion();
+            Proyecto nuevoProyecto = construirProyectoDesdeFormulario();
+            if (nuevoProyecto == null) {
+                return;
+            }
+            AdminProyectoRepositoryMock.addProyecto(nuevoProyecto);
             Toast.makeText(this, "Proyecto creado", Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -337,6 +384,105 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         finish();
     }
 
+    private Proyecto construirProyectoDesdeFormulario() {
+        String titulo = texto(etTitulo);
+        if (titulo.isEmpty()) {
+            Toast.makeText(this, "Ingresa un titulo de proyecto", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        String ubicacion = texto(etUbicacion);
+        String descripcion = texto(etDescripcion);
+        String precio = texto(etPrecio);
+        String area = texto(etArea);
+        String dormitorios = texto(etDormitorios);
+        String banos = texto(etBanos);
+        String estacionamiento = texto(etEstacionamiento);
+        String estado = texto(etEstado);
+        String inmobiliaria = texto(etInmobiliaria);
+
+        boolean petFriendly = switchPetFriendly != null && switchPetFriendly.isChecked();
+        boolean conAscensor = switchConAscensor != null && switchConAscensor.isChecked();
+
+        String certificado = texto(etCertificadoEnergetico);
+        boolean patio = switchPatio != null && switchPatio.isChecked();
+        boolean terraza = switchTerraza != null && switchTerraza.isChecked();
+        boolean balcon = switchBalcon != null && switchBalcon.isChecked();
+        boolean aireAcondicionado = switchAireAcondicionado != null && switchAireAcondicionado.isChecked();
+        boolean cocinaIntegrada = switchCocinaIntegrada != null && switchCocinaIntegrada.isChecked();
+        boolean amueblado = switchAmueblado != null && switchAmueblado.isChecked();
+        boolean persianas = switchPersianas != null && switchPersianas.isChecked();
+        int closets = parseInt(etClosets);
+        String tipoPiso = texto(etTipoPiso);
+        String ventilacion = texto(etVentilacion);
+        String tipoAcabados = texto(etTipoAcabados);
+
+        int hero = imagenHeroProyecto != 0 ? imagenHeroProyecto : R.drawable.onboarding1;
+        int[] galeria = imagenesProyecto != null && imagenesProyecto.length > 0
+                ? imagenesProyecto
+                : new int[]{hero};
+
+        String tipologiaId = "tip_" + System.currentTimeMillis();
+        Tipologia tipologia = new Tipologia(
+                tipologiaId,
+                area.isEmpty() ? "Tipologia" : area + " · " + dormitorios + "d",
+                descripcion.isEmpty() ? "Sin descripcion" : descripcion,
+                area.isEmpty() ? "-" : area,
+                dormitorios.isEmpty() ? "0" : dormitorios,
+                banos.isEmpty() ? "0" : banos,
+                estacionamiento.isEmpty() ? "-" : estacionamiento,
+                precio.isEmpty() ? "-" : precio,
+                estado.isEmpty() ? "Disponible" : estado,
+                hero,
+                galeria,
+                patio,
+                certificado.isEmpty() ? "B" : certificado,
+                terraza,
+                balcon,
+                aireAcondicionado,
+                cocinaIntegrada,
+                closets,
+                tipoPiso.isEmpty() ? "estandar" : tipoPiso,
+                amueblado,
+                ventilacion.isEmpty() ? "natural" : ventilacion,
+                persianas,
+                tipoAcabados.isEmpty() ? "basico" : tipoAcabados
+        );
+
+        List<Tipologia> tipologias = new ArrayList<>();
+        tipologias.add(tipologia);
+
+        String idProyecto = "proy_" + System.currentTimeMillis();
+        return new Proyecto(
+                idProyecto,
+                titulo,
+                ubicacion.isEmpty() ? "Sin ubicacion" : ubicacion,
+                descripcion.isEmpty() ? "Sin descripcion" : descripcion,
+                Collections.emptyList(),
+                estado.isEmpty() ? "En planos" : estado,
+                galeria,
+                hero,
+                tipologias,
+                inmobiliaria.isEmpty() ? "Inmobiliaria INMIA" : inmobiliaria,
+                conAscensor,
+                "Nuevo",
+                "",
+                "REF-" + idProyecto,
+                petFriendly,
+                Collections.emptyList(),
+                tipologia,
+                ""
+        );
+    }
+
+    private int parseInt(TextInputEditText editText) {
+        String value = texto(editText);
+        try {
+            return value.isEmpty() ? 0 : Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
     private static class TipologiaData {
         final String nombre;
         final String descripcion;
@@ -372,12 +518,3 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         }
     }
 }
-
-
-
-
-
-
-
-
-
