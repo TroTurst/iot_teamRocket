@@ -8,11 +8,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Usuario;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SuperAdminHomeActivity extends AppCompatActivity {
 
@@ -21,6 +27,11 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     private TextView tvBadgeNotif;
     private MaterialCardView cardSolicitudes;
     private MaterialButton btnVerSolicitudes;
+
+    // ← NUEVO: RecyclerView nuevos usuarios
+    private RecyclerView recyclerNuevosUsuarios;
+    private NuevoUsuarioAdapter nuevoUsuarioAdapter;
+    private List<Usuario> listaNuevosUsuarios;
 
     // Hardcodeado — luego vendrá de Firebase
     private int totalNotificaciones = 3;
@@ -36,14 +47,25 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.sa_activity_home_superadmin);
 
-        bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
-        frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
-        cardSolicitudes     = findViewById(R.id.cardSolicitudes);
-        btnVerSolicitudes   = findViewById(R.id.btnVerSolicitudes);
+        // Vincular vistas
+        bottomNav              = findViewById(R.id.bottomNavSuperAdmin);
+        frameNotificaciones    = findViewById(R.id.frameNotificaciones);
+        tvBadgeNotif           = findViewById(R.id.tvBadgeNotif);
+        cardSolicitudes        = findViewById(R.id.cardSolicitudes);
+        btnVerSolicitudes      = findViewById(R.id.btnVerSolicitudes);
+        recyclerNuevosUsuarios = findViewById(R.id.recyclerNuevosUsuarios);
 
+        // Configurar badge y solicitudes
         configurarBadge();
         configurarSolicitudes();
+
+        // ← NUEVO: Configurar RecyclerView de nuevos usuarios
+        inicializarNuevosUsuarios();
+        recyclerNuevosUsuarios.setLayoutManager(
+                new LinearLayoutManager(this));
+        nuevoUsuarioAdapter = new NuevoUsuarioAdapter(
+                this, listaNuevosUsuarios);
+        recyclerNuevosUsuarios.setAdapter(nuevoUsuarioAdapter);
 
         // Campanita
         frameNotificaciones.setOnClickListener(v -> {
@@ -53,7 +75,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
             limpiarBadge();
         });
 
-        // Card solicitudes → ir directo a Gestión de Usuarios
+        // Card solicitudes → ir a Gestión de Usuarios
         cardSolicitudes.setOnClickListener(v -> irAGestionUsuarios());
 
         // Botón "Ver solicitudes →"
@@ -69,7 +91,6 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
                 irAGestionUsuarios();
                 return true;
             } else if (id == R.id.nav_reportes) {
-                // ← CAMBIO: navega a ReportesActivity
                 startActivity(new Intent(this, ReportesActivity.class));
                 return true;
             } else if (id == R.id.nav_logs) {
@@ -83,6 +104,32 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
             return false;
         });
     }
+
+    // ── Datos hardcodeados nuevos usuarios ──────────────────────────────────
+
+    private void inicializarNuevosUsuarios() {
+        listaNuevosUsuarios = new ArrayList<>();
+        listaNuevosUsuarios.add(new Usuario(
+                "Juan Pérez",
+                "INMIA Miraflores",
+                "JP", true,
+                "admin",
+                "Hace 2 días"));
+        listaNuevosUsuarios.add(new Usuario(
+                "María García",
+                "INMIA San Isidro",
+                "MG", true,
+                "asesor",
+                "Hace 5 días"));
+        listaNuevosUsuarios.add(new Usuario(
+                "Carlos Rodríguez",
+                "Sin inmobiliaria",
+                "CR", true,
+                "cliente",
+                "Hace 1 semana"));
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private void irAGestionUsuarios() {
         startActivity(new Intent(this, GestionUsuariosActivity.class));
