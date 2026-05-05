@@ -31,10 +31,10 @@
                     android:id="@+id/imgHeaderLogo"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_logo_inmia"
+                    android:src="@drawable/ic_logo_inmia_blanco"
                     android:contentDescription="@string/cd_logo"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="48dp"
+                    android:layout_marginTop="20dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -59,7 +59,7 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginTop="44dp"
+                    android:layout_marginTop="20dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -72,6 +72,7 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
+                        android:tint="@color/inmia_white"
                         android:contentDescription="Notificaciones"/>
 
                     <TextView
@@ -96,7 +97,7 @@
                     android:layout_width="44dp"
                     android:layout_height="44dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="44dp"
+                    android:layout_marginTop="20dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/bg_profile_circle"

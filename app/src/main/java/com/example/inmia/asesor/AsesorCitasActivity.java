@@ -135,7 +135,7 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         ));
         citas.add(new CitaItem(
             "Pendiente",
-            R.color.inmia_teal_dark,
+            R.color.inmia_warning,
             1f,
             "Catalina Sky",
             "Maria Garcia",
@@ -144,7 +144,7 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         ));
         citas.add(new CitaItem(
             "Terminada",
-            R.color.inmia_text,
+            R.color.inmia_neutral,
             0.7f,
             "Pueblo Libre",
             "Carlos Ruiz",
@@ -184,6 +184,7 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         btnCalendar.setOnClickListener(v -> {
             MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Selecciona fecha")
+                .setTheme(R.style.ThemeOverlay_Inmia_DatePicker)
                 .build();
 
             picker.addOnPositiveButtonClickListener(selection -> {

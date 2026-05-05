@@ -2,15 +2,22 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import android.content.res.ColorStateList;
 
 public class AsesorCitaDetailActivity extends AppCompatActivity {
 
@@ -18,8 +25,11 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
+    private TextView tvClienteCitaDetalle;
+    private TextView btnCancelarCita;
 
     private int totalNotificaciones = 2;
+    private boolean citaCancelada = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +45,8 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         framePerfil = findViewById(R.id.framePerfil);
+        tvClienteCitaDetalle = findViewById(R.id.tvClienteCitaDetalle);
+        btnCancelarCita = findViewById(R.id.btnCancelarCita);
 
         configurarBadge();
 
@@ -74,11 +86,94 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     }
 
     public void onHablarCliente(View view) {
-        Toast.makeText(this, "Abrir chat con cliente", Toast.LENGTH_SHORT).show();
+        String cliente = obtenerNombreCliente();
+        Intent intent = new Intent(this, AsesorChatDetailActivity.class);
+        intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_NAME, cliente);
+        intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_ID, "chat_" + cliente.toLowerCase().replace(" ", "_"));
+        startActivity(intent);
     }
 
     public void onCancelarCita(View view) {
-        Toast.makeText(this, "Cancelar cita", Toast.LENGTH_SHORT).show();
+        if (citaCancelada) {
+            return;
+        }
+        mostrarDialogoAccion(
+            "Cancelar cita",
+            "Estas seguro de cancelar la cita con el cliente?",
+            "Cancelar",
+            "Volver",
+            R.color.inmia_danger,
+            R.drawable.bg_badge_red_circle,
+            () -> {
+                citaCancelada = true;
+                if (btnCancelarCita != null) {
+                    btnCancelarCita.setText("Cancelada");
+                    btnCancelarCita.setEnabled(false);
+                    btnCancelarCita.setAlpha(0.6f);
+                }
+                Toast.makeText(this, "Cita cancelada", Toast.LENGTH_SHORT).show();
+            }
+        );
+    }
+
+    private String obtenerNombreCliente() {
+        if (tvClienteCitaDetalle == null) {
+            return "Cliente";
+        }
+        String raw = tvClienteCitaDetalle.getText() == null ? "" : tvClienteCitaDetalle.getText().toString().trim();
+        if (raw.isEmpty()) {
+            return "Cliente";
+        }
+        return raw;
+    }
+
+    private void mostrarDialogoAccion(
+        String titulo,
+        String mensaje,
+        String textoConfirmar,
+        String textoCancelar,
+        int colorConfirmarRes,
+        int iconoFondoRes,
+        Runnable onConfirmar
+    ) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirmar_eliminar_chat, null);
+
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tvDialogTitle);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarDialogo);
+        MaterialButton btnConfirmar = dialogView.findViewById(R.id.btnEliminarDialogo);
+        FrameLayout frameIcon = dialogView.findViewById(R.id.frameDialogIcon);
+        ImageView imgIcon = dialogView.findViewById(R.id.imgDialogIcon);
+
+        tvDialogTitle.setText(titulo);
+        tvDialogMessage.setText(mensaje);
+        btnCancelar.setText(textoCancelar);
+        btnConfirmar.setText(textoConfirmar);
+        btnConfirmar.setBackgroundTintList(ColorStateList.valueOf(
+            ContextCompat.getColor(this, colorConfirmarRes)
+        ));
+
+        if (frameIcon != null) {
+            frameIcon.setBackgroundResource(iconoFondoRes);
+        }
+        if (imgIcon != null) {
+            imgIcon.setImageResource(android.R.drawable.ic_dialog_alert);
+        }
+
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        btnConfirmar.setOnClickListener(v -> {
+            if (onConfirmar != null) {
+                onConfirmar.run();
+            }
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void configurarBadge() {

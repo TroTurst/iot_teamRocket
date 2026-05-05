@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,8 +155,34 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
     }
 
     @Override
-    public void onChatDeleted(ChatThread thread) {
-        Toast.makeText(this, "Chat eliminado", Toast.LENGTH_SHORT).show();
+    public void onChatDeleteRequested(ChatThread thread) {
+        mostrarDialogoEliminarChat(thread);
+    }
+
+    private void mostrarDialogoEliminarChat(ChatThread thread) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_confirmar_eliminar_chat, null);
+
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tvDialogTitle);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarDialogo);
+        MaterialButton btnEliminar = dialogView.findViewById(R.id.btnEliminarDialogo);
+
+        tvDialogTitle.setText("Eliminar chat");
+        tvDialogMessage.setText("Seguro que quieres eliminar la conversación con " + thread.getName() + "?");
+
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        btnEliminar.setOnClickListener(v -> {
+            adapter.deleteThreadById(thread.getId());
+            Toast.makeText(this, "Chat eliminado", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void configurarBadge() {

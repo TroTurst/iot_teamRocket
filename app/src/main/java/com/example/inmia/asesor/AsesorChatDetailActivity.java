@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
     public static final String EXTRA_CHAT_NAME = "extra_chat_name";
     public static final String EXTRA_CHAT_ID = "extra_chat_id";
 
-    private BottomNavigationView bottomNav;
     private TextView tvChatName;
     private TextView tvChatStatus;
     private View btnBackChat;
@@ -38,7 +36,6 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_asesor_chat_detail);
 
-        bottomNav = findViewById(R.id.bottomNavAsesor);
         tvChatName = findViewById(R.id.tvChatName);
         tvChatStatus = findViewById(R.id.tvChatStatus);
         btnBackChat = findViewById(R.id.btnBackChat);
@@ -67,31 +64,6 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         ChatMessageAdapter adapter = new ChatMessageAdapter(buildMockMessages());
         recyclerChatMessages.setLayoutManager(new LinearLayoutManager(this));
         recyclerChatMessages.setAdapter(adapter);
-
-        bottomNav.setSelectedItemId(R.id.nav_chat);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(this, AsesorHomeActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(this, AsesorChatActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_citas) {
-                startActivity(new Intent(this, AsesorCitasActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_separaciones) {
-                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
-                finish();
-                return true;
-            }
-
-            return false;
-        });
     }
 
     private List<ChatMessage> buildMockMessages() {

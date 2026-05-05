@@ -42,6 +42,7 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
+                        android:tint="@color/inmia_white"
                         android:contentDescription="Notificaciones"/>
 
                     <TextView
@@ -102,7 +103,7 @@
                     android:id="@+id/tvSubGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gestion de separaciones"
+                    android:text="Solicitudes y aprobaciones"
                     android:textColor="@color/inmia_white"
                     android:textSize="14sp"
                     android:layout_marginStart="20dp"
@@ -120,7 +121,61 @@
                 android:orientation="vertical"
                 android:paddingTop="16dp">
 
+            <LinearLayout
+                android:id="@+id/layoutFiltrosSeparaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFiltroAprobada"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Aprobada"
+                    android:textAllCaps="false"
+                    android:textColor="@color/inmia_teal_dark"
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/inmia_teal_pale"
+                    app:strokeColor="@color/inmia_teal_light"
+                    app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFiltroPorConfirmar"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="15dp"
+                    android:text="Pendiente"
+                    android:textAllCaps="false"
+                    android:textColor="@color/inmia_teal_dark"
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/inmia_teal_pale"
+                    app:strokeColor="@color/inmia_teal_light"
+                    app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFiltroTerminada"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="15dp"
+                    android:text="Terminada"
+                    android:textAllCaps="false"
+                    android:textColor="@color/inmia_teal_dark"
+                    app:cornerRadius="10dp"
+                    app:backgroundTint="@color/inmia_teal_pale"
+                    app:strokeColor="@color/inmia_teal_light"
+                    app:strokeWidth="1dp"/>
+
+            </LinearLayout>
+
             <TextView
+                android:id="@+id/tvTituloPendientes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Por confirmar"
@@ -140,6 +195,7 @@
                 android:nestedScrollingEnabled="false"/>
 
             <TextView
+                android:id="@+id/tvTituloAprobadas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Aprobada"
@@ -152,6 +208,26 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerSeparacionesAprobadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:nestedScrollingEnabled="false"/>
+
+            <TextView
+                android:id="@+id/tvTituloTerminadas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terminada"
+                android:textColor="@color/inmia_text"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSeparacionesTerminadas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"

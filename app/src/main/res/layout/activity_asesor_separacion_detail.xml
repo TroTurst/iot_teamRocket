@@ -42,6 +42,7 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
+                        android:tint="@color/inmia_white"
                         android:contentDescription="Notificaciones"/>
 
                     <TextView
@@ -140,7 +141,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aprobada"
-                        android:textColor="@color/inmia_success"
+                        android:textColor="@color/inmia_info"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -154,6 +155,7 @@
                         android:layout_marginTop="4dp" />
 
                     <TextView
+                        android:id="@+id/tvClienteSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cliente: Maria Garcia"
