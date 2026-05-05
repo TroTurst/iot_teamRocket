@@ -12,6 +12,7 @@
     <color name="inmia_danger">#E53935</color>
     <color name="inmia_info">#3A8DD8</color>
     <color name="inmia_warning">#F0A500</color>
+    <color name="inmia_neutral">#9AA5A5</color>
     <color name="inmia_line">#C8E6D5</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

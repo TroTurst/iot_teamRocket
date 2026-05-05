@@ -26,4 +26,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ThemeOverlay.Inmia.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">@color/inmia_teal_dark</item>
+        <item name="colorOnPrimary">@color/inmia_white</item>
+        <item name="colorSurface">@color/inmia_white</item>
+        <item name="colorOnSurface">@color/inmia_text</item>
+    </style>
+
 </resources>

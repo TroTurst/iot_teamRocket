@@ -20,7 +20,7 @@ public class ChatThreadAdapter extends RecyclerView.Adapter<ChatThreadAdapter.Ch
 
     public interface Listener {
         void onChatSelected(ChatThread thread);
-        void onChatDeleted(ChatThread thread);
+        void onChatDeleteRequested(ChatThread thread);
     }
 
     private final List<ChatThread> allThreads;
@@ -78,14 +78,17 @@ public class ChatThreadAdapter extends RecyclerView.Adapter<ChatThreadAdapter.Ch
         notifyDataSetChanged();
     }
 
+    public void deleteThreadById(String id) {
+        removeThreadById(id);
+    }
+
     private void showMenu(View anchor, ChatThread thread) {
         PopupMenu menu = new PopupMenu(anchor.getContext(), anchor);
         menu.inflate(R.menu.menu_chat_thread);
         menu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_delete) {
-                removeThreadById(thread.getId());
                 if (listener != null) {
-                    listener.onChatDeleted(thread);
+                    listener.onChatDeleteRequested(thread);
                 }
                 return true;
             }
