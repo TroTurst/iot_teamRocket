@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
+import com.example.inmia.superadmin.db.AdminEntity;
+import com.example.inmia.superadmin.db.AppDatabase;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -217,14 +219,34 @@ public class CrearAdminActivity extends AppCompatActivity {
     }
 
     private void registrarAdmin() {
-        // TODO: guardar en Firebase cuando se integre el backend
+        String nombres   = etNombres.getText().toString().trim();
+        String apellidos = etApellidos.getText().toString().trim();
 
-        // Mostrar mensaje de éxito
+        // Guardar en Room (storage local)
+        AdminEntity admin = new AdminEntity();
+        admin.nombres          = nombres;
+        admin.apellidos        = apellidos;
+        admin.tipoDocumento    = spinnerTipoDocumento.getText().toString();
+        admin.numDocumento     = etNumDocumento.getText().toString().trim();
+        admin.fechaNacimiento  = etFechaNacimiento.getText().toString().trim();
+        admin.correo           = etCorreo.getText().toString().trim();
+        admin.telefono         = etTelefono.getText().toString().trim();
+        admin.domicilio        = etDomicilio.getText().toString().trim();
+        admin.fechaCreacion    = System.currentTimeMillis();
+        AppDatabase.getInstance(this).adminDao().insertar(admin);
+
+        // Disparar notificación
+        NotificacionHelper.enviar(
+                this,
+                "Nuevo administrador registrado",
+                nombres + " " + apellidos + " ha sido añadido al sistema.",
+                NotificacionHelper.TIPO_ADMIN_CREADO
+        );
+
         Toast.makeText(this,
                 getString(R.string.registro_exitoso),
                 Toast.LENGTH_LONG).show();
 
-        // Regresar a Gestión de Usuarios con tab Admins activo
         Intent intent = new Intent(this, GestionUsuariosActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

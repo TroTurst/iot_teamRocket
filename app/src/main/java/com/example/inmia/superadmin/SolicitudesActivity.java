@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Solicitud;
+import com.example.inmia.superadmin.NotificacionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -125,11 +126,17 @@ public class SolicitudesActivity extends AppCompatActivity
         adapter.eliminarItem(position);
         actualizarContador();
 
+        NotificacionHelper.enviar(
+                this,
+                "Asesor habilitado",
+                solicitud.getNombre() + " ha sido habilitado como asesor de ventas.",
+                NotificacionHelper.TIPO_ASESOR_HABILITADO
+        );
+
         Toast.makeText(this,
                 solicitud.getNombre() + " ha sido habilitado como asesor",
                 Toast.LENGTH_SHORT).show();
 
-        // Si no quedan solicitudes volver a gestión
         if (listaSolicitudes.isEmpty()) {
             irAGestionUsuarios();
         }
@@ -140,11 +147,17 @@ public class SolicitudesActivity extends AppCompatActivity
         adapter.eliminarItem(position);
         actualizarContador();
 
+        NotificacionHelper.enviar(
+                this,
+                "Solicitud rechazada",
+                "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
+                NotificacionHelper.TIPO_ASESOR_RECHAZADO
+        );
+
         Toast.makeText(this,
                 "Solicitud de " + solicitud.getNombre() + " rechazada",
                 Toast.LENGTH_SHORT).show();
 
-        // Si no quedan solicitudes volver a gestión
         if (listaSolicitudes.isEmpty()) {
             irAGestionUsuarios();
         }
