@@ -18,8 +18,9 @@ import com.example.inmia.superadmin.db.NotificacionSAEntity;
 
 public class NotificacionHelper {
 
-    public static final String TIPO_ADMIN_CREADO         = "admin_creado";
-    public static final String TIPO_ASESOR_HABILITADO    = "asesor_habilitado";
+    public static final String TIPO_ADMIN_CREADO            = "admin_creado";
+    public static final String TIPO_NUEVA_SOLICITUD_ASESOR  = "nueva_solicitud_asesor";
+    public static final String TIPO_ASESOR_HABILITADO       = "asesor_habilitado";
     public static final String TIPO_ASESOR_RECHAZADO     = "asesor_rechazado";
     public static final String TIPO_USUARIO_ACTIVADO     = "usuario_activado";
     public static final String TIPO_USUARIO_DESACTIVADO  = "usuario_desactivado";
