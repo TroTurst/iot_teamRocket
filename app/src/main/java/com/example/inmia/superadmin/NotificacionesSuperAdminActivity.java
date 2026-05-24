@@ -1,6 +1,5 @@
 package com.example.inmia.superadmin;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -12,15 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.example.inmia.superadmin.db.AppDatabase;
 import com.example.inmia.superadmin.db.NotificacionSAEntity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.List;
 
 public class NotificacionesSuperAdminActivity extends AppCompatActivity {
 
     private RecyclerView recyclerNotificaciones;
     private TextView tvSinNotificaciones;
-    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +30,6 @@ public class NotificacionesSuperAdminActivity extends AppCompatActivity {
 
         recyclerNotificaciones = findViewById(R.id.recyclerNotificaciones);
         tvSinNotificaciones    = findViewById(R.id.tvSinNotificaciones);
-        bottomNav              = findViewById(R.id.bottomNavSuperAdmin);
 
         // Botón atrás
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
@@ -60,31 +55,5 @@ public class NotificacionesSuperAdminActivity extends AppCompatActivity {
                     new NotificacionSAAdapter(this, lista));
         }
 
-        // Bottom navigation
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(this, SuperAdminHomeActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_usuarios) {
-                startActivity(new Intent(this, GestionUsuariosActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_reportes) {
-                startActivity(new Intent(this, ReportesActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_logs) {
-                startActivity(new Intent(this, LogsActivity.class));
-                finish();
-                return true;
-            } else if (id == R.id.nav_perfil) {
-                startActivity(new Intent(this, PerfilActivity.class));
-                finish();
-                return true;
-            }
-            return false;
-        });
     }
 }
