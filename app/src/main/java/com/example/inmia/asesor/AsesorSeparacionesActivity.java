@@ -38,6 +38,7 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
     private MaterialButton btnFiltroAprobada;
     private MaterialButton btnFiltroPorConfirmar;
     private MaterialButton btnFiltroTerminada;
+    private MaterialButton btnLimpiarFiltrosSeparaciones;
     private TextView tvTituloPendientes;
     private TextView tvTituloAprobadas;
     private TextView tvTituloTerminadas;
@@ -48,11 +49,10 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
     private SeparacionItemAdapter aprobadasAdapter;
     private SeparacionItemAdapter terminadasAdapter;
     private List<SeparacionItem> separacionesPendientes;
+    private List<SeparacionItem> separacionesAprobadas;
     private List<SeparacionItem> separacionesTerminadas;
 
     private FiltroEstado filtroActual = null;
-
-    private int totalNotificaciones = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +71,7 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         btnFiltroAprobada = findViewById(R.id.btnFiltroAprobada);
         btnFiltroPorConfirmar = findViewById(R.id.btnFiltroPorConfirmar);
         btnFiltroTerminada = findViewById(R.id.btnFiltroTerminada);
+        btnLimpiarFiltrosSeparaciones = findViewById(R.id.btnLimpiarFiltrosSeparaciones);
         tvTituloPendientes = findViewById(R.id.tvTituloPendientes);
         tvTituloAprobadas = findViewById(R.id.tvTituloAprobadas);
         tvTituloTerminadas = findViewById(R.id.tvTituloTerminadas);
@@ -78,6 +79,8 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         recyclerSeparacionesAprobadas = findViewById(R.id.recyclerSeparacionesAprobadas);
         recyclerSeparacionesTerminadas = findViewById(R.id.recyclerSeparacionesTerminadas);
 
+        AsesorSeparacionStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -89,16 +92,17 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        separacionesPendientes = buildMockPendientes();
+        separacionesPendientes = obtenerSeparacionesPorEstado("Por aprobar");
         pendientesAdapter = new SeparacionItemAdapter(separacionesPendientes, this);
         recyclerSeparacionesPendientes.setLayoutManager(new LinearLayoutManager(this));
         recyclerSeparacionesPendientes.setAdapter(pendientesAdapter);
 
-        aprobadasAdapter = new SeparacionItemAdapter(buildMockAprobadas(), this);
+        separacionesAprobadas = obtenerSeparacionesPorEstado("Aprobada");
+        aprobadasAdapter = new SeparacionItemAdapter(separacionesAprobadas, this);
         recyclerSeparacionesAprobadas.setLayoutManager(new LinearLayoutManager(this));
         recyclerSeparacionesAprobadas.setAdapter(aprobadasAdapter);
 
-        separacionesTerminadas = buildMockTerminadas();
+        separacionesTerminadas = obtenerSeparacionesPorEstado("Terminada");
         terminadasAdapter = new SeparacionItemAdapter(separacionesTerminadas, this);
         recyclerSeparacionesTerminadas.setLayoutManager(new LinearLayoutManager(this));
         recyclerSeparacionesTerminadas.setAdapter(terminadasAdapter);
@@ -138,6 +142,9 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         }
         if (btnFiltroTerminada != null) {
             btnFiltroTerminada.setOnClickListener(v -> onFiltroSeleccionado(FiltroEstado.TERMINADA));
+        }
+        if (btnLimpiarFiltrosSeparaciones != null) {
+            btnLimpiarFiltrosSeparaciones.setOnClickListener(v -> aplicarFiltro(null));
         }
 
         aplicarFiltro(null);
@@ -195,7 +202,7 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
     @Override
     public void onAction(SeparacionItem item, int position) {
         if (item.isConfirmed()) {
-            openDetallesSeparacion();
+            openDetallesSeparacion(item);
             return;
         }
         showConfirmDialog(item, position);
@@ -210,6 +217,8 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
             R.color.inmia_info,
             R.drawable.bg_badge_teal,
             () -> {
+                String key = AsesorSeparacionStore.buildKey(item.getProject());
+                AsesorSeparacionStore.updateStatus(this, key, "Aprobada", true);
                 SeparacionItem updated = new SeparacionItem(
                     "Aprobada",
                     R.color.inmia_info,
@@ -221,6 +230,16 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
                 );
                 separacionesPendientes.set(position, updated);
                 pendientesAdapter.notifyItemChanged(position);
+                AsesorNotificacionHelper.enviar(
+                    this,
+                    "Separacion aprobada",
+                    "Se aprobo la separacion de " + item.getProject(),
+                    AsesorNotificacionStore.TIPO_SEPARACION_APROBADA,
+                    AsesorNotificacionStore.TARGET_SEPARACION_DETAIL,
+                    key
+                );
+                cargarSeparaciones();
+                configurarBadge();
                 Toast.makeText(this, "Separacion confirmada", Toast.LENGTH_SHORT).show();
             }
         );
@@ -276,11 +295,43 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         dialog.show();
     }
 
-    private void openDetallesSeparacion() {
-        startActivity(new Intent(this, AsesorSeparacionDetailActivity.class));
+    private void openDetallesSeparacion(SeparacionItem item) {
+        Intent intent = new Intent(this, AsesorSeparacionDetailActivity.class);
+        String key = AsesorSeparacionStore.buildKey(item.getProject());
+        intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_KEY, key);
+        intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_PROYECTO, item.getProject());
+        intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_ESTADO, item.getStatus());
+        intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_CONFIRMADA, item.isConfirmed());
+        startActivity(intent);
+    }
+
+    private void cargarSeparaciones() {
+        if (pendientesAdapter != null) {
+            separacionesPendientes = obtenerSeparacionesPorEstado("Por aprobar");
+            pendientesAdapter.updateItems(separacionesPendientes);
+        }
+        if (aprobadasAdapter != null) {
+            separacionesAprobadas = obtenerSeparacionesPorEstado("Aprobada");
+            aprobadasAdapter.updateItems(separacionesAprobadas);
+        }
+        if (terminadasAdapter != null) {
+            separacionesTerminadas = obtenerSeparacionesPorEstado("Terminada");
+            terminadasAdapter.updateItems(separacionesTerminadas);
+        }
+    }
+
+    private List<SeparacionItem> obtenerSeparacionesPorEstado(String estado) {
+        List<SeparacionItem> items = new ArrayList<>();
+        for (SeparacionItem item : AsesorSeparacionStore.getItems(this)) {
+            if (estado.equalsIgnoreCase(item.getStatus())) {
+                items.add(item);
+            }
+        }
+        return items;
     }
 
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(android.view.View.VISIBLE);
@@ -290,49 +341,16 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(android.view.View.GONE);
     }
 
-    private List<SeparacionItem> buildMockPendientes() {
-        List<SeparacionItem> items = new ArrayList<>();
-        items.add(new SeparacionItem(
-            "Por confirmar",
-            R.color.inmia_warning,
-            "Palm Living",
-            "San Isidro, Lima",
-            "Galeon Inmobiliaria",
-            "Confirmar",
-            false
-        ));
-        return items;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarSeparaciones();
+        aplicarFiltro(filtroActual);
+        configurarBadge();
     }
 
-    private List<SeparacionItem> buildMockAprobadas() {
-        List<SeparacionItem> items = new ArrayList<>();
-        items.add(new SeparacionItem(
-            "Aprobada",
-            R.color.inmia_info,
-            "Palm Living",
-            "San Isidro, Lima",
-            "Galeon Inmobiliaria",
-            "Detalles",
-            true
-        ));
-        return items;
-    }
-
-    private List<SeparacionItem> buildMockTerminadas() {
-        List<SeparacionItem> items = new ArrayList<>();
-        items.add(new SeparacionItem(
-            "Terminada",
-            R.color.inmia_neutral,
-            "San Borja View",
-            "San Borja, Lima",
-            "Horizonte Inmobiliaria",
-            "Detalles",
-            true
-        ));
-        return items;
-    }
 }

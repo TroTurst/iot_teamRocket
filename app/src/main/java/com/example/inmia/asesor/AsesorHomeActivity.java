@@ -17,7 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAdapter.Listener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
@@ -25,9 +25,6 @@ public class AsesorHomeActivity extends AppCompatActivity {
     private FrameLayout framePerfil;
     private RecyclerView recyclerHomeCitas;
     private HomeCitaAdapter homeCitaAdapter;
-
-    // Hardcodeado — luego vendrá de Firebase
-    private int totalNotificaciones = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +42,8 @@ public class AsesorHomeActivity extends AppCompatActivity {
         framePerfil         = findViewById(R.id.framePerfil);
         recyclerHomeCitas    = findViewById(R.id.recyclerHomeCitas);
 
-        // Configurar badge inicial
+        AsesorCitaStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
         configurarBadge();
 
         // Click en campanita
@@ -58,7 +56,7 @@ public class AsesorHomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        homeCitaAdapter = new HomeCitaAdapter(buildMockHomeCitas());
+        homeCitaAdapter = new HomeCitaAdapter(AsesorCitaStore.getItems(this), this);
         recyclerHomeCitas.setLayoutManager(new LinearLayoutManager(this));
         recyclerHomeCitas.setAdapter(homeCitaAdapter);
 
@@ -86,28 +84,8 @@ public class AsesorHomeActivity extends AppCompatActivity {
         });
     }
 
-    private List<HomeCita> buildMockHomeCitas() {
-        List<HomeCita> citas = new ArrayList<>();
-        citas.add(new HomeCita(
-            "10:00",
-            "AM",
-            "Juan Perez",
-            "Edificio Catalina Sky",
-            "Pendiente",
-            false
-        ));
-        citas.add(new HomeCita(
-            "02:00",
-            "PM",
-            "Maria Garcia",
-            "Condominio Pueblo Libre",
-            "Confirmada",
-            true
-        ));
-        return citas;
-    }
-
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -117,7 +95,27 @@ public class AsesorHomeActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (homeCitaAdapter != null) {
+            homeCitaAdapter.updateItems(AsesorCitaStore.getItems(this));
+        }
+        configurarBadge();
+    }
+
+    @Override
+    public void onCitaSelected(HomeCita item) {
+        Intent intent = new Intent(this, AsesorCitaDetailActivity.class);
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CLIENTE, item.getClient());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_PROYECTO, item.getProject());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_ESTADO, item.getStatus());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CONFIRMADA, item.isConfirmed());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_KEY, AsesorCitaStore.buildKey(item.getClient(), item.getProject()));
+        startActivity(intent);
     }
 }

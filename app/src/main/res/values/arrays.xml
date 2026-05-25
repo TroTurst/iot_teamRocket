@@ -5,6 +5,7 @@
         <item>Pendiente</item>
         <item>Confirmada</item>
         <item>Terminada</item>
+        <item>Cancelada</item>
     </string-array>
 
     <string-array name="citas_proyecto_options">

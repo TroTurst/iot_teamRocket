@@ -19,6 +19,12 @@ import android.content.res.ColorStateList;
 
 public class AsesorSeparacionDetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_SEPARACION_KEY = "extra_separacion_key";
+    public static final String EXTRA_SEPARACION_CLIENTE = "extra_separacion_cliente";
+    public static final String EXTRA_SEPARACION_PROYECTO = "extra_separacion_proyecto";
+    public static final String EXTRA_SEPARACION_ESTADO = "extra_separacion_estado";
+    public static final String EXTRA_SEPARACION_CONFIRMADA = "extra_separacion_confirmada";
+
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
@@ -27,8 +33,8 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
     private FrameLayout framePerfil;
     private TextView tvClienteSeparacionDetalle;
 
-    private int totalNotificaciones = 2;
     private boolean separacionCancelada = false;
+    private String separacionKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,9 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
         framePerfil = findViewById(R.id.framePerfil);
         tvClienteSeparacionDetalle = findViewById(R.id.tvClienteSeparacionDetalle);
 
+        AsesorSeparacionStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
+        cargarDatosSeparacion();
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -106,11 +115,23 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
             R.drawable.bg_badge_red_circle,
             () -> {
                 separacionCancelada = true;
+                if (separacionKey != null) {
+                    AsesorSeparacionStore.updateStatus(this, separacionKey, "Cancelada", false);
+                }
                 tvEstadoDetalle.setText("Cancelada");
                 tvEstadoDetalle.setTextColor(ContextCompat.getColor(this, R.color.inmia_danger));
                 btnCancelarSeparacion.setText("Cancelada");
                 btnCancelarSeparacion.setEnabled(false);
                 btnCancelarSeparacion.setAlpha(0.6f);
+                AsesorNotificacionHelper.enviar(
+                    this,
+                    "Separacion cancelada",
+                    "Se cancelo la separacion de " + obtenerNombreCliente(),
+                    AsesorNotificacionStore.TIPO_SEPARACION_CANCELADA,
+                    AsesorNotificacionStore.TARGET_SEPARACION_DETAIL,
+                    separacionKey
+                );
+                configurarBadge();
             }
         );
     }
@@ -124,6 +145,33 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
             return "Cliente";
         }
         return raw.replace("Cliente:", "").trim();
+    }
+
+    private void cargarDatosSeparacion() {
+        String cliente = getIntent().getStringExtra(EXTRA_SEPARACION_CLIENTE);
+        String proyecto = getIntent().getStringExtra(EXTRA_SEPARACION_PROYECTO);
+        separacionKey = getIntent().getStringExtra(EXTRA_SEPARACION_KEY);
+
+        if ((separacionKey == null || separacionKey.trim().isEmpty()) && proyecto != null) {
+            separacionKey = proyecto.trim().toLowerCase().replace(' ', '_');
+        }
+
+        AsesorSeparacionStore.SeparacionRecord record = AsesorSeparacionStore.getRecordByKey(this, separacionKey);
+        if (record != null) {
+            if (tvClienteSeparacionDetalle != null) {
+                tvClienteSeparacionDetalle.setText("Cliente: " + record.client);
+            }
+            separacionCancelada = "Cancelada".equalsIgnoreCase(record.status);
+            if (separacionCancelada) {
+                tvEstadoDetalle.setText("Cancelada");
+                tvEstadoDetalle.setTextColor(ContextCompat.getColor(this, R.color.inmia_danger));
+                btnCancelarSeparacion.setText("Cancelada");
+                btnCancelarSeparacion.setEnabled(false);
+                btnCancelarSeparacion.setAlpha(0.6f);
+            }
+        } else if (cliente != null && tvClienteSeparacionDetalle != null) {
+            tvClienteSeparacionDetalle.setText("Cliente: " + cliente);
+        }
     }
 
     private void mostrarDialogoAccion(
@@ -177,6 +225,7 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
     }
 
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(android.view.View.VISIBLE);
@@ -186,7 +235,7 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(android.view.View.GONE);
     }
 }

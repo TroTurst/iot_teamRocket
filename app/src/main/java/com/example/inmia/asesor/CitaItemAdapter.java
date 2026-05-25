@@ -58,6 +58,12 @@ public class CitaItemAdapter extends RecyclerView.Adapter<CitaItemAdapter.CitaVi
         return items.size();
     }
 
+    public void updateItems(List<CitaItem> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
     static class CitaViewHolder extends RecyclerView.ViewHolder {
         final TextView status;
         final TextView project;

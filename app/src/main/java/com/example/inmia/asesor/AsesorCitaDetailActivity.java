@@ -21,6 +21,12 @@ import android.content.res.ColorStateList;
 
 public class AsesorCitaDetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_CITA_KEY = "extra_cita_key";
+    public static final String EXTRA_CITA_CLIENTE = "extra_cita_cliente";
+    public static final String EXTRA_CITA_PROYECTO = "extra_cita_proyecto";
+    public static final String EXTRA_CITA_ESTADO = "extra_cita_estado";
+    public static final String EXTRA_CITA_CONFIRMADA = "extra_cita_confirmada";
+
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
@@ -28,8 +34,8 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     private TextView tvClienteCitaDetalle;
     private TextView btnCancelarCita;
 
-    private int totalNotificaciones = 2;
     private boolean citaCancelada = false;
+    private String citaKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,9 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
         tvClienteCitaDetalle = findViewById(R.id.tvClienteCitaDetalle);
         btnCancelarCita = findViewById(R.id.btnCancelarCita);
 
+        AsesorCitaStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
+        cargarDatosCita();
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -106,11 +115,23 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
             R.drawable.bg_badge_red_circle,
             () -> {
                 citaCancelada = true;
+                if (citaKey != null) {
+                    AsesorCitaStore.updateStatus(this, citaKey, "Cancelada", false);
+                }
                 if (btnCancelarCita != null) {
                     btnCancelarCita.setText("Cancelada");
                     btnCancelarCita.setEnabled(false);
                     btnCancelarCita.setAlpha(0.6f);
                 }
+                AsesorNotificacionHelper.enviar(
+                    this,
+                    "Cita cancelada",
+                    "Se cancelo la cita con " + obtenerNombreCliente(),
+                    AsesorNotificacionStore.TIPO_CITA_CANCELADA,
+                    AsesorNotificacionStore.TARGET_CITA_DETAIL,
+                    citaKey
+                );
+                configurarBadge();
                 Toast.makeText(this, "Cita cancelada", Toast.LENGTH_SHORT).show();
             }
         );
@@ -125,6 +146,31 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
             return "Cliente";
         }
         return raw;
+    }
+
+    private void cargarDatosCita() {
+        String cliente = getIntent().getStringExtra(EXTRA_CITA_CLIENTE);
+        String proyecto = getIntent().getStringExtra(EXTRA_CITA_PROYECTO);
+        citaKey = getIntent().getStringExtra(EXTRA_CITA_KEY);
+
+        if ((citaKey == null || citaKey.trim().isEmpty()) && cliente != null && proyecto != null) {
+            citaKey = AsesorCitaStore.buildKey(cliente, proyecto);
+        }
+
+        AsesorCitaStore.CitaRecord record = AsesorCitaStore.getRecordByKey(this, citaKey);
+        if (record != null) {
+            if (tvClienteCitaDetalle != null) {
+                tvClienteCitaDetalle.setText(record.client);
+            }
+            citaCancelada = "Cancelada".equalsIgnoreCase(record.status);
+            if (citaCancelada && btnCancelarCita != null) {
+                btnCancelarCita.setText("Cancelada");
+                btnCancelarCita.setEnabled(false);
+                btnCancelarCita.setAlpha(0.6f);
+            }
+        } else if (cliente != null && tvClienteCitaDetalle != null) {
+            tvClienteCitaDetalle.setText(cliente);
+        }
     }
 
     private void mostrarDialogoAccion(
@@ -177,6 +223,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     }
 
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -186,7 +233,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
     }
 }

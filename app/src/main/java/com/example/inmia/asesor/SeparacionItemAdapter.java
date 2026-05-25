@@ -57,6 +57,12 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
         return items.size();
     }
 
+    public void updateItems(List<SeparacionItem> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
     static class SeparacionViewHolder extends RecyclerView.ViewHolder {
         final TextView status;
         final TextView project;

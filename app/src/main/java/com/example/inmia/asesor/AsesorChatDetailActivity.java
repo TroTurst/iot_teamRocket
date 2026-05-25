@@ -24,7 +24,12 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
     private TextView tvChatStatus;
     private View btnBackChat;
     private View btnChatMenu;
+    private View btnSend;
+    private android.widget.EditText etMessage;
     private RecyclerView recyclerChatMessages;
+    private ChatMessageAdapter adapter;
+    private String chatId;
+    private String chatName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +45,23 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
         tvChatStatus = findViewById(R.id.tvChatStatus);
         btnBackChat = findViewById(R.id.btnBackChat);
         btnChatMenu = findViewById(R.id.btnChatMenu);
+        btnSend = findViewById(R.id.btnSend);
+        etMessage = findViewById(R.id.etMessage);
         recyclerChatMessages = findViewById(R.id.recyclerChatMessages);
 
-        String chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
+        AsesorChatStore.seedIfEmpty(this);
+
+        chatId = getIntent().getStringExtra(EXTRA_CHAT_ID);
+        chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
+        if (chatId == null || chatId.trim().isEmpty()) {
+            List<ChatThread> threads = AsesorChatStore.getThreads(this);
+            chatId = threads.isEmpty() ? "chat_1" : threads.get(0).getId();
+        }
+
+        ChatThread thread = AsesorChatStore.getThreadById(this, chatId);
+        if (thread != null) {
+            chatName = thread.getName();
+        }
         if (chatName != null && !chatName.trim().isEmpty()) {
             tvChatName.setText(chatName);
         }
@@ -61,28 +80,36 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
             );
         }
 
-        ChatMessageAdapter adapter = new ChatMessageAdapter(buildMockMessages());
+        adapter = new ChatMessageAdapter(new ArrayList<>());
         recyclerChatMessages.setLayoutManager(new LinearLayoutManager(this));
         recyclerChatMessages.setAdapter(adapter);
+        refrescarMensajes();
+
+        if (btnSend != null) {
+            btnSend.setOnClickListener(v -> enviarMensaje());
+        }
     }
 
-    private List<ChatMessage> buildMockMessages() {
-        List<ChatMessage> messages = new ArrayList<>();
-        messages.add(new ChatMessage(
-            "Hola, quiero info del proyecto Catalina Sky",
-            "10:02",
-            false
-        ));
-        messages.add(new ChatMessage(
-            "Hola, claro. Te envio las opciones disponibles",
-            "10:03",
-            true
-        ));
-        messages.add(new ChatMessage(
-            "Gracias, tambien quiero agendar visita",
-            "10:04",
-            false
-        ));
-        return messages;
+    private void refrescarMensajes() {
+        if (adapter == null) {
+            return;
+        }
+        adapter.updateMessages(AsesorChatStore.getMessages(this, chatId));
+        recyclerChatMessages.scrollToPosition(Math.max(0, adapter.getItemCount() - 1));
+    }
+
+    private void enviarMensaje() {
+        if (etMessage == null) {
+            return;
+        }
+        String texto = etMessage.getText() == null ? "" : etMessage.getText().toString().trim();
+        if (texto.isEmpty()) {
+            return;
+        }
+
+        AsesorChatStore.sendMessage(this, chatId, texto);
+        etMessage.setText("");
+        refrescarMensajes();
+        Toast.makeText(this, "Mensaje enviado", Toast.LENGTH_SHORT).show();
     }
 }
