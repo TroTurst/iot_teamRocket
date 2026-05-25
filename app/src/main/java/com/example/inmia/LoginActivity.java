@@ -16,6 +16,7 @@ import com.example.inmia.superadmin.SuperAdminHomeActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import android.content.SharedPreferences;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -114,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
         String email    = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
         String password = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
 
-        // Validar email
+
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError(getString(R.string.error_email_empty));
             valido = false;
@@ -125,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
             tilEmail.setError(null);
         }
 
-        // Validar contraseña
+
         if (TextUtils.isEmpty(password)) {
             tilPassword.setError(getString(R.string.error_password_empty));
             valido = false;

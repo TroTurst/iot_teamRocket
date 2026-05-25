@@ -11,7 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
+import android.content.SharedPreferences;
+import android.widget.TextView;
 import com.example.inmia.R;
 import com.example.inmia.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -32,6 +33,7 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_perfil_cliente);
 
         inicializarVistas();
+        cargarDatosDesdePreferencias();
         configurarNavegacion();
         if (layoutCerrarSesion != null) {
             layoutCerrarSesion.setOnClickListener(v -> {
@@ -127,5 +129,37 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
                 return false;
             });
         }
+    }
+
+    private void cargarDatosDesdePreferencias() {
+        SharedPreferences prefs = getSharedPreferences("InmiaPrefs", MODE_PRIVATE);
+        String nombre = prefs.getString("nombre", "Usuario Invitado");
+        String correo = prefs.getString("correo", "correo@ejemplo.com");
+        String telefono = prefs.getString("telefono", "No registrado");
+        String ubicacion = prefs.getString("ubicacion", "No registrada");
+
+
+        TextView tvNombreUsuario = findViewById(R.id.tvNombreUsuario);
+        TextView tvNombre = findViewById(R.id.tvNombre);
+        TextView tvCorreo = findViewById(R.id.tvCorreo);
+        TextView tvTelefono = findViewById(R.id.tvTelefono);
+        TextView tvUbicacion = findViewById(R.id.tvUbicacion);
+        TextView tvAvatar = findViewById(R.id.tvAvatar);
+
+
+        tvNombreUsuario.setText(nombre);
+        tvNombre.setText(nombre);
+        tvCorreo.setText(correo);
+        tvTelefono.setText(telefono);
+        tvUbicacion.setText(ubicacion);
+
+        String[] partes = nombre.split(" ");
+        String iniciales = "";
+        if (partes.length >= 2) {
+            iniciales = partes[0].substring(0, 1) + partes[1].substring(0, 1);
+        } else if (nombre.length() >= 2) {
+            iniciales = nombre.substring(0, 2);
+        }
+        tvAvatar.setText(iniciales.toUpperCase());
     }
 }

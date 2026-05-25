@@ -1,7 +1,11 @@
 package com.example.inmia.cliente;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,9 +35,7 @@ public class ClientePagoExitosoActivity extends AppCompatActivity {
         if (btnVolverInicio != null) {
             btnVolverInicio.setOnClickListener(v -> {
                 Intent intent = new Intent(this, ClienteHomeActivity.class);
-
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
                 startActivity(intent);
                 finish();
             });
@@ -41,8 +43,29 @@ public class ClientePagoExitosoActivity extends AppCompatActivity {
 
         if (btnDescargarComprobante != null) {
             btnDescargarComprobante.setOnClickListener(v -> {
-                Toast.makeText(this, "Descargando comprobante en PDF...", Toast.LENGTH_SHORT).show();
+                descargarComprobante();
             });
         }
     }
+
+    private void descargarComprobante() {
+        String urlPdf = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+        String nombreArchivo = "Comprobante_Pago_INMIA.pdf";
+
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlPdf));
+        request.setTitle("Comprobante de Pago");
+        request.setDescription("Guardando tu recibo en PDF");
+
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, nombreArchivo);
+
+        DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        if (manager != null) {
+            manager.enqueue(request);
+            Toast.makeText(this, "Descarga iniciada", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

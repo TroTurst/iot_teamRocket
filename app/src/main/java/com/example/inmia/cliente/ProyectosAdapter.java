@@ -37,6 +37,12 @@ public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.Proy
         holder.tvPrecio.setText(proyecto.getPrecio());
         holder.tvEtiqueta.setText(proyecto.getEtiqueta());
         holder.imgProyecto.setImageResource(proyecto.getImagenResId());
+
+        holder.itemView.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), ClienteDetallePropiedadActivity.class);
+
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
