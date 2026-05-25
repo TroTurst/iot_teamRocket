@@ -18,6 +18,7 @@ public class AdminPerfilActivity extends AppCompatActivity {
     private LinearLayout layoutCerrarSesion;
     private LinearLayout layoutCambiarPassword;
     private LinearLayout layoutNotificaciones;
+    private LinearLayout layoutSimularNotificacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class AdminPerfilActivity extends AppCompatActivity {
         layoutCerrarSesion = findViewById(R.id.layoutCerrarSesion);
         layoutCambiarPassword = findViewById(R.id.layoutCambiarPassword);
         layoutNotificaciones = findViewById(R.id.layoutNotificaciones);
+        layoutSimularNotificacion = findViewById(R.id.layoutSimularNotificacion);
 
         // Cerrar sesion - AlertDialog de confirmacion
         layoutCerrarSesion.setOnClickListener(v -> mostrarDialogoCerrarSesion());
@@ -44,6 +46,10 @@ public class AdminPerfilActivity extends AppCompatActivity {
         // Notificaciones
         layoutNotificaciones.setOnClickListener(v ->
                 Toast.makeText(this, "Configurar notificaciones", Toast.LENGTH_SHORT).show());
+
+        // Simular notificacion
+        layoutSimularNotificacion.setOnClickListener(v ->
+                startActivity(new Intent(this, AdminSimularNotificacionesActivity.class)));
 
         // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_perfil);
@@ -92,5 +98,3 @@ public class AdminPerfilActivity extends AppCompatActivity {
                 .show();
     }
 }
-
-
