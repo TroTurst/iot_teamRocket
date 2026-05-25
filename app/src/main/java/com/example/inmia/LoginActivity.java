@@ -11,6 +11,7 @@ import com.example.inmia.admin.AdminHomeActivity;
 import com.example.inmia.admin.RegistroInmobiliariaActivity;
 import com.example.inmia.asesor.AsesorHomeActivity;
 import com.example.inmia.cliente.ClienteHomeActivity;
+import com.example.inmia.superadmin.SessionManager;
 import com.example.inmia.superadmin.SuperAdminHomeActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -55,8 +56,11 @@ public class LoginActivity extends AppCompatActivity {
                     // Credenciales incorrectas
                     tilPassword.setError(getString(R.string.error_credenciales));
                 } else {
-                    // Credenciales correctas → redirigir según rol
+                    // Credenciales correctas → guardar sesión si es superadmin
                     tilPassword.setError(null);
+                    if (UserCheck.ROL_SUPERADMIN.equals(rol)) {
+                        new SessionManager(this).guardarSesion("Superadmin", email);
+                    }
                     redirigirSegunRol(rol);
                 }
             }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
+import com.example.inmia.superadmin.NotificacionHelper;
 
 import java.util.List;
 
@@ -92,10 +93,22 @@ public class UsuarioAdapter extends
                             .setTitle(titulo)
                             .setMessage(mensaje)
                             .setPositiveButton(btnOk, (dialog, which) -> {
-                                // Confirmar — actualizar modelo
                                 usuario.setActivo(isChecked);
                                 notifyItemChanged(position);
-                                // TODO: actualizar en Firebase
+
+                                // Notificación al activar / desactivar
+                                String tipoNotif = isChecked
+                                        ? NotificacionHelper.TIPO_USUARIO_ACTIVADO
+                                        : NotificacionHelper.TIPO_USUARIO_DESACTIVADO;
+                                String textoNotif = isChecked
+                                        ? usuario.getNombre() + " ha sido activado."
+                                        : usuario.getNombre() + " ha sido desactivado.";
+                                NotificacionHelper.enviar(
+                                        context,
+                                        isChecked ? "Usuario activado" : "Usuario desactivado",
+                                        textoNotif,
+                                        tipoNotif
+                                );
                             })
                             .setNegativeButton("Cancelar", (dialog, which) -> {
                                 // Revertir switch sin disparar listener

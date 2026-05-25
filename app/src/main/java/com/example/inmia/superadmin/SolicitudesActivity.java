@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Solicitud;
+import com.example.inmia.superadmin.db.AppDatabase;
+import com.example.inmia.superadmin.db.SolicitudEntity;
+import com.example.inmia.superadmin.NotificacionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -83,71 +86,95 @@ public class SolicitudesActivity extends AppCompatActivity
 
     private void inicializarDatos() {
         listaSolicitudes = new ArrayList<>();
-        listaSolicitudes.add(new Solicitud(
-                "María García López",
-                "INMIA San Isidro",
-                "MG",
-                "m.garcia@inmia.com",
-                "+51 987 654 321",
-                "Hace 2 horas",
-                "DNI · 45678901",
-                "15/03/1995",
-                "Av. Javier Prado 1234, San Isidro"
-        ));
-        listaSolicitudes.add(new Solicitud(
-                "Carlos Ramos Torres",
-                "INMIA Miraflores",
-                "CR",
-                "c.ramos@inmia.com",
-                "+51 912 345 678",
-                "Hace 5 horas",
-                "DNI · 32156789",
-                "22/07/1990",
-                "Calle Las Flores 567, Miraflores"
-        ));
-        listaSolicitudes.add(new Solicitud(
-                "Juan Sánchez Pérez",
-                "INMIA Surco",
-                "JS",
-                "j.sanchez@inmia.com",
-                "+51 956 789 012",
-                "Ayer 11:30 pm",
-                "DNI · 78234561",
-                "08/11/1988",
-                "Jr. Los Pinos 890, Surco"
-        ));
+
+        // Cargar solicitudes reales desde Room (creadas por el admin de inmobiliaria)
+        List<SolicitudEntity> desdeRoom =
+                AppDatabase.getInstance(this).solicitudDao().obtenerPendientes();
+        for (SolicitudEntity e : desdeRoom) {
+            String iniciales = obtenerIniciales(e.nombre, e.apellidos);
+            listaSolicitudes.add(new Solicitud(
+                    e.id,
+                    e.nombre + " " + e.apellidos,
+                    e.inmobiliaria,
+                    iniciales,
+                    e.correo,
+                    e.telefono,
+                    "Recién enviado",
+                    e.documento,
+                    e.fechaNac,
+                    e.domicilio
+            ));
+        }
+
+        // Si no hay solicitudes reales, mostrar datos de demo
+        if (listaSolicitudes.isEmpty()) {
+            listaSolicitudes.add(new Solicitud(
+                    "María García López", "INMIA San Isidro", "MG",
+                    "m.garcia@inmia.com", "+51 987 654 321", "Hace 2 horas",
+                    "DNI · 45678901", "15/03/1995", "Av. Javier Prado 1234, San Isidro"));
+            listaSolicitudes.add(new Solicitud(
+                    "Carlos Ramos Torres", "INMIA Miraflores", "CR",
+                    "c.ramos@inmia.com", "+51 912 345 678", "Hace 5 horas",
+                    "DNI · 32156789", "22/07/1990", "Calle Las Flores 567, Miraflores"));
+            listaSolicitudes.add(new Solicitud(
+                    "Juan Sánchez Pérez", "INMIA Surco", "JS",
+                    "j.sanchez@inmia.com", "+51 956 789 012", "Ayer 11:30 pm",
+                    "DNI · 78234561", "08/11/1988", "Jr. Los Pinos 890, Surco"));
+        }
+    }
+
+    private String obtenerIniciales(String nombre, String apellidos) {
+        String n = (nombre != null && !nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)) : "";
+        String a = (apellidos != null && !apellidos.isEmpty()) ? String.valueOf(apellidos.charAt(0)) : "";
+        return (n + a).toUpperCase();
     }
 
     // ── Callbacks del adapter ────────────────────────────────────────────────
 
     @Override
     public void onHabilitar(Solicitud solicitud, int position) {
+        if (solicitud.getRoomId() > 0) {
+            AppDatabase.getInstance(this)
+                    .solicitudDao().marcarProcesada(solicitud.getRoomId());
+        }
         adapter.eliminarItem(position);
         actualizarContador();
+
+        NotificacionHelper.enviar(
+                this,
+                "Asesor habilitado",
+                solicitud.getNombre() + " ha sido habilitado como asesor de ventas.",
+                NotificacionHelper.TIPO_ASESOR_HABILITADO
+        );
 
         Toast.makeText(this,
                 solicitud.getNombre() + " ha sido habilitado como asesor",
                 Toast.LENGTH_SHORT).show();
 
-        // Si no quedan solicitudes volver a gestión
-        if (listaSolicitudes.isEmpty()) {
-            irAGestionUsuarios();
-        }
+        if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
     }
 
     @Override
     public void onRechazar(Solicitud solicitud, int position) {
+        if (solicitud.getRoomId() > 0) {
+            AppDatabase.getInstance(this)
+                    .solicitudDao().marcarProcesada(solicitud.getRoomId());
+        }
         adapter.eliminarItem(position);
         actualizarContador();
+
+        NotificacionHelper.enviar(
+                this,
+                "Solicitud rechazada",
+                "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
+                NotificacionHelper.TIPO_ASESOR_RECHAZADO
+        );
 
         Toast.makeText(this,
                 "Solicitud de " + solicitud.getNombre() + " rechazada",
                 Toast.LENGTH_SHORT).show();
 
-        // Si no quedan solicitudes volver a gestión
-        if (listaSolicitudes.isEmpty()) {
-            irAGestionUsuarios();
-        }
+        if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
     }
 
     @Override

@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inmia">
         <activity
+            android:name=".superadmin.NotificacionesSuperAdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".superadmin.PerfilUserActivity"
             android:exported="false" />
         <activity

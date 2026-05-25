@@ -1,18 +1,23 @@
 package com.example.inmia.superadmin;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
+import com.example.inmia.superadmin.db.AppDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -33,9 +38,13 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     private NuevoUsuarioAdapter nuevoUsuarioAdapter;
     private List<Usuario> listaNuevosUsuarios;
 
-    // Hardcodeado — luego vendrá de Firebase
-    private int totalNotificaciones = 3;
-    private int totalSolicitudes    = 3;
+    private int totalSolicitudes = 3;
+
+    private final ActivityResultLauncher<String> permisosLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    granted -> NotificacionHelper.crearCanal(this)
+            );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,9 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         btnVerSolicitudes      = findViewById(R.id.btnVerSolicitudes);
         recyclerNuevosUsuarios = findViewById(R.id.recyclerNuevosUsuarios);
 
+        // Solicitar permiso de notificaciones (Android 13+)
+        solicitarPermisoNotificaciones();
+
         // Configurar badge y solicitudes
         configurarBadge();
         configurarSolicitudes();
@@ -67,12 +79,9 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
                 this, listaNuevosUsuarios);
         recyclerNuevosUsuarios.setAdapter(nuevoUsuarioAdapter);
 
-        // Campanita
+        // Campanita → ir a la vista de notificaciones
         frameNotificaciones.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Tienes " + totalNotificaciones + " notificaciones",
-                    Toast.LENGTH_SHORT).show();
-            limpiarBadge();
+            startActivity(new Intent(this, NotificacionesSuperAdminActivity.class));
         });
 
         // Card solicitudes → ir a Gestión de Usuarios
@@ -157,16 +166,29 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     }
 
     private void configurarBadge() {
-        if (totalNotificaciones > 0) {
-            tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
+        int count = AppDatabase.getInstance(this)
+                .notificacionDao().contarNoLeidas();
+        if (count > 0) {
+            tvBadgeNotif.setText(String.valueOf(count));
             tvBadgeNotif.setVisibility(View.VISIBLE);
         } else {
             tvBadgeNotif.setVisibility(View.GONE);
         }
     }
 
-    private void limpiarBadge() {
-        totalNotificaciones = 0;
-        tvBadgeNotif.setVisibility(View.GONE);
+    private void solicitarPermisoNotificaciones() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) {
+            NotificacionHelper.crearCanal(this);
+        } else {
+            permisosLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        configurarBadge();
     }
 }
