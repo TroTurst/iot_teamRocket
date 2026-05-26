@@ -146,6 +146,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvProyectoSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Palm Living"
@@ -178,6 +179,7 @@
                             android:contentDescription="Ubicacion" />
 
                         <TextView
+                            android:id="@+id/tvUbicacionSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -188,6 +190,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tvEmpresaSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Galeon Inmobiliaria"
@@ -244,6 +247,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvFechaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="19/04/2026"
@@ -276,6 +280,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvClienteReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Maria Garcia"
@@ -308,6 +313,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvDepartamentoReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A-402"
@@ -340,6 +346,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvTelefonoReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0214345646"

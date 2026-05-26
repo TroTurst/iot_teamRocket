@@ -58,8 +58,9 @@ public class AsesorChatDetailActivity extends AppCompatActivity {
             chatId = threads.isEmpty() ? "chat_1" : threads.get(0).getId();
         }
 
-        ChatThread thread = AsesorChatStore.getThreadById(this, chatId);
+        ChatThread thread = AsesorChatStore.ensureThread(this, chatId, chatName, R.drawable.ic_perfil);
         if (thread != null) {
+            chatId = thread.getId();
             chatName = thread.getName();
         }
         if (chatName != null && !chatName.trim().isEmpty()) {

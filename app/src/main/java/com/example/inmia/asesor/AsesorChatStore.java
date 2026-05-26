@@ -92,6 +92,25 @@ public final class AsesorChatStore {
         return null;
     }
 
+    public static ChatThread ensureThread(Context context, String id, String name, int avatarResId) {
+        if (id == null || id.trim().isEmpty()) {
+            return null;
+        }
+
+        ChatThread current = getThreadById(context, id);
+        if (current != null) {
+            return current;
+        }
+
+        String resolvedName = name == null || name.trim().isEmpty() ? "Chat" : name.trim();
+        ChatThread created = new ChatThread(id, resolvedName, "Nuevo chat", timeFormat().format(System.currentTimeMillis()), avatarResId);
+
+        List<ChatThread> threads = getThreads(context);
+        threads.add(0, created);
+        saveThreads(context, threads);
+        return created;
+    }
+
     public static List<ChatMessage> getMessages(Context context, String threadId) {
         List<ChatMessage> messages = new ArrayList<>();
         String raw = prefs(context).getString(KEY_MESSAGES_PREFIX + threadId, "[]");
@@ -114,6 +133,8 @@ public final class AsesorChatStore {
         if (threadId == null || text == null || text.trim().isEmpty()) {
             return;
         }
+
+        ensureThread(context, threadId, null, R.drawable.ic_perfil);
 
         List<ChatMessage> messages = getMessages(context, threadId);
         String now = timeFormat().format(System.currentTimeMillis());

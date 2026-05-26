@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +23,9 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
     private RecyclerView recyclerHomeCitas;
+    private TextView tvCitasHoyCount;
+    private TextView tvSeparacionesCount;
+    private TextView tvProyectosCount;
     private HomeCitaAdapter homeCitaAdapter;
 
     @Override
@@ -41,6 +43,9 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
         framePerfil         = findViewById(R.id.framePerfil);
         recyclerHomeCitas    = findViewById(R.id.recyclerHomeCitas);
+        tvCitasHoyCount = findViewById(R.id.tvCitasHoyCount);
+        tvSeparacionesCount = findViewById(R.id.tvSeparacionesCount);
+        tvProyectosCount = findViewById(R.id.tvProyectosCount);
 
         AsesorCitaStore.seedIfEmpty(this);
         AsesorNotificacionStore.seedIfEmpty(this);
@@ -56,9 +61,10 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        homeCitaAdapter = new HomeCitaAdapter(AsesorCitaStore.getItems(this), this);
+        homeCitaAdapter = new HomeCitaAdapter(AsesorCitaStore.getTodayItems(this), this);
         recyclerHomeCitas.setLayoutManager(new LinearLayoutManager(this));
         recyclerHomeCitas.setAdapter(homeCitaAdapter);
+        actualizarResumen();
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -103,9 +109,22 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
     protected void onResume() {
         super.onResume();
         if (homeCitaAdapter != null) {
-            homeCitaAdapter.updateItems(AsesorCitaStore.getItems(this));
+            homeCitaAdapter.updateItems(AsesorCitaStore.getTodayItems(this));
         }
+        actualizarResumen();
         configurarBadge();
+    }
+
+    private void actualizarResumen() {
+        if (tvCitasHoyCount != null) {
+            tvCitasHoyCount.setText(String.valueOf(AsesorCitaStore.getTodayItems(this).size()));
+        }
+        if (tvSeparacionesCount != null) {
+            tvSeparacionesCount.setText(String.valueOf(AsesorSeparacionStore.countByStatus(this, "Aprobada")));
+        }
+        if (tvProyectosCount != null) {
+            tvProyectosCount.setText(String.valueOf(AsesorSeparacionStore.getItems(this).size()));
+        }
     }
 
     @Override

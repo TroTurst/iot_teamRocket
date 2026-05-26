@@ -31,6 +31,17 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
+    private TextView tvEstadoCitaDetalle;
+    private TextView tvProyectoCitaDetalle;
+    private TextView tvUbicacionCitaDetalle;
+    private TextView tvFechaCitaDetalle;
+    private TextView tvProyectoGuiaCitaDetalle;
+    private TextView tvUbicacionGuiaCitaDetalle;
+    private TextView tvEmpresaCitaDetalle;
+    private TextView tvFechaReservaCitaDetalle;
+    private TextView tvClienteReservaCitaDetalle;
+    private TextView tvDepartamentoReservaCitaDetalle;
+    private TextView tvTelefonoReservaCitaDetalle;
     private TextView tvClienteCitaDetalle;
     private TextView btnCancelarCita;
 
@@ -51,6 +62,17 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         framePerfil = findViewById(R.id.framePerfil);
+        tvEstadoCitaDetalle = findViewById(R.id.tvEstadoCitaDetalle);
+        tvProyectoCitaDetalle = findViewById(R.id.tvProyectoCitaDetalle);
+        tvUbicacionCitaDetalle = findViewById(R.id.tvUbicacionCitaDetalle);
+        tvFechaCitaDetalle = findViewById(R.id.tvFechaCitaDetalle);
+        tvProyectoGuiaCitaDetalle = findViewById(R.id.tvProyectoGuiaCitaDetalle);
+        tvUbicacionGuiaCitaDetalle = findViewById(R.id.tvUbicacionGuiaCitaDetalle);
+        tvEmpresaCitaDetalle = findViewById(R.id.tvEmpresaCitaDetalle);
+        tvFechaReservaCitaDetalle = findViewById(R.id.tvFechaReservaCitaDetalle);
+        tvClienteReservaCitaDetalle = findViewById(R.id.tvClienteReservaCitaDetalle);
+        tvDepartamentoReservaCitaDetalle = findViewById(R.id.tvDepartamentoReservaCitaDetalle);
+        tvTelefonoReservaCitaDetalle = findViewById(R.id.tvTelefonoReservaCitaDetalle);
         tvClienteCitaDetalle = findViewById(R.id.tvClienteCitaDetalle);
         btnCancelarCita = findViewById(R.id.btnCancelarCita);
 
@@ -162,6 +184,40 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
             if (tvClienteCitaDetalle != null) {
                 tvClienteCitaDetalle.setText(record.client);
             }
+            if (tvEstadoCitaDetalle != null) {
+                tvEstadoCitaDetalle.setText(record.status);
+                AsesorEstadoBadgeStyle.apply(this, tvEstadoCitaDetalle, record.status);
+            }
+            if (tvProyectoCitaDetalle != null) {
+                tvProyectoCitaDetalle.setText(record.project);
+            }
+            if (tvUbicacionCitaDetalle != null) {
+                tvUbicacionCitaDetalle.setText(record.location);
+            }
+            if (tvFechaCitaDetalle != null) {
+                tvFechaCitaDetalle.setText("Fecha " + record.date.replace('-', '/') + " - " + record.time + record.meridian);
+            }
+            if (tvProyectoGuiaCitaDetalle != null) {
+                tvProyectoGuiaCitaDetalle.setText(record.project);
+            }
+            if (tvUbicacionGuiaCitaDetalle != null) {
+                tvUbicacionGuiaCitaDetalle.setText(record.location);
+            }
+            if (tvEmpresaCitaDetalle != null) {
+                tvEmpresaCitaDetalle.setText(record.company);
+            }
+            if (tvFechaReservaCitaDetalle != null) {
+                tvFechaReservaCitaDetalle.setText(record.date.replace('-', '/'));
+            }
+            if (tvClienteReservaCitaDetalle != null) {
+                tvClienteReservaCitaDetalle.setText(record.client);
+            }
+            if (tvDepartamentoReservaCitaDetalle != null) {
+                tvDepartamentoReservaCitaDetalle.setText(record.project);
+            }
+            if (tvTelefonoReservaCitaDetalle != null) {
+                tvTelefonoReservaCitaDetalle.setText(buildPhoneFromKey(citaKey));
+            }
             citaCancelada = "Cancelada".equalsIgnoreCase(record.status);
             if (citaCancelada && btnCancelarCita != null) {
                 btnCancelarCita.setText("Cancelada");
@@ -171,6 +227,14 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
         } else if (cliente != null && tvClienteCitaDetalle != null) {
             tvClienteCitaDetalle.setText(cliente);
         }
+    }
+
+    private String buildPhoneFromKey(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            return "000000000";
+        }
+        int hash = Math.abs(key.hashCode());
+        return String.format(java.util.Locale.US, "9%08d", hash % 100000000);
     }
 
     private void mostrarDialogoAccion(

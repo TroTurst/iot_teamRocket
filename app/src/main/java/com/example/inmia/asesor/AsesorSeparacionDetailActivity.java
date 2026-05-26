@@ -29,6 +29,14 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private TextView tvEstadoDetalle;
+    private TextView tvEstadoSeparacionDetalle;
+    private TextView tvProyectoSeparacionDetalle;
+    private TextView tvUbicacionSeparacionDetalle;
+    private TextView tvEmpresaSeparacionDetalle;
+    private TextView tvFechaSeparacionDetalle;
+    private TextView tvClienteReservaSeparacionDetalle;
+    private TextView tvDepartamentoReservaSeparacionDetalle;
+    private TextView tvTelefonoReservaSeparacionDetalle;
     private TextView btnCancelarSeparacion;
     private FrameLayout framePerfil;
     private TextView tvClienteSeparacionDetalle;
@@ -50,6 +58,14 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         tvEstadoDetalle = findViewById(R.id.tvEstadoSeparacionDetalle);
+        tvEstadoSeparacionDetalle = findViewById(R.id.tvEstadoSeparacionDetalle);
+        tvProyectoSeparacionDetalle = findViewById(R.id.tvProyectoSeparacionDetalle);
+        tvUbicacionSeparacionDetalle = findViewById(R.id.tvUbicacionSeparacionDetalle);
+        tvEmpresaSeparacionDetalle = findViewById(R.id.tvEmpresaSeparacionDetalle);
+        tvFechaSeparacionDetalle = findViewById(R.id.tvFechaSeparacionDetalle);
+        tvClienteReservaSeparacionDetalle = findViewById(R.id.tvClienteReservaSeparacionDetalle);
+        tvDepartamentoReservaSeparacionDetalle = findViewById(R.id.tvDepartamentoReservaSeparacionDetalle);
+        tvTelefonoReservaSeparacionDetalle = findViewById(R.id.tvTelefonoReservaSeparacionDetalle);
         btnCancelarSeparacion = findViewById(R.id.btnCancelarSeparacion);
         framePerfil = findViewById(R.id.framePerfil);
         tvClienteSeparacionDetalle = findViewById(R.id.tvClienteSeparacionDetalle);
@@ -158,8 +174,33 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
 
         AsesorSeparacionStore.SeparacionRecord record = AsesorSeparacionStore.getRecordByKey(this, separacionKey);
         if (record != null) {
+            if (tvEstadoSeparacionDetalle != null) {
+                tvEstadoSeparacionDetalle.setText(record.status);
+                AsesorEstadoBadgeStyle.apply(this, tvEstadoSeparacionDetalle, record.status);
+            }
+            if (tvProyectoSeparacionDetalle != null) {
+                tvProyectoSeparacionDetalle.setText(record.project);
+            }
+            if (tvUbicacionSeparacionDetalle != null) {
+                tvUbicacionSeparacionDetalle.setText(record.location);
+            }
+            if (tvEmpresaSeparacionDetalle != null) {
+                tvEmpresaSeparacionDetalle.setText(record.company);
+            }
             if (tvClienteSeparacionDetalle != null) {
                 tvClienteSeparacionDetalle.setText("Cliente: " + record.client);
+            }
+            if (tvFechaSeparacionDetalle != null) {
+                tvFechaSeparacionDetalle.setText(buildDateFromKey(record.key));
+            }
+            if (tvClienteReservaSeparacionDetalle != null) {
+                tvClienteReservaSeparacionDetalle.setText(record.client);
+            }
+            if (tvDepartamentoReservaSeparacionDetalle != null) {
+                tvDepartamentoReservaSeparacionDetalle.setText(record.project);
+            }
+            if (tvTelefonoReservaSeparacionDetalle != null) {
+                tvTelefonoReservaSeparacionDetalle.setText(buildPhoneFromKey(record.key));
             }
             separacionCancelada = "Cancelada".equalsIgnoreCase(record.status);
             if (separacionCancelada) {
@@ -172,6 +213,23 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
         } else if (cliente != null && tvClienteSeparacionDetalle != null) {
             tvClienteSeparacionDetalle.setText("Cliente: " + cliente);
         }
+    }
+
+    private String buildDateFromKey(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            return "--/--/----";
+        }
+        int day = Math.abs(key.hashCode() % 28) + 1;
+        int month = Math.abs((key.hashCode() / 31) % 12) + 1;
+        return String.format(java.util.Locale.US, "%02d/%02d/2026", day, month);
+    }
+
+    private String buildPhoneFromKey(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            return "000000000";
+        }
+        int hash = Math.abs(key.hashCode());
+        return String.format(java.util.Locale.US, "9%08d", hash % 100000000);
     }
 
     private void mostrarDialogoAccion(

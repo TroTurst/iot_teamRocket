@@ -47,6 +47,16 @@ public final class AsesorSeparacionStore {
         return items;
     }
 
+    public static int countByStatus(Context context, String status) {
+        int count = 0;
+        for (SeparacionRecord record : getRecords(context)) {
+            if (status != null && status.equalsIgnoreCase(record.status)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static SeparacionRecord getRecordByKey(Context context, String key) {
         if (key == null) {
             return null;
@@ -151,7 +161,7 @@ public final class AsesorSeparacionStore {
                 colorRes = com.example.inmia.R.color.inmia_danger;
                 actionLabel = "Detalles";
             } else if ("Aprobada".equalsIgnoreCase(status)) {
-                colorRes = com.example.inmia.R.color.inmia_info;
+                colorRes = com.example.inmia.R.color.inmia_success;
                 actionLabel = "Detalles";
             } else if ("Terminada".equalsIgnoreCase(status)) {
                 colorRes = com.example.inmia.R.color.inmia_neutral;

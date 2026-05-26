@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -43,17 +42,7 @@ public class HomeCitaAdapter extends RecyclerView.Adapter<HomeCitaAdapter.HomeCi
         holder.client.setText(item.getClient());
         holder.project.setText(item.getProject());
         holder.status.setText(item.getStatus());
-
-        if ("Cancelada".equalsIgnoreCase(item.getStatus())) {
-            holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
-            holder.status.setBackgroundResource(R.drawable.bg_badge_red_circle);
-        } else if (item.isConfirmed()) {
-            holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
-            holder.status.setBackgroundResource(R.drawable.btn_rounded);
-        } else {
-            holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_teal_dark));
-            holder.status.setBackgroundResource(R.drawable.badge_outline);
-        }
+        AsesorEstadoBadgeStyle.apply(holder.itemView.getContext(), holder.status, item.getStatus());
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

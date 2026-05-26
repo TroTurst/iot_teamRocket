@@ -7,8 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class AsesorCitaStore {
 
@@ -22,17 +26,21 @@ public final class AsesorCitaStore {
         List<CitaRecord> records = getRecords(context);
         boolean changed = false;
 
-        changed |= ensureRecord(records, new CitaRecord("juan_perez_edificio_catalina_sky", "Juan Perez", "Edificio Catalina Sky", "10:00", "AM", "Pendiente", false));
-        changed |= ensureRecord(records, new CitaRecord("sofia_martinez_catalina_sky", "Sofia Martinez", "Edificio Catalina Sky", "12:30", "PM", "Pendiente", false));
-        changed |= ensureRecord(records, new CitaRecord("roberto_chavez_san_isidro", "Roberto Chavez", "San Isidro Prime", "05:15", "PM", "Pendiente", false));
+        String today = todayIso();
+        String yesterday = offsetIso(-1);
+        String tomorrow = offsetIso(1);
 
-        changed |= ensureRecord(records, new CitaRecord("maria_garcia_condominio_pueblo_libre", "Maria Garcia", "Condominio Pueblo Libre", "02:00", "PM", "Confirmada", true));
-        changed |= ensureRecord(records, new CitaRecord("ana_torres_miraflores", "Ana Torres", "Miraflores Life", "11:00", "AM", "Confirmada", true));
-        changed |= ensureRecord(records, new CitaRecord("luis_rodriguez_san_isidro", "Luis Rodriguez", "San Isidro Heights", "03:45", "PM", "Confirmada", true));
+        changed |= ensureRecord(records, new CitaRecord("juan_perez_edificio_catalina_sky", "Juan Perez", "Edificio Catalina Sky", "10:00", "AM", "Pendiente", false, today, "Av. Los Alamos 214", "Catalina Sky Inmobiliaria"));
+        changed |= ensureRecord(records, new CitaRecord("sofia_martinez_catalina_sky", "Sofia Martinez", "Edificio Catalina Sky", "12:30", "PM", "Pendiente", false, today, "Av. Los Alamos 214", "Catalina Sky Inmobiliaria"));
+        changed |= ensureRecord(records, new CitaRecord("roberto_chavez_san_isidro", "Roberto Chavez", "San Isidro Prime", "05:15", "PM", "Pendiente", false, tomorrow, "Calle Rivera 540", "Prime House SAC"));
 
-        changed |= ensureRecord(records, new CitaRecord("carlos_ruiz_pueblo_libre", "Carlos Ruiz", "Pueblo Libre Vista", "09:30", "AM", "Terminada", false));
-        changed |= ensureRecord(records, new CitaRecord("elena_pardo_miraflores", "Elena Pardo", "Miraflores Bay", "06:20", "PM", "Terminada", false));
-        changed |= ensureRecord(records, new CitaRecord("diego_flores_san_isidro", "Diego Flores", "San Isidro Center", "07:10", "PM", "Terminada", false));
+        changed |= ensureRecord(records, new CitaRecord("maria_garcia_condominio_pueblo_libre", "Maria Garcia", "Condominio Pueblo Libre", "02:00", "PM", "Confirmada", true, today, "Jr. Libertad 120", "Pueblo Libre Homes"));
+        changed |= ensureRecord(records, new CitaRecord("ana_torres_miraflores", "Ana Torres", "Miraflores Life", "11:00", "AM", "Confirmada", true, yesterday, "Av. Larco 980", "Miraflores Life SAC"));
+        changed |= ensureRecord(records, new CitaRecord("luis_rodriguez_san_isidro", "Luis Rodriguez", "San Isidro Heights", "03:45", "PM", "Confirmada", true, today, "Calle Las Camelias 775", "Heights Group"));
+
+        changed |= ensureRecord(records, new CitaRecord("carlos_ruiz_pueblo_libre", "Carlos Ruiz", "Pueblo Libre Vista", "09:30", "AM", "Terminada", false, yesterday, "Jr. Independencia 300", "Vista Inmobiliaria"));
+        changed |= ensureRecord(records, new CitaRecord("elena_pardo_miraflores", "Elena Pardo", "Miraflores Bay", "06:20", "PM", "Terminada", false, today, "Av. La Paz 456", "Bay Homes"));
+        changed |= ensureRecord(records, new CitaRecord("diego_flores_san_isidro", "Diego Flores", "San Isidro Center", "07:10", "PM", "Terminada", false, tomorrow, "Calle Los Pinos 88", "Center Inmobiliaria"));
 
         if (changed) {
             saveRecords(context, records);
@@ -43,6 +51,17 @@ public final class AsesorCitaStore {
         List<HomeCita> items = new ArrayList<>();
         for (CitaRecord record : getRecords(context)) {
             items.add(record.toHomeCita());
+        }
+        return items;
+    }
+
+    public static List<HomeCita> getTodayItems(Context context) {
+        List<HomeCita> items = new ArrayList<>();
+        String today = todayIso();
+        for (CitaRecord record : getRecords(context)) {
+            if (today.equals(record.date)) {
+                items.add(record.toHomeCita());
+            }
         }
         return items;
     }
@@ -76,7 +95,7 @@ public final class AsesorCitaStore {
         List<CitaRecord> updated = new ArrayList<>();
         for (CitaRecord record : records) {
             if (key != null && key.equals(record.key)) {
-                updated.add(new CitaRecord(record.key, record.client, record.project, record.time, record.meridian, status, confirmed));
+                updated.add(new CitaRecord(record.key, record.client, record.project, record.time, record.meridian, status, confirmed, record.date, record.location, record.company));
             } else {
                 updated.add(record);
             }
@@ -98,7 +117,10 @@ public final class AsesorCitaStore {
                     json.optString("time"),
                     json.optString("meridian"),
                     json.optString("status"),
-                    json.optBoolean("confirmed", false)
+                    json.optBoolean("confirmed", false),
+                    json.optString("date", todayIso()),
+                    json.optString("location", defaultLocationForProject(json.optString("project"))),
+                    json.optString("company", defaultCompanyForProject(json.optString("project")))
                 ));
             }
         } catch (JSONException ignored) {
@@ -118,6 +140,9 @@ public final class AsesorCitaStore {
                 json.put("meridian", record.meridian);
                 json.put("status", record.status);
                 json.put("confirmed", record.confirmed);
+                json.put("date", record.date);
+                json.put("location", record.location);
+                json.put("company", record.company);
             } catch (JSONException ignored) {
             }
             array.put(json);
@@ -136,6 +161,56 @@ public final class AsesorCitaStore {
         return value.trim().toLowerCase().replace(' ', '_');
     }
 
+    private static String todayIso() {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+    }
+
+    private static String offsetIso(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, days);
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(calendar.getTime());
+    }
+
+    private static String defaultLocationForProject(String project) {
+        if (project == null) {
+            return "Ubicación pendiente";
+        }
+        String normalized = project.toLowerCase(Locale.US);
+        if (normalized.contains("catalina")) {
+            return "Surco, Lima";
+        }
+        if (normalized.contains("san isidro")) {
+            return "San Isidro, Lima";
+        }
+        if (normalized.contains("miraflores")) {
+            return "Miraflores, Lima";
+        }
+        if (normalized.contains("pueblo libre")) {
+            return "Pueblo Libre, Lima";
+        }
+        return "Ubicación pendiente";
+    }
+
+    private static String defaultCompanyForProject(String project) {
+        if (project == null) {
+            return "Inmobiliaria";
+        }
+        String normalized = project.toLowerCase(Locale.US);
+        if (normalized.contains("catalina")) {
+            return "Catalina Sky Inmobiliaria";
+        }
+        if (normalized.contains("san isidro")) {
+            return "Heights Group";
+        }
+        if (normalized.contains("miraflores")) {
+            return "Miraflores Life SAC";
+        }
+        if (normalized.contains("pueblo libre")) {
+            return "Pueblo Libre Homes";
+        }
+        return "Inmobiliaria";
+    }
+
     public static final class CitaRecord {
         final String key;
         final String client;
@@ -144,8 +219,11 @@ public final class AsesorCitaStore {
         final String meridian;
         final String status;
         final boolean confirmed;
+        final String date;
+        final String location;
+        final String company;
 
-        CitaRecord(String key, String client, String project, String time, String meridian, String status, boolean confirmed) {
+        CitaRecord(String key, String client, String project, String time, String meridian, String status, boolean confirmed, String date, String location, String company) {
             this.key = key;
             this.client = client;
             this.project = project;
@@ -153,10 +231,13 @@ public final class AsesorCitaStore {
             this.meridian = meridian;
             this.status = status;
             this.confirmed = confirmed;
+            this.date = date == null || date.trim().isEmpty() ? todayIso() : date;
+            this.location = location == null || location.trim().isEmpty() ? defaultLocationForProject(project) : location;
+            this.company = company == null || company.trim().isEmpty() ? defaultCompanyForProject(project) : company;
         }
 
         HomeCita toHomeCita() {
-            return new HomeCita(time, meridian, client, project, status, confirmed);
+            return new HomeCita(time, meridian, client, project, status, confirmed, date);
         }
 
         CitaItem toCitaItem() {
@@ -183,9 +264,16 @@ public final class AsesorCitaStore {
                 alpha,
                 project,
                 client,
-                "Ubicación pendiente",
-                "Fecha y hora " + time + meridian
+                location,
+                "Fecha " + displayDate(date) + " - " + time + meridian
             );
+        }
+
+        private String displayDate(String isoDate) {
+            if (isoDate == null || isoDate.trim().isEmpty()) {
+                return "Pendiente";
+            }
+            return isoDate.replace('-', '/');
         }
     }
 

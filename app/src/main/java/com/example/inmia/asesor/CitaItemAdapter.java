@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -39,8 +38,8 @@ public class CitaItemAdapter extends RecyclerView.Adapter<CitaItemAdapter.CitaVi
     public void onBindViewHolder(@NonNull CitaViewHolder holder, int position) {
         CitaItem item = items.get(position);
         holder.status.setText(item.getStatus());
-        holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), item.getStatusColorRes()));
         holder.status.setAlpha(item.getStatusAlpha());
+        AsesorEstadoBadgeStyle.apply(holder.itemView.getContext(), holder.status, item.getStatus());
         holder.project.setText(item.getProject());
         holder.client.setText(item.getClient());
         holder.location.setText(item.getLocation());
