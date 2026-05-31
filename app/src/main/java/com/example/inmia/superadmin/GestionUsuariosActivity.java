@@ -7,12 +7,10 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
@@ -34,17 +32,17 @@ public class GestionUsuariosActivity extends AppCompatActivity
     private TextView tvTituloLista;
     private MaterialButton btnNuevo, btnSolicitudes;
 
-    // RecyclerView
-    private RecyclerView recyclerUsuarios;
-    private UsuarioAdapter adapter;
+    // ViewPager2
+    private ViewPager2 viewPager;
+    private UsuariosPagerAdapter pagerAdapter;
 
     // Bottom nav
     private BottomNavigationView bottomNav;
 
-    // Estado actual del tab
-    private String tabActual = "admins";
+    // 0=admins, 1=asesores, 2=clientes
+    private int tabActual = 0;
 
-    // ── Listas hardcodeadas por rol ──────────────────────────────────────────
+    // Listas por rol
     private List<Usuario> listaAdmins;
     private List<Usuario> listaAsesores;
     private List<Usuario> listaClientes;
@@ -68,32 +66,39 @@ public class GestionUsuariosActivity extends AppCompatActivity
         tvTituloLista  = findViewById(R.id.tvTituloLista);
         btnNuevo       = findViewById(R.id.btnNuevo);
         btnSolicitudes = findViewById(R.id.btnSolicitudes);
-        recyclerUsuarios = findViewById(R.id.recyclerUsuarios);
+        viewPager      = findViewById(R.id.viewPagerUsuarios);
         bottomNav      = findViewById(R.id.bottomNavSuperAdmin);
 
-        // Inicializar datos hardcodeados
         inicializarDatos();
 
-        // Configurar RecyclerView
-        recyclerUsuarios.setLayoutManager(
-                new LinearLayoutManager(this));
-        adapter = new UsuarioAdapter(this, listaAdmins, this);
-        recyclerUsuarios.setAdapter(adapter);
+        // Configurar ViewPager2
+        pagerAdapter = new UsuariosPagerAdapter(
+                this, listaAdmins, listaAsesores, listaClientes, this);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setOffscreenPageLimit(2); // mantiene las 3 páginas en memoria
 
-        // Marcar tab activo en el nav
-        bottomNav.setSelectedItemId(R.id.nav_usuarios);
+        // Sincronizar tabs al deslizar
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                tabActual = position;
+                etBuscar.setText("");
+                actualizarTabVisual(position);
+            }
+        });
 
-        // Configurar tabs
-        tabAdmins.setOnClickListener(v  -> seleccionarTab("admins"));
-        tabAsesores.setOnClickListener(v -> seleccionarTab("asesores"));
-        tabClientes.setOnClickListener(v -> seleccionarTab("clientes"));
+        // Estado inicial del tab visual
+        actualizarTabVisual(0);
+
+        // Clicks en tabs navegan el pager con animación
+        tabAdmins.setOnClickListener(v   -> viewPager.setCurrentItem(0, true));
+        tabAsesores.setOnClickListener(v -> viewPager.setCurrentItem(1, true));
+        tabClientes.setOnClickListener(v -> viewPager.setCurrentItem(2, true));
 
         // Búsqueda en tiempo real
         etBuscar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s,
-                                                    int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s,
-                                                int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filtrarPorNombre(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
@@ -109,6 +114,9 @@ public class GestionUsuariosActivity extends AppCompatActivity
         // Botón Solicitudes
         btnSolicitudes.setOnClickListener(v ->
                 startActivity(new Intent(this, SolicitudesActivity.class)));
+
+        // Marcar tab activo en nav
+        bottomNav.setSelectedItemId(R.id.nav_usuarios);
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -134,10 +142,7 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
     // ── Datos hardcodeados ───────────────────────────────────────────────────
 
-    // ── Listas con datos completos ───────────────────────────────────────────
-
     private void inicializarDatos() {
-        // Admins
         listaAdmins = new ArrayList<>();
         listaAdmins.add(new Usuario(
                 "Cyndy Lillibridge", "Inmobiliaria Sofia", "CL", true, "admin",
@@ -160,7 +165,6 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 "teddy@inmiaoasis.com", "+51 965 555 666",
                 "Calle Lima 789, Pueblo Libre"));
 
-        // Asesores
         listaAsesores = new ArrayList<>();
         listaAsesores.add(new Usuario(
                 "María García", "INMIA San Isidro", "MG", true, "asesor",
@@ -178,7 +182,6 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 "j.sanchez@inmia.com", "+51 956 789 012",
                 "Jr. Los Pinos 890, Surco"));
 
-        // Clientes
         listaClientes = new ArrayList<>();
         listaClientes.add(new Usuario(
                 "Ana Torres", "Sin inmobiliaria", "AT", true, "cliente",
@@ -197,70 +200,54 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 "Jr. Cusco 987, Cercado"));
     }
 
-// ── Ver perfil — navegar con datos completos ──────────────────────────────
+    // ── Ver perfil ───────────────────────────────────────────────────────────
 
     @Override
     public void onVerPerfil(Usuario usuario) {
         Intent intent = new Intent(this, PerfilUserActivity.class);
-        intent.putExtra(PerfilUserActivity.EXTRA_NOMBRE,       usuario.getNombre());
-        intent.putExtra(PerfilUserActivity.EXTRA_EMPRESA,      usuario.getEmpresa());
-        intent.putExtra(PerfilUserActivity.EXTRA_INICIALES,    usuario.getIniciales());
-        intent.putExtra(PerfilUserActivity.EXTRA_DOCUMENTO,    usuario.getDocumento());
-        intent.putExtra(PerfilUserActivity.EXTRA_FECHA_NAC,    usuario.getFechaNacimiento());
-        intent.putExtra(PerfilUserActivity.EXTRA_CORREO,       usuario.getCorreo());
-        intent.putExtra(PerfilUserActivity.EXTRA_TELEFONO,     usuario.getTelefono());
-        intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO,    usuario.getDomicilio());
-        intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,       usuario.isActivo());
-        intent.putExtra(PerfilUserActivity.EXTRA_ROL,          usuario.getRol());
+        intent.putExtra(PerfilUserActivity.EXTRA_NOMBRE,    usuario.getNombre());
+        intent.putExtra(PerfilUserActivity.EXTRA_EMPRESA,   usuario.getEmpresa());
+        intent.putExtra(PerfilUserActivity.EXTRA_INICIALES, usuario.getIniciales());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOCUMENTO, usuario.getDocumento());
+        intent.putExtra(PerfilUserActivity.EXTRA_FECHA_NAC, usuario.getFechaNacimiento());
+        intent.putExtra(PerfilUserActivity.EXTRA_CORREO,    usuario.getCorreo());
+        intent.putExtra(PerfilUserActivity.EXTRA_TELEFONO,  usuario.getTelefono());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO, usuario.getDomicilio());
+        intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,    usuario.isActivo());
+        intent.putExtra(PerfilUserActivity.EXTRA_ROL,       usuario.getRol());
         startActivity(intent);
     }
 
     // ── Tabs ─────────────────────────────────────────────────────────────────
 
-    private void seleccionarTab(String tab) {
-        tabActual = tab;
-
+    private void actualizarTabVisual(int position) {
         // Resetear todos los tabs
-        tabAdmins.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabAdmins.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAdmins.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabAsesores.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabAsesores.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAsesores.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabClientes.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabClientes.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabClientes.setTextColor(getColor(R.color.inmia_teal_dark));
 
-        switch (tab) {
-            case "admins":
-                tabAdmins.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+        switch (position) {
+            case 0:
+                tabAdmins.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAdmins.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de administradores (" + listaAdmins.size() + ")");
-                adapter.actualizarLista(listaAdmins);
+                tvTituloLista.setText("Lista de administradores (" + listaAdmins.size() + ")");
                 btnNuevo.setVisibility(View.VISIBLE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
-
-            case "asesores":
-                tabAsesores.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+            case 1:
+                tabAsesores.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAsesores.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de asesores (" + listaAsesores.size() + ")");
-                adapter.actualizarLista(listaAsesores);
+                tvTituloLista.setText("Lista de asesores (" + listaAsesores.size() + ")");
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.VISIBLE);
                 break;
-
-            case "clientes":
-                tabClientes.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+            case 2:
+                tabClientes.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabClientes.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de clientes (" + listaClientes.size() + ")");
-                adapter.actualizarLista(listaClientes);
+                tvTituloLista.setText("Lista de clientes (" + listaClientes.size() + ")");
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
@@ -271,26 +258,27 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
     private void filtrarPorNombre(String query) {
         List<Usuario> listaBase = obtenerListaActual();
+        UsuarioAdapter currentAdapter = pagerAdapter.getPageAdapter(tabActual);
+
         if (query.isEmpty()) {
-            adapter.actualizarLista(listaBase);
+            currentAdapter.actualizarLista(listaBase);
             return;
         }
 
         List<Usuario> filtrada = new ArrayList<>();
         for (Usuario u : listaBase) {
-            if (u.getNombre().toLowerCase()
-                    .contains(query.toLowerCase())) {
+            if (u.getNombre().toLowerCase().contains(query.toLowerCase())) {
                 filtrada.add(u);
             }
         }
-        adapter.actualizarLista(filtrada);
+        currentAdapter.actualizarLista(filtrada);
     }
 
     private List<Usuario> obtenerListaActual() {
         switch (tabActual) {
-            case "asesores": return listaAsesores;
-            case "clientes": return listaClientes;
-            default:         return listaAdmins;
+            case 1: return listaAsesores;
+            case 2: return listaClientes;
+            default: return listaAdmins;
         }
     }
 
@@ -303,24 +291,19 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 .setTitle("Filtrar por estado")
                 .setItems(opciones, (dialog, which) -> {
                     List<Usuario> listaBase = obtenerListaActual();
-                    List<Usuario> filtrada  = new ArrayList<>();
+                    UsuarioAdapter currentAdapter = pagerAdapter.getPageAdapter(tabActual);
 
-                    switch (which) {
-                        case 0: // Todos
-                            adapter.actualizarLista(listaBase);
-                            return;
-                        case 1: // Activos
-                            for (Usuario u : listaBase) {
-                                if (u.isActivo()) filtrada.add(u);
-                            }
-                            break;
-                        case 2: // Inactivos
-                            for (Usuario u : listaBase) {
-                                if (!u.isActivo()) filtrada.add(u);
-                            }
-                            break;
+                    if (which == 0) {
+                        currentAdapter.actualizarLista(listaBase);
+                        return;
                     }
-                    adapter.actualizarLista(filtrada);
+
+                    boolean buscarActivos = (which == 1);
+                    List<Usuario> filtrada = new ArrayList<>();
+                    for (Usuario u : listaBase) {
+                        if (u.isActivo() == buscarActivos) filtrada.add(u);
+                    }
+                    currentAdapter.actualizarLista(filtrada);
                 })
                 .show();
     }

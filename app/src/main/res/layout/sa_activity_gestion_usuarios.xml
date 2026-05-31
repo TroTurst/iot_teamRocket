@@ -6,237 +6,230 @@
     android:layout_height="match_parent"
     android:background="#F5FAFA">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp">
+        android:orientation="vertical"
+        android:paddingBottom="64dp"
+        android:clipToPadding="false">
 
-        <LinearLayout
+        <!-- ── HEADER — solo título ── -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerGestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="@drawable/gradient_background2"
+            android:paddingTop="45dp"
+            android:paddingBottom="40dp"
+            android:paddingHorizontal="20dp">
 
-            <!-- ── HEADER — solo título ── -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/headerGestion"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background2"
-                android:paddingTop="45dp"
-                android:paddingBottom="40dp"
-                android:paddingHorizontal="20dp">
+                android:text="@string/gestion_usuarios_title"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ── CONTENIDO — esquinas redondeadas con overlap ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginTop="-24dp"
+            android:background="@drawable/bg_content_rounded"
+            android:paddingTop="16dp">
+
+            <!-- ── TABS ── -->
+            <LinearLayout
+                android:id="@+id/layoutTabs"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/inmia_teal_pale"
+                android:padding="4dp">
 
                 <TextView
-                    android:id="@+id/tvTitulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/gestion_usuarios_title"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
+                    android:id="@+id/tabAdmins"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/tab_admins"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    android:gravity="center"
+                    android:background="@drawable/tab_selected_bg_superadmin"
+                    android:textColor="#FFFFFF"
+                    android:clickable="true"
+                    android:focusable="true"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tabAsesores"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/tab_asesores"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/tab_unselected_bg_superadmin"
+                    android:textColor="@color/inmia_teal_dark"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_marginHorizontal="4dp"/>
 
-            <!-- ── CONTENIDO — esquinas redondeadas con overlap ── -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="-24dp"
-                android:background="@drawable/bg_content_rounded"
-                android:paddingTop="16dp">
-
-                <!-- ── TABS — encima del buscador ── -->
-                <LinearLayout
-                    android:id="@+id/layoutTabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:orientation="horizontal"
-
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@color/inmia_teal_pale"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:id="@+id/tabAdmins"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/tab_admins"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="@drawable/tab_selected_bg_superadmin"
-                        android:textColor="#FFFFFF"
-                        android:clickable="true"
-                        android:focusable="true"/>
-
-                    <TextView
-                        android:id="@+id/tabAsesores"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/tab_asesores"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="@drawable/tab_unselected_bg_superadmin"
-                        android:textColor="@color/inmia_teal_dark"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:layout_marginHorizontal="4dp"/>
-
-                    <TextView
-                        android:id="@+id/tabClientes"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="@string/tab_clientes"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="@drawable/tab_unselected_bg_superadmin"
-                        android:textColor="@color/inmia_teal_dark"
-                        android:clickable="true"
-                        android:focusable="true"/>
-
-                </LinearLayout>
-
-                <!-- ── BARRA: BÚSQUEDA + FILTRO ── -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingBottom="8dp"
-                    android:gravity="center_vertical">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="10dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="#FFFFFF">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="12dp">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@android:drawable/ic_menu_search"
-                                android:contentDescription="Buscar"/>
-
-                            <EditText
-                                android:id="@+id/etBuscar"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:hint="@string/buscar_hint"
-                                android:textSize="14sp"
-                                android:textColor="@color/inmia_text"
-                                android:textColorHint="#A0BFBF"
-                                android:background="@null"
-                                android:paddingStart="8dp"
-                                android:inputType="text"
-                                android:imeOptions="actionSearch"
-                                android:maxLines="1"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnFiltro"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp"
-                        app:cardBackgroundColor="#FFFFFF">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_sort_by_size"
-                            android:contentDescription="Filtrar"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-
-                <!-- ── FILA: título lista + botones acción ── -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="20dp"
-                    android:paddingBottom="12dp"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/tvTituloLista"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Lista de administradores (4)"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSolicitudes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Solicitudes (2)"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginEnd="8dp"
-                        app:backgroundTint="#F4845F"
-                        app:cornerRadius="20dp"
-                        android:visibility="gone"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnNuevo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="@string/btn_nuevo"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:textColor="#FFFFFF"
-                        app:backgroundTint="@color/inmia_teal_dark"
-                        app:cornerRadius="20dp"
-                        android:visibility="visible"/>
-
-                </LinearLayout>
-
-                <!-- ── LISTA DE USUARIOS — RecyclerView ── -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerUsuarios"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingBottom="8dp"
-                    android:nestedScrollingEnabled="false"/>
+                <TextView
+                    android:id="@+id/tabClientes"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/tab_clientes"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/tab_unselected_bg_superadmin"
+                    android:textColor="@color/inmia_teal_dark"
+                    android:clickable="true"
+                    android:focusable="true"/>
 
             </LinearLayout>
 
+            <!-- ── BARRA: BÚSQUEDA + FILTRO ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="8dp"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="12dp">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@android:drawable/ic_menu_search"
+                            android:contentDescription="Buscar"/>
+
+                        <EditText
+                            android:id="@+id/etBuscar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/buscar_hint"
+                            android:textSize="14sp"
+                            android:textColor="@color/inmia_text"
+                            android:textColorHint="#A0BFBF"
+                            android:background="@null"
+                            android:paddingStart="8dp"
+                            android:inputType="text"
+                            android:imeOptions="actionSearch"
+                            android:maxLines="1"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnFiltro"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        android:contentDescription="Filtrar"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- ── FILA: título lista + botones acción ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="12dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvTituloLista"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Lista de administradores (4)"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSolicitudes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Solicitudes (2)"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="8dp"
+                    app:backgroundTint="#F4845F"
+                    app:cornerRadius="20dp"
+                    android:visibility="gone"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNuevo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="@string/btn_nuevo"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="@color/inmia_teal_dark"
+                    app:cornerRadius="20dp"
+                    android:visibility="visible"/>
+
+            </LinearLayout>
+
+            <!-- ── ViewPager2 con swipe entre tabs ── -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerUsuarios"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
 
     <!-- ── BOTTOM NAVIGATION ── -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
