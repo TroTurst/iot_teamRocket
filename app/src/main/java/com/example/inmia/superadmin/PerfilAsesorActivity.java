@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
@@ -88,32 +87,30 @@ public class PerfilAsesorActivity extends AppCompatActivity {
 
     private void mostrarDialogoHabilitar() {
         String nombre = getIntent().getStringExtra(EXTRA_NOMBRE);
-
-        new AlertDialog.Builder(this)
-                .setTitle("¿Habilitar asesor?")
-                .setMessage("¿Estás seguro de habilitar a "
-                        + nombre + " como asesor de ventas?")
-                .setPositiveButton("Habilitar", (dialog, which) -> {
-                    // TODO: actualizar estado en Firebase
-                    irASolicitudes();
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        DialogHelper.mostrarDialogoAccion(
+            this,
+            "¿Habilitar asesor?",
+            "¿Estás seguro de habilitar a " + nombre + " como asesor de ventas?",
+            "Habilitar",
+            "Cancelar",
+            R.color.inmia_success,
+            R.drawable.bg_badge_teal,
+            this::irASolicitudes
+        );
     }
 
     private void mostrarDialogoRechazar() {
         String nombre = getIntent().getStringExtra(EXTRA_NOMBRE);
-
-        new AlertDialog.Builder(this)
-                .setTitle("¿Rechazar solicitud?")
-                .setMessage("¿Estás seguro de rechazar la solicitud de "
-                        + nombre + "? Esta acción no se puede deshacer.")
-                .setPositiveButton("Rechazar", (dialog, which) -> {
-                    // TODO: actualizar estado en Firebase
-                    irASolicitudes();
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        DialogHelper.mostrarDialogoAccion(
+            this,
+            "¿Rechazar solicitud?",
+            "¿Estás seguro de rechazar la solicitud de " + nombre + "? Esta acción no se puede deshacer.",
+            "Rechazar",
+            "Cancelar",
+            R.color.inmia_danger,
+            R.drawable.bg_badge_red_circle,
+            this::irASolicitudes
+        );
     }
 
     private void irASolicitudes() {

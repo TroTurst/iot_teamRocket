@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.LoginActivity;
@@ -75,18 +74,21 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoCerrarSesion() {
-        new AlertDialog.Builder(this)
-                .setTitle("Cerrar sesión")
-                .setMessage("¿Estás seguro que deseas cerrar sesión?")
-                .setPositiveButton("Cerrar sesión", (dialog, which) -> {
-                    // Navegar al Login y limpiar el stack
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        DialogHelper.mostrarDialogoAccion(
+            this,
+            "Cerrar sesión",
+            "¿Estás seguro que deseas cerrar sesión?",
+            "Cerrar sesión",
+            "Cancelar",
+            R.color.inmia_danger,
+            R.drawable.bg_badge_red_circle,
+            () -> {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        );
     }
 }

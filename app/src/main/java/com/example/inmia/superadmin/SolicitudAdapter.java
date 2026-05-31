@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -68,39 +67,41 @@ public class SolicitudAdapter extends
             }
         });
 
-        // Botón Habilitar — con AlertDialog
-        holder.btnHabilitar.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setTitle("¿Habilitar asesor?")
-                    .setMessage("¿Estás seguro de habilitar a "
-                            + solicitud.getNombre()
-                            + " como asesor de ventas?")
-                    .setPositiveButton("Habilitar", (dialog, which) -> {
-                        if (listener != null) {
-                            listener.onHabilitar(solicitud,
-                                    holder.getAdapterPosition());
-                        }
-                    })
-                    .setNegativeButton("Cancelar", null)
-                    .show();
-        });
+        // Botón Habilitar
+        holder.btnHabilitar.setOnClickListener(v ->
+            DialogHelper.mostrarDialogoAccion(
+                context,
+                "¿Habilitar asesor?",
+                "¿Estás seguro de habilitar a " + solicitud.getNombre() + " como asesor de ventas?",
+                "Habilitar",
+                "Cancelar",
+                R.color.inmia_success,
+                R.drawable.bg_badge_teal,
+                () -> {
+                    if (listener != null) {
+                        listener.onHabilitar(solicitud, holder.getAdapterPosition());
+                    }
+                }
+            )
+        );
 
-        // Botón Rechazar — con AlertDialog
-        holder.btnRechazar.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setTitle("¿Rechazar solicitud?")
-                    .setMessage("¿Estás seguro de rechazar la solicitud de "
-                            + solicitud.getNombre()
-                            + "? Esta acción no se puede deshacer.")
-                    .setPositiveButton("Rechazar", (dialog, which) -> {
-                        if (listener != null) {
-                            listener.onRechazar(solicitud,
-                                    holder.getAdapterPosition());
-                        }
-                    })
-                    .setNegativeButton("Cancelar", null)
-                    .show();
-        });
+        // Botón Rechazar
+        holder.btnRechazar.setOnClickListener(v ->
+            DialogHelper.mostrarDialogoAccion(
+                context,
+                "¿Rechazar solicitud?",
+                "¿Estás seguro de rechazar la solicitud de " + solicitud.getNombre() + "? Esta acción no se puede deshacer.",
+                "Rechazar",
+                "Cancelar",
+                R.color.inmia_danger,
+                R.drawable.bg_badge_red_circle,
+                () -> {
+                    if (listener != null) {
+                        listener.onRechazar(solicitud, holder.getAdapterPosition());
+                    }
+                }
+            )
+        );
     }
 
     @Override
