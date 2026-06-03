@@ -6,15 +6,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.inmia.R;
 import com.example.inmia.models.Tipologia;
+
 import java.util.List;
 
 public class SimpleTipologiaAdapter extends RecyclerView.Adapter<SimpleTipologiaAdapter.ViewHolder> {
     private List<Tipologia> lista;
     private OnItemClickListener listener;
 
-    public interface OnItemClickListener { void onItemClick(Tipologia tp); }
+    public interface OnItemClickListener {
+        void onItemClick(Tipologia tp);
+    }
 
     public SimpleTipologiaAdapter(List<Tipologia> lista, OnItemClickListener listener) {
         this.lista = lista;
@@ -42,7 +46,10 @@ public class SimpleTipologiaAdapter extends RecyclerView.Adapter<SimpleTipologia
         holder.itemView.setOnClickListener(v -> listener.onItemClick(tp));
     }
 
-    @Override public int getItemCount() { return lista.size(); }
+    @Override
+    public int getItemCount() {
+        return lista.size();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvSpecs, tvPrecio;

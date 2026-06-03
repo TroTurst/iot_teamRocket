@@ -262,6 +262,18 @@
                         android:layout_marginTop="10dp"
                         android:nestedScrollingEnabled="false" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAgendarVisita"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="Agendar visita con un asesor"
+                        android:textColor="@color/inmia_teal_dark"
+                        app:strokeColor="@color/inmia_teal_dark"
+                        app:cornerRadius="12dp" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -816,6 +828,7 @@
                     android:layout_height="match_parent" />
             </com.google.android.material.card.MaterialCardView>
 
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -878,6 +891,8 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

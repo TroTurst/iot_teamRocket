@@ -30,33 +30,33 @@ public final class AsesorChatStore {
         }
 
         List<ChatThread> threads = new ArrayList<>();
-        threads.add(new ChatThread("chat_1", "Maria R.", "Hola, quiero info del proyecto Catalina Sky", "10:02", R.drawable.ic_perfil));
-        threads.add(new ChatThread("chat_2", "Carlos M.", "Gracias, tambien quiero agendar visita", "10:04", R.drawable.ic_perfil));
-        threads.add(new ChatThread("chat_3", "Luisa T.", "Me puedes enviar el brochure del proyecto", "09:45", R.drawable.ic_perfil));
-        threads.add(new ChatThread("chat_4", "Javier P.", "Estoy interesado en separar un departamento", "Ayer", R.drawable.ic_perfil));
-        threads.add(new ChatThread("chat_5", "Ana L.", "Podemos ver opciones de financiamiento", "Ayer", R.drawable.ic_perfil));
+        threads.add(new ChatThread("chat_1", "Maria R.", "Hola, quiero info del proyecto Catalina Sky", "10:02", R.drawable.ic_perfil, ""));
+        threads.add(new ChatThread("chat_2", "Carlos M.", "Gracias, tambien quiero agendar visita", "10:04", R.drawable.ic_perfil, ""));
+        threads.add(new ChatThread("chat_3", "Luisa T.", "Me puedes enviar el brochure del proyecto", "09:45", R.drawable.ic_perfil, ""));
+        threads.add(new ChatThread("chat_4", "Javier P.", "Estoy interesado en separar un departamento", "Ayer", R.drawable.ic_perfil, ""));
+        threads.add(new ChatThread("chat_5", "Ana L.", "Podemos ver opciones de financiamiento", "Ayer", R.drawable.ic_perfil, ""));
         saveThreads(context, threads);
 
         saveMessages(context, "chat_1", buildMessages(
-            new ChatMessage("Hola, quiero info del proyecto Catalina Sky", "10:02", false),
-            new ChatMessage("Hola, claro. Te envio las opciones disponibles", "10:03", true),
-            new ChatMessage("Gracias, tambien quiero agendar visita", "10:04", false)
+                new ChatMessage("Hola, quiero info del proyecto Catalina Sky", "10:02", false),
+                new ChatMessage("Hola, claro. Te envio las opciones disponibles", "10:03", true),
+                new ChatMessage("Gracias, tambien quiero agendar visita", "10:04", false)
         ));
         saveMessages(context, "chat_2", buildMessages(
-            new ChatMessage("Gracias, tambien quiero agendar visita", "10:04", false),
-            new ChatMessage("Perfecto, te propongo dos horarios disponibles", "10:05", true)
+                new ChatMessage("Gracias, tambien quiero agendar visita", "10:04", false),
+                new ChatMessage("Perfecto, te propongo dos horarios disponibles", "10:05", true)
         ));
         saveMessages(context, "chat_3", buildMessages(
-            new ChatMessage("Me puedes enviar el brochure del proyecto", "09:45", false),
-            new ChatMessage("Claro, te lo envio ahora mismo", "09:46", true)
+                new ChatMessage("Me puedes enviar el brochure del proyecto", "09:45", false),
+                new ChatMessage("Claro, te lo envio ahora mismo", "09:46", true)
         ));
         saveMessages(context, "chat_4", buildMessages(
-            new ChatMessage("Estoy interesado en separar un departamento", "Ayer", false),
-            new ChatMessage("Excelente, revisemos los pasos", "Ayer", true)
+                new ChatMessage("Estoy interesado en separar un departamento", "Ayer", false),
+                new ChatMessage("Excelente, revisemos los pasos", "Ayer", true)
         ));
         saveMessages(context, "chat_5", buildMessages(
-            new ChatMessage("Podemos ver opciones de financiamiento", "Ayer", false),
-            new ChatMessage("Si, te comparto las alternativas", "Ayer", true)
+                new ChatMessage("Podemos ver opciones de financiamiento", "Ayer", false),
+                new ChatMessage("Si, te comparto las alternativas", "Ayer", true)
         ));
     }
 
@@ -68,11 +68,12 @@ public final class AsesorChatStore {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject json = array.getJSONObject(i);
                 threads.add(new ChatThread(
-                    json.optString("id"),
-                    json.optString("name"),
-                    json.optString("lastMessage"),
-                    json.optString("time"),
-                    json.optInt("avatarResId", R.drawable.ic_perfil)
+                        json.optString("id"),
+                        json.optString("name"),
+                        json.optString("lastMessage"),
+                        json.optString("time"),
+                        json.optInt("avatarResId", R.drawable.ic_perfil),
+                        json.optString("fotoUrl", "")
                 ));
             }
         } catch (JSONException ignored) {
@@ -103,7 +104,8 @@ public final class AsesorChatStore {
         }
 
         String resolvedName = name == null || name.trim().isEmpty() ? "Chat" : name.trim();
-        ChatThread created = new ChatThread(id, resolvedName, "Nuevo chat", timeFormat().format(System.currentTimeMillis()), avatarResId);
+
+        ChatThread created = new ChatThread(id, resolvedName, "Nuevo chat", timeFormat().format(System.currentTimeMillis()), avatarResId, "");
 
         List<ChatThread> threads = getThreads(context);
         threads.add(0, created);
@@ -119,9 +121,9 @@ public final class AsesorChatStore {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject json = array.getJSONObject(i);
                 messages.add(new ChatMessage(
-                    json.optString("message"),
-                    json.optString("time"),
-                    json.optBoolean("outgoing", false)
+                        json.optString("message"),
+                        json.optString("time"),
+                        json.optBoolean("outgoing", false)
                 ));
             }
         } catch (JSONException ignored) {
@@ -150,7 +152,8 @@ public final class AsesorChatStore {
         ChatThread matched = null;
         for (ChatThread thread : threads) {
             if (threadId.equals(thread.getId())) {
-                matched = new ChatThread(thread.getId(), thread.getName(), replyText, replyTime, thread.getAvatarResId());
+
+                matched = new ChatThread(thread.getId(), thread.getName(), replyText, replyTime, thread.getAvatarResId(), thread.getFotoUrl());
                 updated.add(matched);
             } else {
                 updated.add(thread);
@@ -161,12 +164,12 @@ public final class AsesorChatStore {
         ChatThread notifyThread = matched != null ? matched : getThreadById(context, threadId);
         String name = notifyThread != null ? notifyThread.getName() : "Chat";
         AsesorNotificacionHelper.enviar(
-            context,
-            "Nuevo mensaje de " + name,
-            replyText,
-            AsesorNotificacionStore.TIPO_CHAT_RESPUESTA,
-            AsesorNotificacionStore.TARGET_CHAT_DETAIL,
-            threadId
+                context,
+                "Nuevo mensaje de " + name,
+                replyText,
+                AsesorNotificacionStore.TIPO_CHAT_RESPUESTA,
+                AsesorNotificacionStore.TARGET_CHAT_DETAIL,
+                threadId
         );
     }
 
@@ -217,6 +220,7 @@ public final class AsesorChatStore {
                 json.put("lastMessage", thread.getLastMessage());
                 json.put("time", thread.getTime());
                 json.put("avatarResId", thread.getAvatarResId());
+                json.put("fotoUrl", thread.getFotoUrl() != null ? thread.getFotoUrl() : ""); // <-- Guardar en JSON
             } catch (JSONException ignored) {
             }
             array.put(json);
