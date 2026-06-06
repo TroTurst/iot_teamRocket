@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
@@ -14,8 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminAsesorRepositoryMock;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.example.inmia.models.CitaAsesor;
 import com.example.inmia.models.Proyecto;
@@ -28,6 +30,9 @@ import java.util.List;
 
 public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
+    private AdminRepository repository;
+    private String companyId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,9 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_asesor_detalle_carlos);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
 
         View btnBack = findViewById(R.id.btnBackDetalleCarlos);
         View btnDetalleCita = findViewById(R.id.btnDetalleCitaCarlos);
@@ -48,6 +56,11 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
 
         Asesor asesor = cargarAsesor();
+        if (asesor == null) {
+            Toast.makeText(this, "No se encontró asesor", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         poblarPerfil(asesor);
 
         RecyclerView recyclerViewProyectos = findViewById(R.id.recyclerViewProyectosCarlos);
@@ -108,9 +121,10 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
     private Asesor cargarAsesor() {
         String asesorId = getIntent().getStringExtra("asesor_id");
-        Asesor asesor = AdminAsesorRepositoryMock.getAsesorById(asesorId);
+        Asesor asesor = repository.getAdvisorById(companyId, asesorId);
         if (asesor == null) {
-            asesor = AdminAsesorRepositoryMock.getAsesores().get(0);
+            List<Asesor> asesores = repository.getAdvisors(companyId);
+            asesor = !asesores.isEmpty() ? asesores.get(0) : null;
         }
         return asesor;
     }
@@ -152,7 +166,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
     private List<Proyecto> filtrarProyectosPorAsesor(String nombreAsesor) {
         List<Proyecto> filtrados = new ArrayList<>();
-        for (Proyecto proyecto : AdminProyectoRepositoryMock.getProyectos()) {
+        for (Proyecto proyecto : repository.getProjects(companyId)) {
             if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(nombreAsesor)) {
                 filtrados.add(proyecto);
             }

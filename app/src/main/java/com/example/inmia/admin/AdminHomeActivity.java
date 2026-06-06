@@ -10,6 +10,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AdminHomeActivity extends AppCompatActivity {
@@ -18,7 +21,8 @@ public class AdminHomeActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
 
-    // Hardcodeado — luego vendrá de Firebase
+    private AdminRepository repository;
+    private String companyId;
     private int totalNotificaciones = 5;
 
     @Override
@@ -30,6 +34,10 @@ public class AdminHomeActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_home);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
+        totalNotificaciones = repository.getUnreadNotifications(companyId);
 
         bottomNav           = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);

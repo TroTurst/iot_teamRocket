@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -37,7 +39,10 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     public static final String EXTRA_PROYECTO_ID = "proyecto_id";
 
     private BottomNavigationView bottomNav;
-    private final int totalNotificaciones = 5;
+    private int totalNotificaciones;
+
+    private AdminRepository repository;
+    private String companyId;
 
     private ImageView imgHeroProyecto;
     private android.widget.TextView tvNombreProyecto;
@@ -92,6 +97,10 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_proyecto_detalle);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
+        totalNotificaciones = repository.getUnreadNotifications(companyId);
 
         Context ctx = getApplicationContext();
         SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
@@ -150,7 +159,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         // Cargar proyecto seleccionado
         String proyectoId = getIntent() != null ? getIntent().getStringExtra(EXTRA_PROYECTO_ID) : null;
-        currentProyecto = AdminProyectoRepositoryMock.getProyectoById(proyectoId);
+        currentProyecto = repository.getProjectById(companyId, proyectoId);
         if (currentProyecto == null) {
             Toast.makeText(this, "No se encontró el proyecto seleccionado", Toast.LENGTH_SHORT).show();
             finish();

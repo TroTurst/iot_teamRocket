@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (UserCheck.ROL_SUPERADMIN.equals(rol)) {
                         new SessionManager(this).guardarSesion("Superadmin", email);
                     }
-                    redirigirSegunRol(rol);
+                    redirigirSegunRol(rol, email);
                 }
             }
         });
@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void redirigirSegunRol(String rol) {
+    private void redirigirSegunRol(String rol, String email) {
         Intent intent;
 
         switch (rol) {
@@ -89,14 +89,15 @@ public class LoginActivity extends AppCompatActivity {
             case UserCheck.ROL_ASESOR:
                 intent = new Intent(this, AsesorHomeActivity.class);
                 break;
-            case UserCheck.ROL_ADMIN:
-                intent = new Intent(this, RegistroInmobiliariaActivity.class);
+            case UserCheck.ROL_ADMIN_EMPRESA:
+                if (UserCheck.needsCompanySetup(email)) {
+                    intent = new Intent(this, RegistroInmobiliariaActivity.class);
+                } else {
+                    intent = new Intent(this, AdminHomeActivity.class);
+                }
                 break;
             case UserCheck.ROL_SUPERADMIN:
                 intent = new Intent(this, SuperAdminHomeActivity.class);
-                break;
-            case UserCheck.ROL_ADMIN1:
-                intent = new Intent(this, AdminHomeActivity.class);
                 break;
             default:
                 return;

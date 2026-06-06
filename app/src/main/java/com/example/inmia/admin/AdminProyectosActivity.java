@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,9 +28,10 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
 
-    // Hardcodeado - luego vendra de Firebase
-    private int totalNotificaciones = 5;
+    private int totalNotificaciones;
 
+    private AdminRepository repository;
+    private String companyId;
     private AdminProyectoAdapter adapter;
 
     @Override
@@ -40,6 +43,10 @@ public class AdminProyectosActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_proyectos);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
+        totalNotificaciones = repository.getUnreadNotifications(companyId);
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -55,7 +62,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
         recyclerViewProyectos.setLayoutManager(layoutManager);
 
         // Crear lista de proyectos con datos mock (fuente única compartida con el detalle)
-        List<Proyecto> proyectos = AdminProyectoRepositoryMock.getProyectos();
+        List<Proyecto> proyectos = repository.getProjects(companyId);
 
         adapter = new AdminProyectoAdapter(this, proyectos);
         recyclerViewProyectos.setAdapter(adapter);
@@ -119,7 +126,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (adapter != null) {
-            adapter.setProyectos(AdminProyectoRepositoryMock.getProyectos());
+            adapter.setProyectos(repository.getProjects(companyId));
         }
     }
 
@@ -144,5 +151,5 @@ public class AdminProyectosActivity extends AppCompatActivity {
         finish();
     }
 
-    // Datos mock se obtienen desde AdminProyectoRepositoryMock
+    // Datos mock se obtienen desde AdminRepository (local) hasta conectar Firebase.
 }

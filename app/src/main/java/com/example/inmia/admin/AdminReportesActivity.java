@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminAsesorRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -36,7 +38,9 @@ public class AdminReportesActivity extends AppCompatActivity {
     private RecyclerView recyclerViewReportes;
 
     // Hardcodeado - luego vendra de Firebase
-    private int totalNotificaciones = 5;
+    private int totalNotificaciones;
+    private AdminRepository repository;
+    private String companyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,10 @@ public class AdminReportesActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_reportes);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
+        totalNotificaciones = repository.getUnreadNotifications(companyId);
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -118,7 +126,7 @@ public class AdminReportesActivity extends AppCompatActivity {
     }
 
     private void cargarReporteMock() {
-        List<Asesor> asesores = AdminAsesorRepositoryMock.getAsesores();
+        List<Asesor> asesores = repository.getAdvisors(companyId);
         if (asesores == null || asesores.isEmpty()) {
             return;
         }
