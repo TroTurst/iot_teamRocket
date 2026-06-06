@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AsesorNotificacionesActivity extends AppCompatActivity {
@@ -31,6 +30,8 @@ public class AsesorNotificacionesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_asesor_notificaciones);
 
+        AsesorNotificacionStore.seedIfEmpty(this);
+
         bottomNav = findViewById(R.id.bottomNavAsesor);
         framePerfil = findViewById(R.id.framePerfil);
         recyclerNotificacionesHoy = findViewById(R.id.recyclerNotificacionesHoy);
@@ -40,11 +41,19 @@ public class AsesorNotificacionesActivity extends AppCompatActivity {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        NotificacionItemAdapter hoyAdapter = new NotificacionItemAdapter(buildMockNotificacionesHoy());
+        AsesorNotificacionStore.clearBadge(this);
+
+        NotificacionItemAdapter hoyAdapter = new NotificacionItemAdapter(
+            AsesorNotificacionStore.getNotificacionesHoy(this),
+            this::abrirDestinoNotificacion
+        );
         recyclerNotificacionesHoy.setLayoutManager(new LinearLayoutManager(this));
         recyclerNotificacionesHoy.setAdapter(hoyAdapter);
 
-        NotificacionItemAdapter ayerAdapter = new NotificacionItemAdapter(buildMockNotificacionesAyer());
+        NotificacionItemAdapter ayerAdapter = new NotificacionItemAdapter(
+            AsesorNotificacionStore.getNotificacionesAyer(this),
+            this::abrirDestinoNotificacion
+        );
         recyclerNotificacionesAyer.setLayoutManager(new LinearLayoutManager(this));
         recyclerNotificacionesAyer.setAdapter(ayerAdapter);
 
@@ -73,63 +82,47 @@ public class AsesorNotificacionesActivity extends AppCompatActivity {
         });
     }
 
-    private List<NotificacionItem> buildMockNotificacionesHoy() {
-        List<NotificacionItem> items = new ArrayList<>();
-        items.add(new NotificacionItem(
-            "George Cordova confirmo una cita para Palm Living",
-            "Cita confirmada",
-            "Hoy 3:59 pm",
-            R.color.inmia_info,
-            R.drawable.ic_citas,
-            R.color.inmia_info,
-            R.color.inmia_teal_light,
-            0.8f
-        ));
-        items.add(new NotificacionItem(
-            "Adrian solicita separacion para Palm Living Dpto 402",
-            "Separacion solicitada",
-            "Hoy 2:39 am",
-            R.color.inmia_teal_dark,
-            R.drawable.ic_separaciones,
-            R.color.inmia_teal_dark,
-            R.color.inmia_teal_light,
-            0.8f
-        ));
-        items.add(new NotificacionItem(
-            "La separacion de Maria Quispe fue aprobada",
-            "Separacion aprobada",
-            "Hoy 9:14 am",
-            R.color.inmia_success,
-            R.drawable.ic_separaciones,
-            R.color.inmia_success,
-            R.color.inmia_teal_light,
-            0.8f
-        ));
-        return items;
-    }
+    private void abrirDestinoNotificacion(NotificacionItem item) {
+        if (item == null || item.getTargetType() == null) {
+            return;
+        }
 
-    private List<NotificacionItem> buildMockNotificacionesAyer() {
-        List<NotificacionItem> items = new ArrayList<>();
-        items.add(new NotificacionItem(
-            "Juan Perez cancelo su cita del 06/04/2026",
-            "Cita cancelada",
-            "Ayer 11:39 pm",
-            R.color.inmia_danger,
-            R.drawable.ic_citas,
-            R.color.inmia_danger,
-            R.color.inmia_line,
-            1f
-        ));
-        items.add(new NotificacionItem(
-            "Carlos Mendoza realizo el pago de S/ 2,000",
-            "Pago recibido",
-            "Ayer 4:20 pm",
-            R.color.inmia_warning,
-            R.drawable.ic_reportes,
-            R.color.inmia_warning,
-            R.color.inmia_line,
-            1f
-        ));
-        return items;
+        if (AsesorNotificacionStore.TARGET_CHAT_DETAIL.equals(item.getTargetType())) {
+            ChatThread thread = AsesorChatStore.getThreadById(this, item.getTargetId());
+            if (thread != null) {
+                Intent intent = new Intent(this, AsesorChatDetailActivity.class);
+                intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_ID, thread.getId());
+                intent.putExtra(AsesorChatDetailActivity.EXTRA_CHAT_NAME, thread.getName());
+                startActivity(intent);
+            }
+            return;
+        }
+
+        if (AsesorNotificacionStore.TARGET_CITA_DETAIL.equals(item.getTargetType())) {
+            AsesorCitaStore.CitaRecord record = AsesorCitaStore.getRecordByKey(this, item.getTargetId());
+            if (record != null) {
+                Intent intent = new Intent(this, AsesorCitaDetailActivity.class);
+                intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CLIENTE, record.client);
+                intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_PROYECTO, record.project);
+                intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_ESTADO, record.status);
+                intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CONFIRMADA, record.confirmed);
+                intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_KEY, record.key);
+                startActivity(intent);
+            }
+            return;
+        }
+
+        if (AsesorNotificacionStore.TARGET_SEPARACION_DETAIL.equals(item.getTargetType())) {
+            AsesorSeparacionStore.SeparacionRecord record = AsesorSeparacionStore.getRecordByKey(this, item.getTargetId());
+            if (record != null) {
+                Intent intent = new Intent(this, AsesorSeparacionDetailActivity.class);
+                intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_KEY, record.key);
+                intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_CLIENTE, record.client);
+                intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_PROYECTO, record.project);
+                intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_ESTADO, record.status);
+                intent.putExtra(AsesorSeparacionDetailActivity.EXTRA_SEPARACION_CONFIRMADA, record.confirmed);
+                startActivity(intent);
+            }
+        }
     }
 }

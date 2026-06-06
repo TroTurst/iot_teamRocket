@@ -5,6 +5,8 @@ public class NotificacionItem {
     private final String message;
     private final String status;
     private final String time;
+    private final String targetType;
+    private final String targetId;
     private final int statusColorRes;
     private final int iconResId;
     private final int iconBackgroundColorRes;
@@ -15,6 +17,8 @@ public class NotificacionItem {
         String message,
         String status,
         String time,
+        String targetType,
+        String targetId,
         int statusColorRes,
         int iconResId,
         int iconBackgroundColorRes,
@@ -24,6 +28,8 @@ public class NotificacionItem {
         this.message = message;
         this.status = status;
         this.time = time;
+        this.targetType = targetType;
+        this.targetId = targetId;
         this.statusColorRes = statusColorRes;
         this.iconResId = iconResId;
         this.iconBackgroundColorRes = iconBackgroundColorRes;
@@ -41,6 +47,14 @@ public class NotificacionItem {
 
     public String getTime() {
         return time;
+    }
+
+    public String getTargetType() {
+        return targetType;
+    }
+
+    public String getTargetId() {
+        return targetId;
     }
 
     public int getStatusColorRes() {

@@ -17,10 +17,16 @@ import java.util.List;
 
 public class NotificacionItemAdapter extends RecyclerView.Adapter<NotificacionItemAdapter.NotificacionViewHolder> {
 
-    private final List<NotificacionItem> items;
+    public interface Listener {
+        void onNotificationSelected(NotificacionItem item);
+    }
 
-    public NotificacionItemAdapter(List<NotificacionItem> items) {
+    private final List<NotificacionItem> items;
+    private final Listener listener;
+
+    public NotificacionItemAdapter(List<NotificacionItem> items, Listener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     @NonNull
@@ -42,6 +48,12 @@ public class NotificacionItemAdapter extends RecyclerView.Adapter<NotificacionIt
         holder.iconCard.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), item.getIconBackgroundColorRes()));
         holder.line.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), item.getLineColorRes()));
         holder.line.setAlpha(item.getLineAlpha());
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onNotificationSelected(item);
+            }
+        });
     }
 
     @Override

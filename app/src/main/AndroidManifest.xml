@@ -270,6 +270,9 @@
         <activity
             android:name=".cliente.ClienteBuzonNotificacionesActivity"
             android:exported="false" />
+        <activity
+            android:name=".cliente.ClienteCambiarPasswordActivity"
+            android:exported="false" />
 
     </application>
 

@@ -55,6 +55,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return items.size();
     }
 
+    public void updateMessages(List<ChatMessage> messages) {
+        items.clear();
+        items.addAll(messages);
+        notifyDataSetChanged();
+    }
+
     static class IncomingViewHolder extends RecyclerView.ViewHolder {
         final TextView message;
         final TextView time;

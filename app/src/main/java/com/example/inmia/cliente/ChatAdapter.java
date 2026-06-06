@@ -4,18 +4,17 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.asesor.ChatThread;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     private List<ChatThread> listaChats;
 
@@ -25,23 +24,32 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
     @NonNull
     @Override
-    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_thread, parent, false);
-        return new ChatViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatThread chat = listaChats.get(position);
 
-        holder.tvName.setText(chat.getName());
-        holder.tvLastMessage.setText(chat.getLastMessage());
-        holder.tvTime.setText(chat.getTime());
-        holder.imgAvatar.setImageResource(chat.getAvatarResId());
+        holder.tvNombre.setText(chat.getName());
+        holder.tvUltimoMensaje.setText(chat.getLastMessage());
+        holder.tvHora.setText(chat.getTime());
+
+        if (chat.getFotoUrl() != null && !chat.getFotoUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(chat.getFotoUrl())
+                    .placeholder(chat.getAvatarResId())
+                    .into(holder.imgAvatar);
+        } else {
+            holder.imgAvatar.setImageResource(chat.getAvatarResId());
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), ClienteChatActivity.class);
-            intent.putExtra("NOMBRE_ASESOR", chat.getName());
+            intent.putExtra("CHAT_ID", chat.getId());
+            intent.putExtra("ASESOR_NOMBRE", chat.getName());
             v.getContext().startActivity(intent);
         });
     }
@@ -51,20 +59,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return listaChats.size();
     }
 
-    public static class ChatViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgAvatar;
-        TextView tvName;
-        TextView tvTime;
-        TextView tvLastMessage;
-        ImageView btnMore;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        android.widget.ImageView imgAvatar;
+        TextView tvNombre, tvUltimoMensaje, tvHora;
 
-        public ChatViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgAvatar = itemView.findViewById(R.id.imgAvatar);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvTime = itemView.findViewById(R.id.tvTime);
-            tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
-            btnMore = itemView.findViewById(R.id.btnMore);
+            tvNombre = itemView.findViewById(R.id.tvName);
+            tvUltimoMensaje = itemView.findViewById(R.id.tvLastMessage);
+            tvHora = itemView.findViewById(R.id.tvTime);
         }
     }
 }

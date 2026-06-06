@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -15,10 +14,16 @@ import java.util.List;
 
 public class HomeCitaAdapter extends RecyclerView.Adapter<HomeCitaAdapter.HomeCitaViewHolder> {
 
-    private final List<HomeCita> items;
+    public interface Listener {
+        void onCitaSelected(HomeCita item);
+    }
 
-    public HomeCitaAdapter(List<HomeCita> items) {
+    private final List<HomeCita> items;
+    private final Listener listener;
+
+    public HomeCitaAdapter(List<HomeCita> items, Listener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,19 +42,24 @@ public class HomeCitaAdapter extends RecyclerView.Adapter<HomeCitaAdapter.HomeCi
         holder.client.setText(item.getClient());
         holder.project.setText(item.getProject());
         holder.status.setText(item.getStatus());
+        AsesorEstadoBadgeStyle.apply(holder.itemView.getContext(), holder.status, item.getStatus());
 
-        if (item.isConfirmed()) {
-            holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
-            holder.status.setBackgroundResource(R.drawable.btn_rounded);
-        } else {
-            holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_teal_dark));
-            holder.status.setBackgroundResource(R.drawable.badge_outline);
-        }
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCitaSelected(item);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void updateItems(List<HomeCita> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
     }
 
     static class HomeCitaViewHolder extends RecyclerView.ViewHolder {

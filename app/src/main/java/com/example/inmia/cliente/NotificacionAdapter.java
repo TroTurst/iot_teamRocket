@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.google.android.material.card.MaterialCardView;
 import java.util.List;
+import com.example.inmia.models.Notificacion;
 
 public class NotificacionAdapter extends RecyclerView.Adapter<NotificacionAdapter.ViewHolder> {
 
@@ -36,7 +37,7 @@ public class NotificacionAdapter extends RecyclerView.Adapter<NotificacionAdapte
 
         if (notif.getTipo().equals("ERROR") || notif.getTipo().equals("CANCELADO")) {
             holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#FFCDD2"));
-            holder.imgNotifIcon.setImageResource(R.drawable.ic_close); // Icono de X
+            holder.imgNotifIcon.setImageResource(R.drawable.ic_close);
             holder.imgNotifIcon.setColorFilter(Color.parseColor("#C62828"));
         } else {
             holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#A8E6CF"));

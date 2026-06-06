@@ -3,22 +3,69 @@ package com.example.inmia.cliente;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ClienteDetallesCitaActivity extends AppCompatActivity {
+
+    private FirebaseFirestore db;
+    private String citaId = "";
+
+    private TextView tvNombreProyectoDetalle, tvInmobiliariaProyectoDetalle, tvUbicacionProyectoDetalle;
+    private TextView tvEstadoReserva, tvFechaHoraCita, tvNombreAsesorCita, tvDetallesTipologiaCita, tvTelefonoAsesorCita;
+    private ImageView imgProyectoDetalleCita, imgMiniaturaProyecto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        setContentView(R.layout.activity_detalles_cita_cliente2);
+        setContentView(R.layout.activity_detalles_cita_cliente);
+
+        db = FirebaseFirestore.getInstance();
+
+        if (getIntent() != null && getIntent().hasExtra("CITA_ID")) {
+            citaId = getIntent().getStringExtra("CITA_ID");
+        }
+
+        inicializarVistas();
+
+        if (!citaId.isEmpty()) {
+            cargarDetallesDeCita(citaId);
+        } else {
+            Toast.makeText(this, "No se encontró el ID de la cita", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void inicializarVistas() {
+        tvNombreProyectoDetalle = findViewById(R.id.tvNombreProyectoDetalle);
+        tvInmobiliariaProyectoDetalle = findViewById(R.id.tvInmobiliariaProyectoDetalle);
+        tvUbicacionProyectoDetalle = findViewById(R.id.tvUbicacionProyectoDetalle);
+        tvEstadoReserva = findViewById(R.id.tvEstadoReserva);
+        tvFechaHoraCita = findViewById(R.id.tvFechaHoraCita);
+        tvNombreAsesorCita = findViewById(R.id.tvNombreAsesorCita);
+        tvDetallesTipologiaCita = findViewById(R.id.tvDetallesTipologiaCita);
+        tvTelefonoAsesorCita = findViewById(R.id.tvTelefonoAsesorCita);
+
+
+        imgMiniaturaProyecto = findViewById(R.id.imgMiniaturaProyecto);
 
         FrameLayout btnBack = findViewById(R.id.btnBack);
         if (btnBack != null) {
@@ -32,12 +79,64 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
+    }
 
-        MaterialButton btnCancelarCita = findViewById(R.id.btnCancelarCita);
-        if (btnCancelarCita != null) {
-            btnCancelarCita.setOnClickListener(v -> {
-                finish();
-            });
-        }
+    private void cargarDetallesDeCita(String idCita) {
+        db.collection("citas").document(idCita).get().addOnSuccessListener(docCita -> {
+            if (docCita.exists()) {
+
+                tvNombreProyectoDetalle.setText(docCita.getString("nombreProyecto"));
+                tvEstadoReserva.setText(docCita.getString("estado").toUpperCase());
+                tvDetallesTipologiaCita.setText(docCita.getString("tipologiaSeleccionada"));
+
+                Timestamp tsInicio = docCita.getTimestamp("fechaHoraInicio");
+                if (tsInicio != null) {
+                    Date date = tsInicio.toDate();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy - hh:mm a", Locale.getDefault());
+                    tvFechaHoraCita.setText(sdf.format(date));
+                }
+
+                String proyectoId = docCita.getString("proyectoId");
+                String asesorId = docCita.getString("asesorId");
+                String inmobiliariaId = docCita.getString("inmobiliariaId");
+
+                if (proyectoId != null) {
+                    db.collection("proyectos").document(proyectoId).get().addOnSuccessListener(docProyecto -> {
+                        if (docProyecto.exists()) {
+                            Map<String, Object> ubicacion = (Map<String, Object>) docProyecto.get("ubicacion");
+                            if (ubicacion != null && ubicacion.get("direccion") != null) {
+                                tvUbicacionProyectoDetalle.setText(ubicacion.get("direccion").toString());
+                            }
+
+                            List<String> imagenes = (List<String>) docProyecto.get("imagenesUrls");
+                            if (imagenes != null && !imagenes.isEmpty()) {
+                                Glide.with(this).load(imagenes.get(0)).into(imgProyectoDetalleCita);
+                                Glide.with(this).load(imagenes.get(0)).into(imgMiniaturaProyecto);
+                            }
+                        }
+                    });
+                }
+
+                if (asesorId != null) {
+                    db.collection("usuarios").document(asesorId).get().addOnSuccessListener(docAsesor -> {
+                        if (docAsesor.exists()) {
+                            String nombreCompleto = docAsesor.getString("nombres") + " " + docAsesor.getString("apellidos");
+                            tvNombreAsesorCita.setText(nombreCompleto);
+
+                            String telefono = docAsesor.getString("telefono");
+                            tvTelefonoAsesorCita.setText(telefono != null ? telefono : "No registrado");
+                        }
+                    });
+                }
+
+                if (inmobiliariaId != null) {
+                    db.collection("inmobiliarias").document(inmobiliariaId).get().addOnSuccessListener(docInmob -> {
+                        if (docInmob.exists()) {
+                            tvInmobiliariaProyectoDetalle.setText(docInmob.getString("nombre"));
+                        }
+                    });
+                }
+            }
+        });
     }
 }

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import java.util.List;
+import com.example.inmia.models.Mensaje;
 
 public class MensajeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

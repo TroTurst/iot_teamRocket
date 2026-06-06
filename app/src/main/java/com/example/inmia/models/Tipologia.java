@@ -34,6 +34,7 @@ public class Tipologia {
     private String tipoAcabados;          // Tipo de acabados (lujo, estándar, básico)
 
     // Constructor
+    public Tipologia() {}
     public Tipologia(String id,
                     String nombre,
                     String descripcion,
