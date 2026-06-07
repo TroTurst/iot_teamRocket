@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
 import com.example.inmia.superadmin.NotificacionHelper;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class UsuarioAdapter extends
 
     private final Context context;
     private List<Usuario> listaUsuarios;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Interfaz para el click en Ver perfil
     public interface OnVerPerfilListener {
@@ -98,6 +100,17 @@ public class UsuarioAdapter extends
                         () -> {
                             usuario.setActivo(isChecked);
                             notifyItemChanged(position);
+                            // Persistir cambio en Firestore
+                            String uid = usuario.getUid();
+                            if (uid != null && !uid.isEmpty()) {
+                                db.collection("usuarios").document(uid)
+                                    .update("activo", isChecked)
+                                    .addOnFailureListener(e -> {
+                                        // Revertir si falla la escritura en Firestore
+                                        usuario.setActivo(!isChecked);
+                                        notifyItemChanged(holder.getAdapterPosition());
+                                    });
+                            }
                             String tipoNotif = isChecked
                                     ? NotificacionHelper.TIPO_USUARIO_ACTIVADO
                                     : NotificacionHelper.TIPO_USUARIO_DESACTIVADO;

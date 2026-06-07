@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,6 +18,8 @@ import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,7 @@ public class GestionUsuariosActivity extends AppCompatActivity
     // ViewPager2
     private ViewPager2 viewPager;
     private UsuariosPagerAdapter pagerAdapter;
+    private ProgressBar progressBar;
 
     // Bottom nav
     private BottomNavigationView bottomNav;
@@ -47,6 +52,9 @@ public class GestionUsuariosActivity extends AppCompatActivity
     private List<Usuario> listaAsesores;
     private List<Usuario> listaClientes;
 
+    // Firebase
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +64,8 @@ public class GestionUsuariosActivity extends AppCompatActivity
         }
 
         setContentView(R.layout.sa_activity_gestion_usuarios);
+
+        db = FirebaseFirestore.getInstance();
 
         // Vincular vistas
         tabAdmins      = findViewById(R.id.tabAdmins);
@@ -67,15 +77,18 @@ public class GestionUsuariosActivity extends AppCompatActivity
         btnNuevo       = findViewById(R.id.btnNuevo);
         btnSolicitudes = findViewById(R.id.btnSolicitudes);
         viewPager      = findViewById(R.id.viewPagerUsuarios);
+        progressBar    = findViewById(R.id.progressBar);
         bottomNav      = findViewById(R.id.bottomNavSuperAdmin);
 
-        inicializarDatos();
+        listaAdmins   = new ArrayList<>();
+        listaAsesores = new ArrayList<>();
+        listaClientes = new ArrayList<>();
 
-        // Configurar ViewPager2
+        // Configurar ViewPager2 con listas vacías (se llenan al cargar Firebase)
         pagerAdapter = new UsuariosPagerAdapter(
                 this, listaAdmins, listaAsesores, listaClientes, this);
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setOffscreenPageLimit(2); // mantiene las 3 páginas en memoria
+        viewPager.setOffscreenPageLimit(2);
 
         // Sincronizar tabs al deslizar
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -138,66 +151,112 @@ public class GestionUsuariosActivity extends AppCompatActivity
             }
             return false;
         });
+
+        // Cargar datos desde Firestore
+        cargarUsuariosDeFirestore();
     }
 
-    // ── Datos hardcodeados ───────────────────────────────────────────────────
+    // ── Carga de datos desde Firestore ──────────────────────────────────────
 
-    private void inicializarDatos() {
-        listaAdmins = new ArrayList<>();
-        listaAdmins.add(new Usuario(
-                "Cyndy Lillibridge", "Inmobiliaria Sofia", "CL", true, "admin",
-                "DNI · 87654321", "12/05/1988",
-                "cyndy@inmiasofia.com", "+51 994 123 456",
-                "Av. Santa Cruz 890, Miraflores"));
-        listaAdmins.add(new Usuario(
-                "John Travolta", "Inmobiliaria John", "JT", true, "admin",
-                "DNI · 12345678", "20/08/1985",
-                "john@inmiajohn.com", "+51 987 111 222",
-                "Jr. Los Olivos 123, San Borja"));
-        listaAdmins.add(new Usuario(
-                "Teresa Mertens", "Inmobiliaria I&M", "TM", true, "admin",
-                "DNI · 23456789", "05/03/1990",
-                "teresa@inmiaiym.com", "+51 976 333 444",
-                "Av. Arequipa 456, Lince"));
-        listaAdmins.add(new Usuario(
-                "Teddy Gallagher", "Inmobiliaria Oasis", "TG", false, "admin",
-                "DNI · 34567890", "18/11/1982",
-                "teddy@inmiaoasis.com", "+51 965 555 666",
-                "Calle Lima 789, Pueblo Libre"));
+    private void cargarUsuariosDeFirestore() {
+        progressBar.setVisibility(View.VISIBLE);
+        final int[] finalizadas = {0};
 
-        listaAsesores = new ArrayList<>();
-        listaAsesores.add(new Usuario(
-                "María García", "INMIA San Isidro", "MG", true, "asesor",
-                "DNI · 45678901", "15/03/1995",
-                "m.garcia@inmia.com", "+51 987 654 321",
-                "Av. Javier Prado 1234, San Isidro"));
-        listaAsesores.add(new Usuario(
-                "Carlos Ramos", "INMIA Miraflores", "CR", true, "asesor",
-                "DNI · 32156789", "22/07/1990",
-                "c.ramos@inmia.com", "+51 912 345 678",
-                "Calle Las Flores 567, Miraflores"));
-        listaAsesores.add(new Usuario(
-                "Juan Sánchez", "INMIA Surco", "JS", false, "asesor",
-                "DNI · 78234561", "08/11/1988",
-                "j.sanchez@inmia.com", "+51 956 789 012",
-                "Jr. Los Pinos 890, Surco"));
+        db.collection("usuarios").whereEqualTo("rol", "admin").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaAdmins.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar admins", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
 
-        listaClientes = new ArrayList<>();
-        listaClientes.add(new Usuario(
-                "Ana Torres", "Sin inmobiliaria", "AT", true, "cliente",
-                "DNI · 56789012", "30/06/1998",
-                "ana.torres@gmail.com", "+51 945 111 222",
-                "Av. Brasil 321, Jesús María"));
-        listaClientes.add(new Usuario(
-                "Pedro Vargas", "Sin inmobiliaria", "PV", true, "cliente",
-                "DNI · 67890123", "14/02/1993",
-                "pedro.vargas@gmail.com", "+51 934 333 444",
-                "Calle Colón 654, Barranco"));
-        listaClientes.add(new Usuario(
-                "Lucía Mendoza", "Sin inmobiliaria", "LM", false, "cliente",
-                "DNI · 89012345", "25/09/2000",
-                "lucia.mendoza@gmail.com", "+51 923 555 666",
-                "Jr. Cusco 987, Cercado"));
+        db.collection("usuarios").whereEqualTo("rol", "asesor").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaAsesores.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar asesores", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
+
+        db.collection("usuarios").whereEqualTo("rol", "cliente").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaClientes.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar clientes", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
+    }
+
+    private void onTodasCargadas() {
+        progressBar.setVisibility(View.GONE);
+        pagerAdapter.getPageAdapter(0).actualizarLista(listaAdmins);
+        pagerAdapter.getPageAdapter(1).actualizarLista(listaAsesores);
+        pagerAdapter.getPageAdapter(2).actualizarLista(listaClientes);
+        actualizarTabVisual(tabActual);
+    }
+
+    private Usuario documentToUsuario(DocumentSnapshot doc) {
+        String nombres   = doc.getString("nombres");
+        String apellidos = doc.getString("apellidos");
+        if (nombres == null)   nombres   = "";
+        if (apellidos == null) apellidos = "";
+        String nombre = (nombres + " " + apellidos).trim();
+
+        // Iniciales: primera letra de nombres + primera letra de apellidos
+        String iniciales = "";
+        if (!nombres.isEmpty())   iniciales += Character.toUpperCase(nombres.charAt(0));
+        if (!apellidos.isEmpty()) iniciales += Character.toUpperCase(apellidos.charAt(0));
+        if (iniciales.isEmpty())  iniciales = "??";
+
+        Boolean activoObj = doc.getBoolean("activo");
+        boolean activo = activoObj != null && activoObj;
+
+        String rol = doc.getString("rol");
+        if (rol == null) rol = "";
+
+        // empresa: campo opcional; si no existe, se usa un valor por defecto según rol
+        String empresa = doc.getString("empresa");
+        if (empresa == null || empresa.isEmpty()) {
+            empresa = "cliente".equals(rol) ? "Sin inmobiliaria" : "INMIA";
+        }
+
+        // documento: combina tipo y número
+        String tipoDoc = doc.getString("tipoDocumento");
+        String numDoc  = doc.getString("numeroDocumento");
+        String documento = "";
+        if (tipoDoc != null && !tipoDoc.isEmpty()) {
+            documento = tipoDoc + " · " + (numDoc != null ? numDoc : "");
+        } else if (numDoc != null) {
+            documento = numDoc;
+        }
+
+        String fechaNac  = doc.getString("fechaNacimiento"); if (fechaNac == null)  fechaNac  = "";
+        String correo    = doc.getString("correo");          if (correo == null)    correo    = "";
+        String telefono  = doc.getString("telefono");        if (telefono == null)  telefono  = "";
+        String domicilio = doc.getString("domicilio");       if (domicilio == null) domicilio = "";
+
+        Usuario u = new Usuario(nombre, empresa, iniciales, activo, rol,
+                documento, fechaNac, correo, telefono, domicilio);
+        u.setUid(doc.getId());
+        return u;
     }
 
     // ── Ver perfil ───────────────────────────────────────────────────────────
@@ -221,7 +280,6 @@ public class GestionUsuariosActivity extends AppCompatActivity
     // ── Tabs ─────────────────────────────────────────────────────────────────
 
     private void actualizarTabVisual(int position) {
-        // Resetear todos los tabs
         tabAdmins.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAdmins.setTextColor(getColor(R.color.inmia_teal_dark));
         tabAsesores.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));

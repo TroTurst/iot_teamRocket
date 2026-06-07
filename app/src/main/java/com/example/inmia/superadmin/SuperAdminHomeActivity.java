@@ -21,6 +21,9 @@ import com.example.inmia.superadmin.db.AppDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +35,21 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     private TextView tvBadgeNotif;
     private MaterialCardView cardSolicitudes;
     private MaterialButton btnVerSolicitudes;
+    private TextView tvGreeting;
 
-    // ← NUEVO: RecyclerView nuevos usuarios
+    // Contadores del dashboard
+    private TextView tvContadorInmobiliarias;
+    private TextView tvContadorUsuarios;
+    private TextView tvContadorReservas;
+
+    // RecyclerView nuevos usuarios
     private RecyclerView recyclerNuevosUsuarios;
     private NuevoUsuarioAdapter nuevoUsuarioAdapter;
     private List<Usuario> listaNuevosUsuarios;
 
     private int totalSolicitudes = 3;
+
+    private FirebaseFirestore db;
 
     private final ActivityResultLauncher<String> permisosLauncher =
             registerForActivityResult(
@@ -56,13 +67,19 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.sa_activity_home_superadmin);
 
+        db = FirebaseFirestore.getInstance();
+
         // Vincular vistas
-        bottomNav              = findViewById(R.id.bottomNavSuperAdmin);
-        frameNotificaciones    = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif           = findViewById(R.id.tvBadgeNotif);
-        cardSolicitudes        = findViewById(R.id.cardSolicitudes);
-        btnVerSolicitudes      = findViewById(R.id.btnVerSolicitudes);
-        recyclerNuevosUsuarios = findViewById(R.id.recyclerNuevosUsuarios);
+        bottomNav               = findViewById(R.id.bottomNavSuperAdmin);
+        frameNotificaciones     = findViewById(R.id.frameNotificaciones);
+        tvBadgeNotif            = findViewById(R.id.tvBadgeNotif);
+        cardSolicitudes         = findViewById(R.id.cardSolicitudes);
+        btnVerSolicitudes       = findViewById(R.id.btnVerSolicitudes);
+        recyclerNuevosUsuarios  = findViewById(R.id.recyclerNuevosUsuarios);
+        tvGreeting              = findViewById(R.id.tvGreeting);
+        tvContadorInmobiliarias = findViewById(R.id.tvContadorInmobiliarias);
+        tvContadorUsuarios      = findViewById(R.id.tvContadorUsuarios);
+        tvContadorReservas      = findViewById(R.id.tvContadorReservas);
 
         // Solicitar permiso de notificaciones (Android 13+)
         solicitarPermisoNotificaciones();
@@ -71,18 +88,22 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         configurarBadge();
         configurarSolicitudes();
 
-        // ← NUEVO: Configurar RecyclerView de nuevos usuarios
-        inicializarNuevosUsuarios();
-        recyclerNuevosUsuarios.setLayoutManager(
-                new LinearLayoutManager(this));
-        nuevoUsuarioAdapter = new NuevoUsuarioAdapter(
-                this, listaNuevosUsuarios);
+        // Configurar RecyclerView
+        listaNuevosUsuarios = new ArrayList<>();
+        recyclerNuevosUsuarios.setLayoutManager(new LinearLayoutManager(this));
+        nuevoUsuarioAdapter = new NuevoUsuarioAdapter(this, listaNuevosUsuarios);
         recyclerNuevosUsuarios.setAdapter(nuevoUsuarioAdapter);
 
+        // Cargar datos reales de Firebase
+        cargarDashboard();
+        cargarNombreSuperAdmin();
+
+        // Nuevos usuarios — datos de ejemplo
+        inicializarNuevosUsuarios();
+
         // Campanita → ir a la vista de notificaciones
-        frameNotificaciones.setOnClickListener(v -> {
-            startActivity(new Intent(this, NotificacionesSuperAdminActivity.class));
-        });
+        frameNotificaciones.setOnClickListener(v ->
+                startActivity(new Intent(this, NotificacionesSuperAdminActivity.class)));
 
         // Card solicitudes → ir a Gestión de Usuarios
         cardSolicitudes.setOnClickListener(v -> irAGestionUsuarios());
@@ -114,28 +135,51 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         });
     }
 
-    // ── Datos hardcodeados nuevos usuarios ──────────────────────────────────
+    // ── Carga de datos desde Firestore ──────────────────────────────────────
+
+    private void cargarDashboard() {
+        db.collection("usuarios").get()
+            .addOnSuccessListener(q ->
+                tvContadorUsuarios.setText(String.valueOf(q.size())))
+            .addOnFailureListener(e ->
+                tvContadorUsuarios.setText("—"));
+
+        db.collection("inmobiliarias").get()
+            .addOnSuccessListener(q ->
+                tvContadorInmobiliarias.setText(String.valueOf(q.size())))
+            .addOnFailureListener(e ->
+                tvContadorInmobiliarias.setText("—"));
+
+        db.collection("separaciones").get()
+            .addOnSuccessListener(q ->
+                tvContadorReservas.setText(String.valueOf(q.size())))
+            .addOnFailureListener(e ->
+                tvContadorReservas.setText("—"));
+    }
 
     private void inicializarNuevosUsuarios() {
-        listaNuevosUsuarios = new ArrayList<>();
         listaNuevosUsuarios.add(new Usuario(
-                "Juan Pérez",
-                "INMIA Miraflores",
-                "JP", true,
-                "admin",
-                "Hace 2 días"));
+                "Juan Pérez", "INMIA Miraflores", "JP", true, "admin", "Hace 2 días"));
         listaNuevosUsuarios.add(new Usuario(
-                "María García",
-                "INMIA San Isidro",
-                "MG", true,
-                "asesor",
-                "Hace 5 días"));
+                "María García", "INMIA San Isidro", "MG", true, "asesor", "Hace 5 días"));
         listaNuevosUsuarios.add(new Usuario(
-                "Carlos Rodríguez",
-                "Sin inmobiliaria",
-                "CR", true,
-                "cliente",
-                "Hace 1 semana"));
+                "Carlos Rodríguez", "Sin inmobiliaria", "CR", true, "cliente", "Hace 1 semana"));
+        nuevoUsuarioAdapter.notifyDataSetChanged();
+    }
+
+    private void cargarNombreSuperAdmin() {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        db.collection("usuarios").document(uid).get()
+            .addOnSuccessListener(doc -> {
+                if (doc.exists()) {
+                    String nombres = doc.getString("nombres");
+                    if (nombres != null && !nombres.isEmpty()) {
+                        tvGreeting.setText("¡Hola, " + nombres + "!");
+                    }
+                }
+            });
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

@@ -5,20 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
-import com.example.inmia.superadmin.db.AdminEntity;
-import com.example.inmia.superadmin.db.AppDatabase;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CrearAdminActivity extends AppCompatActivity {
 
@@ -37,8 +43,9 @@ public class CrearAdminActivity extends AppCompatActivity {
     private TextInputLayout tilPassword, tilConfirmPassword;
     private TextInputEditText etPassword, etConfirmPassword;
 
-    // Botón
+    // Botón y overlay
     private MaterialButton btnCrearCuenta;
+    private FrameLayout layoutLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +83,9 @@ public class CrearAdminActivity extends AppCompatActivity {
         etPassword         = findViewById(R.id.etPassword);
         etConfirmPassword  = findViewById(R.id.etConfirmPassword);
 
-        // Botón
+        // Botón y overlay
         btnCrearCuenta = findViewById(R.id.btnCrearCuenta);
+        layoutLoading  = findViewById(R.id.layoutLoading);
 
         // Configurar dropdown tipo de documento
         configurarTipoDocumento();
@@ -219,37 +227,94 @@ public class CrearAdminActivity extends AppCompatActivity {
     }
 
     private void registrarAdmin() {
+        btnCrearCuenta.setEnabled(false);
+        layoutLoading.setVisibility(View.VISIBLE);
+
+        String correo   = etCorreo.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        // Usamos una FirebaseApp secundaria para crear el usuario sin
+        // desloguear al superadmin que está en sesión activa
+        FirebaseApp secondaryApp;
+        try {
+            secondaryApp = FirebaseApp.initializeApp(this,
+                    FirebaseApp.getInstance().getOptions(), "creacion_admin");
+        } catch (IllegalStateException e) {
+            secondaryApp = FirebaseApp.getInstance("creacion_admin");
+        }
+
+        FirebaseAuth secondaryAuth = FirebaseAuth.getInstance(secondaryApp);
+        final FirebaseApp appRef = secondaryApp;
+
+        secondaryAuth.createUserWithEmailAndPassword(correo, password)
+            .addOnSuccessListener(result -> {
+                String uid = result.getUser().getUid();
+                secondaryAuth.signOut();
+                try { appRef.delete(); } catch (Exception ignored) {}
+                guardarEnFirestore(uid);
+            })
+            .addOnFailureListener(e -> {
+                btnCrearCuenta.setEnabled(true);
+                layoutLoading.setVisibility(View.GONE);
+                try { appRef.delete(); } catch (Exception ignored) {}
+
+                String msg = e.getMessage() != null ? e.getMessage() : "";
+                if (msg.contains("email address is already in use")) {
+                    tilCorreo.setError("Este correo ya está registrado");
+                } else {
+                    Toast.makeText(this,
+                            "Error al crear cuenta: " + msg,
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+    }
+
+    private void guardarEnFirestore(String uid) {
         String nombres   = etNombres.getText().toString().trim();
         String apellidos = etApellidos.getText().toString().trim();
 
-        // Guardar en Room (storage local)
-        AdminEntity admin = new AdminEntity();
-        admin.nombres          = nombres;
-        admin.apellidos        = apellidos;
-        admin.tipoDocumento    = spinnerTipoDocumento.getText().toString();
-        admin.numDocumento     = etNumDocumento.getText().toString().trim();
-        admin.fechaNacimiento  = etFechaNacimiento.getText().toString().trim();
-        admin.correo           = etCorreo.getText().toString().trim();
-        admin.telefono         = etTelefono.getText().toString().trim();
-        admin.domicilio        = etDomicilio.getText().toString().trim();
-        admin.fechaCreacion    = System.currentTimeMillis();
-        AppDatabase.getInstance(this).adminDao().insertar(admin);
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombres",          nombres);
+        datos.put("apellidos",        apellidos);
+        datos.put("tipoDocumento",    spinnerTipoDocumento.getText().toString());
+        datos.put("numeroDocumento",  etNumDocumento.getText().toString().trim());
+        datos.put("fechaNacimiento",  etFechaNacimiento.getText().toString().trim());
+        datos.put("correo",           etCorreo.getText().toString().trim());
+        datos.put("telefono",         etTelefono.getText().toString().trim());
+        datos.put("domicilio",        etDomicilio.getText().toString().trim());
+        datos.put("rol",              "admin");
+        datos.put("activo",           true);
+        datos.put("fechaCreacion",    FieldValue.serverTimestamp());
 
-        // Disparar notificación
-        NotificacionHelper.enviar(
-                this,
-                "Nuevo administrador registrado",
-                nombres + " " + apellidos + " ha sido añadido al sistema.",
-                NotificacionHelper.TIPO_ADMIN_CREADO
-        );
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(uid)
+            .set(datos)
+            .addOnSuccessListener(unused -> {
+                layoutLoading.setVisibility(View.GONE);
 
-        Toast.makeText(this,
-                getString(R.string.registro_exitoso),
-                Toast.LENGTH_LONG).show();
+                NotificacionHelper.enviar(
+                        this,
+                        "Nuevo administrador registrado",
+                        nombres + " " + apellidos + " ha sido añadido al sistema.",
+                        NotificacionHelper.TIPO_ADMIN_CREADO
+                );
 
-        Intent intent = new Intent(this, GestionUsuariosActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
+                Toast.makeText(this,
+                        getString(R.string.registro_exitoso),
+                        Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(this, GestionUsuariosActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            })
+            .addOnFailureListener(e -> {
+                btnCrearCuenta.setEnabled(true);
+                layoutLoading.setVisibility(View.GONE);
+                Toast.makeText(this,
+                        "Error al guardar datos: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            });
     }
 }
