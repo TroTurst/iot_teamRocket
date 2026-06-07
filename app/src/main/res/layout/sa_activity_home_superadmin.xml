@@ -27,7 +27,6 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp">
 
-                <!-- Logo + nombre app -->
                 <ImageView
                     android:id="@+id/imgHeaderLogo"
                     android:layout_width="32dp"
@@ -84,7 +83,7 @@
                         android:textStyle="bold"
                         android:gravity="center"
                         android:background="@drawable/badge_background"
-                        android:visibility="visible"/>
+                        android:visibility="gone"/>
 
                 </FrameLayout>
 
@@ -115,16 +114,183 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- ── CONTENIDO — overlap redondeado ── -->
+            <!-- ── CONTENIDO ── -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="-24dp"
                 android:background="@drawable/bg_content_rounded"
-                android:paddingTop="20dp">
+                android:paddingTop="24dp">
 
-                <!-- ── DASHBOARD: RESUMEN GLOBAL ── -->
+                <!-- ── SECCIÓN: USUARIOS ACTIVOS ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Usuarios activos"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:layout_marginBottom="20dp">
+
+                    <!-- Clientes activos -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="110dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="3dp"
+                        app:cardBackgroundColor="#00ACC1">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:id="@+id/tvClientesActivos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textColor="#FFFFFF"
+                                android:textSize="34sp"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Clientes"
+                                android:textColor="#FFFFFFFF"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:gravity="center"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="activos"
+                                android:textColor="#CCE0F7FA"
+                                android:textSize="11sp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Asesores activos -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="110dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="3dp"
+                        app:cardBackgroundColor="#43A047">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:id="@+id/tvAsesoresActivos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textColor="#FFFFFF"
+                                android:textSize="34sp"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Asesores"
+                                android:textColor="#FFFFFFFF"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:gravity="center"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="activos"
+                                android:textColor="#CCE8F5E9"
+                                android:textSize="11sp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Admins activos -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="110dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="3dp"
+                        app:cardBackgroundColor="#3949AB">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:id="@+id/tvAdminsActivos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textColor="#FFFFFF"
+                                android:textSize="34sp"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Admins"
+                                android:textColor="#FFFFFFFF"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:gravity="center"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="activos"
+                                android:textColor="#CCE8EAF6"
+                                android:textSize="11sp"
+                                android:gravity="center"/>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <!-- ── SECCIÓN: RESUMEN GENERAL ── -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Resumen general"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="12dp"/>
+
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -171,38 +337,7 @@
                             android:layout_height="match_parent"
                             android:background="#E0EEEE"/>
 
-                        <!-- Usuarios -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:id="@+id/tvContadorUsuarios"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="—"
-                                android:textColor="@color/inmia_teal_dark"
-                                android:textSize="28sp"
-                                android:textStyle="bold"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Usuarios"
-                                android:textColor="#7A9E9E"
-                                android:textSize="11sp"
-                                android:gravity="center"/>
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="#E0EEEE"/>
-
-                        <!-- Reservas -->
+                        <!-- Reservaciones totales -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -222,7 +357,38 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Reservas"
+                                android:text="Reservaciones"
+                                android:textColor="#7A9E9E"
+                                android:textSize="11sp"
+                                android:gravity="center"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#E0EEEE"/>
+
+                        <!-- Asesores totales -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvContadorCitas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="—"
+                                android:textColor="@color/inmia_teal_dark"
+                                android:textSize="28sp"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Citas"
                                 android:textColor="#7A9E9E"
                                 android:textSize="11sp"
                                 android:gravity="center"/>
@@ -231,7 +397,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- ── SOLICITUDES PENDIENTES ── -->
+                <!-- ── SECCIÓN: SOLICITUDES PENDIENTES ── -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -242,13 +408,12 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginBottom="12dp"/>
 
-                <!-- Card solicitudes — azul índigo que combina con el verde -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSolicitudes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="20dp"
                     android:clickable="true"
                     android:focusable="true"
                     app:cardCornerRadius="16dp"
@@ -260,7 +425,6 @@
                         android:layout_height="wrap_content"
                         android:padding="24dp">
 
-                        <!-- Ícono decorativo de fondo -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -272,7 +436,6 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"/>
 
-                        <!-- Número grande -->
                         <TextView
                             android:id="@+id/tvTotalSolicitudes"
                             android:layout_width="wrap_content"
@@ -285,7 +448,6 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"/>
 
-                        <!-- Descripción -->
                         <TextView
                             android:id="@+id/tvDescSolicitudes"
                             android:layout_width="0dp"
@@ -300,7 +462,6 @@
                             app:layout_constraintStart_toEndOf="@id/tvTotalSolicitudes"
                             app:layout_constraintEnd_toEndOf="parent"/>
 
-                        <!-- Botón -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnVerSolicitudes"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -326,20 +487,88 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nuevos usuarios este mes"
+                    android:text="Actividad del mes"
                     android:textColor="@color/inmia_text"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginStart="20dp"
                     android:layout_marginBottom="12dp"/>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerNuevosUsuarios"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingBottom="8dp"
-                    android:nestedScrollingEnabled="false"/>
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="3dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:strokeColor="#B2EBF2"
+                    app:strokeWidth="1.5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="20dp">
+
+                        <!-- Círculo icono izquierdo -->
+                        <LinearLayout
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:gravity="center"
+                            android:background="@drawable/sa_card_stat_teal"
+                            android:layout_marginEnd="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★"
+                                android:textColor="#FFFFFF"
+                                android:textSize="22sp"/>
+
+                        </LinearLayout>
+
+                        <!-- Texto central -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nuevos usuarios"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/tvSubtituloNuevos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="registrados este mes"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp"
+                                android:layout_marginTop="2dp"/>
+
+                        </LinearLayout>
+
+                        <!-- Número destacado -->
+                        <TextView
+                            android:id="@+id/tvNuevosEsteMes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="—"
+                            android:textColor="@color/inmia_teal_dark"
+                            android:textSize="42sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
 
         </LinearLayout>
