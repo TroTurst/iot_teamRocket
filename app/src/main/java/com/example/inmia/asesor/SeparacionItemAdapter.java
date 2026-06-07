@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -39,7 +38,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
     public void onBindViewHolder(@NonNull SeparacionViewHolder holder, int position) {
         SeparacionItem item = items.get(position);
         holder.status.setText(item.getStatus());
-        holder.status.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), item.getStatusColorRes()));
+        AsesorEstadoBadgeStyle.apply(holder.itemView.getContext(), holder.status, item.getStatus());
         holder.project.setText(item.getProject());
         holder.location.setText(item.getLocation());
         holder.company.setText(item.getCompany());
@@ -55,6 +54,12 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void updateItems(List<SeparacionItem> newItems) {
+        items.clear();
+        items.addAll(newItems);
+        notifyDataSetChanged();
     }
 
     static class SeparacionViewHolder extends RecyclerView.ViewHolder {

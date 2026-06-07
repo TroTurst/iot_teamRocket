@@ -378,6 +378,50 @@
 
                         </LinearLayout>
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginHorizontal="12dp"
+                            android:background="#F0F0F0"/>
+
+                        <!-- Simular una notificación -->
+                        <LinearLayout
+                            android:id="@+id/layoutSimularNotificacion"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:contentDescription="Simular notificación"
+                                android:src="@drawable/ic_notifications"
+                                app:tint="@color/inmia_teal_dark"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:text="Simular una notificación"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"/>
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Ir"
+                                android:rotation="180"
+                                android:src="@drawable/ic_arrow_back"
+                                app:tint="#A0BFBF"/>
+
+                        </LinearLayout>
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

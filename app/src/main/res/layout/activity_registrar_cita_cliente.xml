@@ -110,6 +110,7 @@
                         android:layout_marginBottom="24dp">
 
                         <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/imgResumenProyecto"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:scaleType="centerCrop"
@@ -123,8 +124,9 @@
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
                             android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Palm Living" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="San Isidro, Lima · En venta" android:textColor="#18C0C1" android:textSize="10sp" />
+                            <TextView android:id="@+id/tvResumenNombreProyecto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando proyecto..." android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/tvResumenUbicacionProyecto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando ubicación..." android:textColor="#18C0C1" android:textSize="10sp" />
+                            <TextView android:id="@+id/tvResumenTipologia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tipología: Cargando..." android:textColor="#087A82" android:textStyle="bold" android:textSize="10sp" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
                         <TextView
@@ -149,119 +151,41 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Selecciona el día de tu visita"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_arrow_back"
-                            app:tint="#222222"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Noviembre 2026"
-                            android:textColor="#222222"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_arrow_back"
-                            android:rotation="180"
-                            app:tint="#222222"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#F8FAFA"
-                        android:paddingVertical="8dp"
-                        android:layout_marginBottom="16dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="L" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="M" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="X" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="J" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="V" android:textColor="#A0A0A0" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="S" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="D" android:textColor="#18C0C1" android:textSize="12sp" android:textStyle="bold"/>
-                    </LinearLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:stretchColumns="*"
+                        android:scrollbars="none"
+                        android:clipToPadding="false"
                         android:layout_marginBottom="24dp">
 
-                        <TableRow android:layout_marginBottom="16dp">
-                            <TextView android:gravity="center" android:text="28" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="29" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="30" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="31" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="1" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="2" android:textColor="#18C0C1" android:textSize="13sp"/>
-                            <TextView android:gravity="center" android:text="3" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        </TableRow>
+                        <LinearLayout
+                            android:id="@+id/containerFechas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingEnd="16dp"/>
+                    </HorizontalScrollView>
 
-                        <TableRow android:layout_marginBottom="16dp">
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="4" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="5" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="6" android:textColor="#222222" android:textSize="13sp"/>
-                            <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
-                                <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_teal" android:gravity="center" android:text="7" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="13sp"/>
-                            </FrameLayout>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="8" android:textColor="#222222" android:textSize="13sp"/>
-                            <FrameLayout android:layout_width="wrap_content" android:layout_height="32dp">
-                                <TextView android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" android:background="@drawable/bg_circle_light_teal" android:gravity="center" android:text="9" android:textColor="#18C0C1" android:textSize="13sp"/>
-                            </FrameLayout>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="10" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        </TableRow>
-
-                        <TableRow android:layout_marginBottom="16dp">
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="11" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="12" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="13" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="14" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="15" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="16" android:textColor="#18C0C1" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="17" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        </TableRow>
-
-                        <TableRow android:layout_marginBottom="16dp">
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="18" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="19" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="20" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="21" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="22" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="23" android:textColor="#18C0C1" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="24" android:textColor="#18C0C1" android:textSize="13sp"/>
-                        </TableRow>
-
-                        <TableRow android:layout_marginBottom="16dp">
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="25" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="26" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="27" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="28" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="29" android:textColor="#222222" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="30" android:textColor="#18C0C1" android:textSize="13sp"/>
-                            <TextView android:layout_height="32dp" android:gravity="center" android:text="1" android:textColor="#D0D0D0" android:textSize="13sp"/>
-                        </TableRow>
-                    </TableLayout>
+                    <TextView
+                        android:id="@+id/tvFechaSeleccionada"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aún no has seleccionado una fecha"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_marginBottom="24dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -272,9 +196,10 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvSubtituloHorarios"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Disponibles para el 7 de Noviembre"
+                        android:text="Elige una hora para tu cita"
                         android:textColor="#18C0C1"
                         android:textSize="10sp"
                         android:layout_marginBottom="16dp"/>
@@ -349,6 +274,7 @@
                             app:cardCornerRadius="24dp"
                             app:cardElevation="0dp">
                             <ImageView
+                                android:id="@+id/imgFotoAsesor"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
@@ -361,8 +287,8 @@
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
                             android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Carlos Mendoza" android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor de Ventas Especializado" android:textColor="#18C0C1" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvNombreAsesor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando asesor..." android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor Inmobiliario" android:textColor="#18C0C1" android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 

@@ -247,6 +247,10 @@
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar" />
         <activity
+            android:name=".admin.AdminSimularNotificacionesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Inmia.NoActionBar" />
+        <activity
             android:name=".admin.AdminPerfilActivity"
             android:exported="false"
             android:theme="@style/Theme.Inmia.NoActionBar" /> <!-- SUPERADMIN -->
@@ -265,6 +269,9 @@
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".cliente.ClienteBuzonNotificacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".cliente.ClienteCambiarPasswordActivity"
             android:exported="false" />
 
     </application>

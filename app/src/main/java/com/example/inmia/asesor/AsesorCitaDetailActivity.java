@@ -21,15 +21,32 @@ import android.content.res.ColorStateList;
 
 public class AsesorCitaDetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_CITA_KEY = "extra_cita_key";
+    public static final String EXTRA_CITA_CLIENTE = "extra_cita_cliente";
+    public static final String EXTRA_CITA_PROYECTO = "extra_cita_proyecto";
+    public static final String EXTRA_CITA_ESTADO = "extra_cita_estado";
+    public static final String EXTRA_CITA_CONFIRMADA = "extra_cita_confirmada";
+
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
+    private TextView tvEstadoCitaDetalle;
+    private TextView tvProyectoCitaDetalle;
+    private TextView tvUbicacionCitaDetalle;
+    private TextView tvFechaCitaDetalle;
+    private TextView tvProyectoGuiaCitaDetalle;
+    private TextView tvUbicacionGuiaCitaDetalle;
+    private TextView tvEmpresaCitaDetalle;
+    private TextView tvFechaReservaCitaDetalle;
+    private TextView tvClienteReservaCitaDetalle;
+    private TextView tvDepartamentoReservaCitaDetalle;
+    private TextView tvTelefonoReservaCitaDetalle;
     private TextView tvClienteCitaDetalle;
     private TextView btnCancelarCita;
 
-    private int totalNotificaciones = 2;
     private boolean citaCancelada = false;
+    private String citaKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +62,23 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         framePerfil = findViewById(R.id.framePerfil);
+        tvEstadoCitaDetalle = findViewById(R.id.tvEstadoCitaDetalle);
+        tvProyectoCitaDetalle = findViewById(R.id.tvProyectoCitaDetalle);
+        tvUbicacionCitaDetalle = findViewById(R.id.tvUbicacionCitaDetalle);
+        tvFechaCitaDetalle = findViewById(R.id.tvFechaCitaDetalle);
+        tvProyectoGuiaCitaDetalle = findViewById(R.id.tvProyectoGuiaCitaDetalle);
+        tvUbicacionGuiaCitaDetalle = findViewById(R.id.tvUbicacionGuiaCitaDetalle);
+        tvEmpresaCitaDetalle = findViewById(R.id.tvEmpresaCitaDetalle);
+        tvFechaReservaCitaDetalle = findViewById(R.id.tvFechaReservaCitaDetalle);
+        tvClienteReservaCitaDetalle = findViewById(R.id.tvClienteReservaCitaDetalle);
+        tvDepartamentoReservaCitaDetalle = findViewById(R.id.tvDepartamentoReservaCitaDetalle);
+        tvTelefonoReservaCitaDetalle = findViewById(R.id.tvTelefonoReservaCitaDetalle);
         tvClienteCitaDetalle = findViewById(R.id.tvClienteCitaDetalle);
         btnCancelarCita = findViewById(R.id.btnCancelarCita);
 
+        AsesorCitaStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
+        cargarDatosCita();
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -106,11 +137,23 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
             R.drawable.bg_badge_red_circle,
             () -> {
                 citaCancelada = true;
+                if (citaKey != null) {
+                    AsesorCitaStore.updateStatus(this, citaKey, "Cancelada", false);
+                }
                 if (btnCancelarCita != null) {
                     btnCancelarCita.setText("Cancelada");
                     btnCancelarCita.setEnabled(false);
                     btnCancelarCita.setAlpha(0.6f);
                 }
+                AsesorNotificacionHelper.enviar(
+                    this,
+                    "Cita cancelada",
+                    "Se cancelo la cita con " + obtenerNombreCliente(),
+                    AsesorNotificacionStore.TIPO_CITA_CANCELADA,
+                    AsesorNotificacionStore.TARGET_CITA_DETAIL,
+                    citaKey
+                );
+                configurarBadge();
                 Toast.makeText(this, "Cita cancelada", Toast.LENGTH_SHORT).show();
             }
         );
@@ -125,6 +168,73 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
             return "Cliente";
         }
         return raw;
+    }
+
+    private void cargarDatosCita() {
+        String cliente = getIntent().getStringExtra(EXTRA_CITA_CLIENTE);
+        String proyecto = getIntent().getStringExtra(EXTRA_CITA_PROYECTO);
+        citaKey = getIntent().getStringExtra(EXTRA_CITA_KEY);
+
+        if ((citaKey == null || citaKey.trim().isEmpty()) && cliente != null && proyecto != null) {
+            citaKey = AsesorCitaStore.buildKey(cliente, proyecto);
+        }
+
+        AsesorCitaStore.CitaRecord record = AsesorCitaStore.getRecordByKey(this, citaKey);
+        if (record != null) {
+            if (tvClienteCitaDetalle != null) {
+                tvClienteCitaDetalle.setText(record.client);
+            }
+            if (tvEstadoCitaDetalle != null) {
+                tvEstadoCitaDetalle.setText(record.status);
+                AsesorEstadoBadgeStyle.apply(this, tvEstadoCitaDetalle, record.status);
+            }
+            if (tvProyectoCitaDetalle != null) {
+                tvProyectoCitaDetalle.setText(record.project);
+            }
+            if (tvUbicacionCitaDetalle != null) {
+                tvUbicacionCitaDetalle.setText(record.location);
+            }
+            if (tvFechaCitaDetalle != null) {
+                tvFechaCitaDetalle.setText("Fecha " + record.date.replace('-', '/') + " - " + record.time + record.meridian);
+            }
+            if (tvProyectoGuiaCitaDetalle != null) {
+                tvProyectoGuiaCitaDetalle.setText(record.project);
+            }
+            if (tvUbicacionGuiaCitaDetalle != null) {
+                tvUbicacionGuiaCitaDetalle.setText(record.location);
+            }
+            if (tvEmpresaCitaDetalle != null) {
+                tvEmpresaCitaDetalle.setText(record.company);
+            }
+            if (tvFechaReservaCitaDetalle != null) {
+                tvFechaReservaCitaDetalle.setText(record.date.replace('-', '/'));
+            }
+            if (tvClienteReservaCitaDetalle != null) {
+                tvClienteReservaCitaDetalle.setText(record.client);
+            }
+            if (tvDepartamentoReservaCitaDetalle != null) {
+                tvDepartamentoReservaCitaDetalle.setText(record.project);
+            }
+            if (tvTelefonoReservaCitaDetalle != null) {
+                tvTelefonoReservaCitaDetalle.setText(buildPhoneFromKey(citaKey));
+            }
+            citaCancelada = "Cancelada".equalsIgnoreCase(record.status);
+            if (citaCancelada && btnCancelarCita != null) {
+                btnCancelarCita.setText("Cancelada");
+                btnCancelarCita.setEnabled(false);
+                btnCancelarCita.setAlpha(0.6f);
+            }
+        } else if (cliente != null && tvClienteCitaDetalle != null) {
+            tvClienteCitaDetalle.setText(cliente);
+        }
+    }
+
+    private String buildPhoneFromKey(String key) {
+        if (key == null || key.trim().isEmpty()) {
+            return "000000000";
+        }
+        int hash = Math.abs(key.hashCode());
+        return String.format(java.util.Locale.US, "9%08d", hash % 100000000);
     }
 
     private void mostrarDialogoAccion(
@@ -177,6 +287,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     }
 
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -186,7 +297,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
     }
 }

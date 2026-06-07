@@ -1,5 +1,6 @@
 package com.example.inmia.cliente;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Proyecto;
+import com.example.inmia.models.Tipologia;
 
 import java.util.List;
 
@@ -34,9 +37,36 @@ public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.Proy
 
         holder.tvNombre.setText(proyecto.getNombre());
         holder.tvUbicacion.setText(proyecto.getUbicacion());
-        holder.tvPrecio.setText(proyecto.getPrecio());
-        holder.tvEtiqueta.setText(proyecto.getEtiqueta());
-        holder.imgProyecto.setImageResource(proyecto.getImagenResId());
+        holder.tvEtiqueta.setText(proyecto.getEstadoProyecto());
+        holder.imgProyecto.setImageResource(proyecto.getImagenHeroPrincipal());
+
+        String precioMostrar = "Consultar precio";
+        if (proyecto.getTipologias() != null && !proyecto.getTipologias().isEmpty()) {
+            double minPrecio = Double.MAX_VALUE;
+            for (Tipologia tipo : proyecto.getTipologias()) {
+                if (tipo.getPrecio() != null && !tipo.getPrecio().isEmpty()) {
+                    try {
+                        double precioActual = Double.parseDouble(tipo.getPrecio());
+                        if (precioActual < minPrecio) minPrecio = precioActual;
+                    } catch (NumberFormatException e) {
+
+                    }
+                }
+            }
+            if (minPrecio != Double.MAX_VALUE) {
+                precioMostrar = "Desde S/." + String.format("%.2f", minPrecio);
+            }
+        }
+        holder.tvPrecio.setText(precioMostrar);
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), ClienteDetallePropiedadActivity.class);
+
+            intent.putExtra("PROYECTO_ID", proyecto.getId());
+            intent.putExtra("PROYECTO_NOMBRE", proyecto.getNombre());
+
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override

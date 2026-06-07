@@ -137,6 +137,7 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tvEstadoCitaDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Confirmada"
@@ -145,6 +146,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvProyectoCitaDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Los Alamos"
@@ -177,6 +179,7 @@
                             android:contentDescription="Ubicacion" />
 
                         <TextView
+                            android:id="@+id/tvUbicacionCitaDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -187,6 +190,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tvFechaCitaDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Fecha y hora 12/05/2026 - 10:30AM"
@@ -250,6 +254,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tvProyectoGuiaCitaDetalle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Palm Living"
@@ -271,6 +276,7 @@
                                     android:contentDescription="Ubicacion" />
 
                                 <TextView
+                                    android:id="@+id/tvUbicacionGuiaCitaDetalle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="6dp"
@@ -281,6 +287,7 @@
                             </LinearLayout>
 
                             <TextView
+                                android:id="@+id/tvEmpresaCitaDetalle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Galeon Inmobiliaria"
@@ -399,6 +406,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvFechaReservaCitaDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="07/11/2026"
@@ -431,6 +439,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvClienteReservaCitaDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Juan Perez"
@@ -463,6 +472,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvDepartamentoReservaCitaDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="45 m2 - 1d"
@@ -495,6 +505,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvTelefonoReservaCitaDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0214345646"
