@@ -121,56 +121,116 @@
                 android:orientation="vertical"
                 android:paddingTop="16dp">
 
+            <!-- Barra de búsqueda -->
             <LinearLayout
-                android:id="@+id/layoutFiltrosSeparaciones"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_marginTop="18dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFiltroAprobada"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:text="Aprobada"
-                    android:textAllCaps="false"
-                    android:textColor="@color/inmia_teal_dark"
-                    app:cornerRadius="14dp"
-                    app:backgroundTint="@color/inmia_teal_pale"
-                    app:strokeColor="@color/inmia_teal_light"
-                    app:strokeWidth="1dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilSearchSeparaciones"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="@color/inmia_white"
+                    app:boxCornerRadiusTopStart="24dp"
+                    app:boxCornerRadiusTopEnd="24dp"
+                    app:boxCornerRadiusBottomStart="24dp"
+                    app:boxCornerRadiusBottomEnd="24dp"
+                    app:boxStrokeColor="#D9E5E5"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:startIconDrawable="@drawable/ic_search"
+                    app:endIconMode="clear_text"
+                    app:hintEnabled="false">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFiltroPorConfirmar"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:text="Por aprobar"
-                    android:textAllCaps="false"
-                    android:textColor="@color/inmia_teal_dark"
-                    app:cornerRadius="14dp"
-                    app:backgroundTint="@color/inmia_teal_pale"
-                    app:strokeColor="@color/inmia_teal_light"
-                    app:strokeWidth="1dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etSeparacionesSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Buscar"
+                        android:textColor="@color/inmia_text"
+                        android:textSize="14sp"
+                        android:inputType="text"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"/>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnFiltroTerminada"
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- Dropdowns de filtro -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_marginTop="12dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:text="Terminada"
-                    android:textAllCaps="false"
-                    android:textColor="@color/inmia_teal_dark"
-                    app:cornerRadius="10dp"
-                    app:backgroundTint="@color/inmia_teal_pale"
-                    app:strokeColor="@color/inmia_teal_light"
-                    app:strokeWidth="1dp"/>
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="@color/inmia_white"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="#D9E5E5"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:endIconMode="dropdown_menu"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/dropdownEstadoSep"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Estado"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:textSize="13sp"
+                        android:textColor="@color/inmia_text"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:boxBackgroundMode="filled"
+                    app:boxBackgroundColor="@color/inmia_white"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="#D9E5E5"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:endIconMode="dropdown_menu"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/dropdownProyectoSep"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Proyecto"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:textSize="13sp"
+                        android:textColor="@color/inmia_text"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
@@ -180,8 +240,8 @@
                 android:layout_height="44dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="4dp"
-                android:text="Limpiar filtro"
+                android:layout_marginTop="12dp"
+                android:text="Limpiar filtros"
                 android:textAllCaps="false"
                 android:textColor="@color/inmia_teal_dark"
                 app:cornerRadius="14dp"
