@@ -21,10 +21,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class CrearAdminActivity extends AppCompatActivity {
 
@@ -39,9 +39,9 @@ public class CrearAdminActivity extends AppCompatActivity {
     private TextInputLayout tilCorreo, tilTelefono, tilDomicilio;
     private TextInputEditText etCorreo, etTelefono, etDomicilio;
 
-    // Campos de seguridad
-    private TextInputLayout tilPassword, tilConfirmPassword;
-    private TextInputEditText etPassword, etConfirmPassword;
+    // Campos laborales
+    private TextInputLayout tilInmobiliaria;
+    private TextInputEditText etInmobiliaria;
 
     // Botón y overlay
     private MaterialButton btnCrearCuenta;
@@ -77,11 +77,9 @@ public class CrearAdminActivity extends AppCompatActivity {
         etTelefono   = findViewById(R.id.etTelefono);
         etDomicilio  = findViewById(R.id.etDomicilio);
 
-        // Vincular vistas — seguridad
-        tilPassword        = findViewById(R.id.tilPassword);
-        tilConfirmPassword = findViewById(R.id.tilConfirmPassword);
-        etPassword         = findViewById(R.id.etPassword);
-        etConfirmPassword  = findViewById(R.id.etConfirmPassword);
+        // Vincular vistas — laborales
+        tilInmobiliaria = findViewById(R.id.tilInmobiliaria);
+        etInmobiliaria  = findViewById(R.id.etInmobiliaria);
 
         // Botón y overlay
         btnCrearCuenta = findViewById(R.id.btnCrearCuenta);
@@ -147,8 +145,7 @@ public class CrearAdminActivity extends AppCompatActivity {
         tilCorreo.setError(null);
         tilTelefono.setError(null);
         tilDomicilio.setError(null);
-        tilPassword.setError(null);
-        tilConfirmPassword.setError(null);
+        tilInmobiliaria.setError(null);
 
         String nombres    = etNombres.getText() != null ? etNombres.getText().toString().trim() : "";
         String apellidos  = etApellidos.getText() != null ? etApellidos.getText().toString().trim() : "";
@@ -157,9 +154,6 @@ public class CrearAdminActivity extends AppCompatActivity {
         String correo     = etCorreo.getText() != null ? etCorreo.getText().toString().trim() : "";
         String telefono   = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
         String domicilio  = etDomicilio.getText() != null ? etDomicilio.getText().toString().trim() : "";
-        String password   = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
-        String confirmPwd = etConfirmPassword.getText() != null ? etConfirmPassword.getText().toString().trim() : "";
-
         // Validar nombres
         if (TextUtils.isEmpty(nombres)) {
             tilNombres.setError(getString(R.string.error_campo_requerido));
@@ -205,21 +199,11 @@ public class CrearAdminActivity extends AppCompatActivity {
             valido = false;
         }
 
-        // Validar contraseña
-        if (TextUtils.isEmpty(password)) {
-            tilPassword.setError(getString(R.string.error_campo_requerido));
-            valido = false;
-        } else if (password.length() < 6) {
-            tilPassword.setError(getString(R.string.error_password_corta));
-            valido = false;
-        }
-
-        // Validar confirmar contraseña
-        if (TextUtils.isEmpty(confirmPwd)) {
-            tilConfirmPassword.setError(getString(R.string.error_campo_requerido));
-            valido = false;
-        } else if (!password.equals(confirmPwd)) {
-            tilConfirmPassword.setError(getString(R.string.error_passwords_no_coinciden));
+        // Validar inmobiliaria
+        String inmobNombre = etInmobiliaria.getText() != null
+                ? etInmobiliaria.getText().toString().trim() : "";
+        if (TextUtils.isEmpty(inmobNombre)) {
+            tilInmobiliaria.setError("Ingresa el nombre de la inmobiliaria");
             valido = false;
         }
 
@@ -230,11 +214,9 @@ public class CrearAdminActivity extends AppCompatActivity {
         btnCrearCuenta.setEnabled(false);
         layoutLoading.setVisibility(View.VISIBLE);
 
-        String correo   = etCorreo.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+        String correo       = etCorreo.getText().toString().trim();
+        String tempPassword = UUID.randomUUID().toString().substring(0, 12) + "!A1";
 
-        // Usamos una FirebaseApp secundaria para crear el usuario sin
-        // desloguear al superadmin que está en sesión activa
         FirebaseApp secondaryApp;
         try {
             secondaryApp = FirebaseApp.initializeApp(this,
@@ -246,11 +228,13 @@ public class CrearAdminActivity extends AppCompatActivity {
         FirebaseAuth secondaryAuth = FirebaseAuth.getInstance(secondaryApp);
         final FirebaseApp appRef = secondaryApp;
 
-        secondaryAuth.createUserWithEmailAndPassword(correo, password)
+        secondaryAuth.createUserWithEmailAndPassword(correo, tempPassword)
             .addOnSuccessListener(result -> {
                 String uid = result.getUser().getUid();
                 secondaryAuth.signOut();
                 try { appRef.delete(); } catch (Exception ignored) {}
+
+                FirebaseAuth.getInstance().sendPasswordResetEmail(correo);
                 guardarEnFirestore(uid);
             })
             .addOnFailureListener(e -> {
@@ -270,50 +254,72 @@ public class CrearAdminActivity extends AppCompatActivity {
     }
 
     private void guardarEnFirestore(String uid) {
-        String nombres   = etNombres.getText().toString().trim();
-        String apellidos = etApellidos.getText().toString().trim();
+        String nombres        = etNombres.getText().toString().trim();
+        String apellidos      = etApellidos.getText().toString().trim();
+        String nombreInmob    = etInmobiliaria.getText().toString().trim();
 
-        Map<String, Object> datos = new HashMap<>();
-        datos.put("nombres",          nombres);
-        datos.put("apellidos",        apellidos);
-        datos.put("tipoDocumento",    spinnerTipoDocumento.getText().toString());
-        datos.put("numeroDocumento",  etNumDocumento.getText().toString().trim());
-        datos.put("fechaNacimiento",  etFechaNacimiento.getText().toString().trim());
-        datos.put("correo",           etCorreo.getText().toString().trim());
-        datos.put("telefono",         etTelefono.getText().toString().trim());
-        datos.put("domicilio",        etDomicilio.getText().toString().trim());
-        datos.put("rol",              "admin");
-        datos.put("activo",           true);
-        datos.put("fechaCreacion",    FieldValue.serverTimestamp());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        FirebaseFirestore.getInstance()
-            .collection("usuarios")
-            .document(uid)
-            .set(datos)
-            .addOnSuccessListener(unused -> {
-                layoutLoading.setVisibility(View.GONE);
+        // 1. Crear el documento de la inmobiliaria
+        Map<String, Object> inmobData = new HashMap<>();
+        inmobData.put("nombre",        nombreInmob);
+        inmobData.put("adminId",       uid);
+        inmobData.put("activo",        true);
+        inmobData.put("fechaCreacion", FieldValue.serverTimestamp());
 
-                NotificacionHelper.enviar(
-                        this,
-                        "Nuevo administrador registrado",
-                        nombres + " " + apellidos + " ha sido añadido al sistema.",
-                        NotificacionHelper.TIPO_ADMIN_CREADO
-                );
+        db.collection("inmobiliarias").add(inmobData)
+            .addOnSuccessListener(inmobRef -> {
+                String inmobiliariaId = inmobRef.getId();
 
-                Toast.makeText(this,
-                        getString(R.string.registro_exitoso),
-                        Toast.LENGTH_LONG).show();
+                // 2. Crear el documento del admin con el id de la inmobiliaria
+                Map<String, Object> datos = new HashMap<>();
+                datos.put("nombres",          nombres);
+                datos.put("apellidos",        apellidos);
+                datos.put("tipoDocumento",    spinnerTipoDocumento.getText().toString());
+                datos.put("numeroDocumento",  etNumDocumento.getText().toString().trim());
+                datos.put("fechaNacimiento",  etFechaNacimiento.getText().toString().trim());
+                datos.put("correo",           etCorreo.getText().toString().trim());
+                datos.put("telefono",         etTelefono.getText().toString().trim());
+                datos.put("domicilio",        etDomicilio.getText().toString().trim());
+                datos.put("inmobiliariaId",   inmobiliariaId);
+                datos.put("rol",              "admin");
+                datos.put("activo",           true);
+                datos.put("esPrimeraVez",     true);
+                datos.put("fechaCreacion",    FieldValue.serverTimestamp());
 
-                Intent intent = new Intent(this, GestionUsuariosActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                db.collection("usuarios").document(uid).set(datos)
+                    .addOnSuccessListener(unused -> {
+                        layoutLoading.setVisibility(View.GONE);
+
+                        NotificacionHelper.enviar(
+                                this,
+                                "Nuevo administrador registrado",
+                                nombres + " " + apellidos + " ha sido añadido al sistema.",
+                                NotificacionHelper.TIPO_ADMIN_CREADO
+                        );
+
+                        Toast.makeText(this,
+                                "Admin creado. Se envió correo para establecer contraseña.",
+                                Toast.LENGTH_LONG).show();
+
+                        Intent intent = new Intent(this, GestionUsuariosActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        btnCrearCuenta.setEnabled(true);
+                        layoutLoading.setVisibility(View.GONE);
+                        Toast.makeText(this,
+                                "Error al guardar datos del admin: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    });
             })
             .addOnFailureListener(e -> {
                 btnCrearCuenta.setEnabled(true);
                 layoutLoading.setVisibility(View.GONE);
                 Toast.makeText(this,
-                        "Error al guardar datos: " + e.getMessage(),
+                        "Error al crear inmobiliaria: " + e.getMessage(),
                         Toast.LENGTH_LONG).show();
             });
     }

@@ -1,132 +1,195 @@
 package com.example.inmia.admin;
 
-import android.content.Intent;
+import android.app.DatePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminFirestoreGateway;
-import com.example.inmia.admin.data.AdminSessionDefaults;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdminAsesorNuevoActivity extends AppCompatActivity {
 
-    private AdminFirestoreGateway gateway;
-    private String companyId;
+    private ImageView imgFoto;
+    private TextInputEditText etNombre, etApellido, etDni, etFechaNac;
+    private TextInputEditText etEmail, etTelefono, etDomicilio, etOficina;
+    private AutoCompleteTextView actvTipoDocumento;
+    private MaterialButton btnCrear;
+
+    private Uri fotoUri = null;
+    private FirebaseFirestore db;
+
+    private final ActivityResultLauncher<String> fotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    fotoUri = uri;
+                    imgFoto.setPadding(0, 0, 0, 0);
+                    imgFoto.clearColorFilter();
+                    Glide.with(this).load(uri).circleCrop().into(imgFoto);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.activity_admin_asesor_nuevo);
 
-        gateway = new AdminFirestoreGateway();
+        db = FirebaseFirestore.getInstance();
 
-        View btnBack = findViewById(R.id.btnBackNuevoAsesor);
-        MaterialButton btnCrear = findViewById(R.id.btnCrearAsesor);
+        imgFoto           = findViewById(R.id.imgFoto);
+        etNombre          = findViewById(R.id.etNombreAsesor);
+        etApellido        = findViewById(R.id.etApellidoAsesor);
+        actvTipoDocumento = findViewById(R.id.actvTipoDocumento);
+        etDni             = findViewById(R.id.etDniAsesor);
+        etFechaNac        = findViewById(R.id.etFechaNac);
+        etEmail           = findViewById(R.id.etEmailAsesor);
+        etTelefono        = findViewById(R.id.etTelefonoAsesor);
+        etDomicilio       = findViewById(R.id.etDomicilioAsesor);
+        etOficina         = findViewById(R.id.etOficinaAsesor);
+        btnCrear          = findViewById(R.id.btnCrearAsesor);
 
-        TextInputEditText etNombre = findViewById(R.id.etNombreAsesor);
-        TextInputEditText etApellido = findViewById(R.id.etApellidoAsesor);
-        TextInputEditText etDni = findViewById(R.id.etDniAsesor);
-        TextInputEditText etEmail = findViewById(R.id.etEmailAsesor);
-        TextInputEditText etTelefono = findViewById(R.id.etTelefonoAsesor);
-        TextInputEditText etZona = findViewById(R.id.etZonaAsesor);
+        String[] tipos = {"DNI", "Carnet de Extranjería"};
+        actvTipoDocumento.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, tipos));
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
-        bottomNav.setSelectedItemId(R.id.nav_asesores);
+        findViewById(R.id.frameAvatar).setOnClickListener(v -> fotoLauncher.launch("image/*"));
 
-        btnBack.setOnClickListener(v -> finish());
+        etFechaNac.setOnClickListener(v -> mostrarDatePicker());
+        ((com.google.android.material.textfield.TextInputLayout)
+                findViewById(R.id.tilFechaNac)).setEndIconOnClickListener(v -> mostrarDatePicker());
 
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL,
-                new AdminFirestoreGateway.FirestoreCallback<AdminFirestoreGateway.AdminContext>() {
-            @Override
-            public void onSuccess(AdminFirestoreGateway.AdminContext context) {
-                companyId = context.getCompanyId();
-            }
+        findViewById(R.id.btnBackNuevoAsesor).setOnClickListener(v -> finish());
 
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(AdminAsesorNuevoActivity.this,
-                        "Error al obtener contexto de empresa",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btnCrear.setOnClickListener(v -> {
-            String nombre   = etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
-            String apellido = etApellido.getText() != null ? etApellido.getText().toString().trim() : "";
-            String dni      = etDni.getText() != null ? etDni.getText().toString().trim() : "";
-            String email    = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
-            String telefono = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
-            String zona     = etZona.getText() != null ? etZona.getText().toString().trim() : "";
-
-            if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty()) {
-                Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (companyId == null || companyId.isEmpty()) {
-                Toast.makeText(this, "Error: No se encontró la empresa", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            gateway.saveAsesor(nombre, apellido, email, telefono, dni, zona, companyId,
-                    new AdminFirestoreGateway.FirestoreCallback<String>() {
-                @Override
-                public void onSuccess(String asesorId) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(AdminAsesorNuevoActivity.this,
-                                "Asesor creado exitosamente",
-                                Toast.LENGTH_LONG).show();
-                        finish();
-                    });
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(AdminAsesorNuevoActivity.this,
-                                "Error al crear asesor: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    });
-                }
-            });
-        });
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                navegarATab(AdminHomeActivity.class);
-                return true;
-            } else if (id == R.id.nav_proyectos) {
-                navegarATab(AdminProyectosActivity.class);
-                return true;
-            } else if (id == R.id.nav_asesores) {
-                return true;
-            } else if (id == R.id.nav_reportes) {
-                navegarATab(AdminReportesActivity.class);
-                return true;
-            } else if (id == R.id.nav_perfil) {
-                navegarATab(AdminPerfilActivity.class);
-                return true;
-            }
-            return false;
-        });
+        btnCrear.setOnClickListener(v -> enviarSolicitud());
     }
 
-    private void navegarATab(Class<?> destino) {
-        Intent intent = new Intent(this, destino);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
+    private void mostrarDatePicker() {
+        Calendar hoy = Calendar.getInstance();
+        DatePickerDialog picker = new DatePickerDialog(this,
+                (view, anio, mes, dia) ->
+                        etFechaNac.setText(String.format("%02d/%02d/%04d", dia, mes + 1, anio)),
+                hoy.get(Calendar.YEAR) - 25,
+                hoy.get(Calendar.MONTH),
+                hoy.get(Calendar.DAY_OF_MONTH));
+        picker.getDatePicker().setMaxDate(System.currentTimeMillis());
+        picker.show();
+    }
+
+    private void enviarSolicitud() {
+        String nombre    = texto(etNombre);
+        String apellido  = texto(etApellido);
+        String tipoDoc   = actvTipoDocumento.getText().toString().trim();
+        String numDoc    = texto(etDni);
+        String fechaNac  = texto(etFechaNac);
+        String email     = texto(etEmail);
+        String telefono  = texto(etTelefono);
+        String domicilio = texto(etDomicilio);
+        String oficina   = texto(etOficina);
+
+        if (nombre.isEmpty() || apellido.isEmpty() || numDoc.isEmpty()
+                || email.isEmpty() || oficina.isEmpty()) {
+            Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnCrear.setEnabled(false);
+        btnCrear.setText("Enviando...");
+
+        String adminId = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
+
+        String tipoDocFinal = tipoDoc.isEmpty() ? "DNI" : tipoDoc;
+        if (!adminId.isEmpty()) {
+            db.collection("usuarios").document(adminId).get()
+                    .addOnSuccessListener(adminDoc -> {
+                        String inmobId = (adminDoc.exists()
+                                && adminDoc.getString("inmobiliariaId") != null)
+                                ? adminDoc.getString("inmobiliariaId") : "";
+                        if (inmobId.isEmpty()) {
+                            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
+                                    email, telefono, domicilio, oficina, "", "", adminId);
+                            return;
+                        }
+                        db.collection("inmobiliarias").document(inmobId).get()
+                                .addOnSuccessListener(inmobDoc -> {
+                                    String nomInmob = (inmobDoc.exists()
+                                            && inmobDoc.getString("nombre") != null)
+                                            ? inmobDoc.getString("nombre") : "";
+                                    escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc,
+                                            fechaNac, email, telefono, domicilio, oficina,
+                                            inmobId, nomInmob, adminId);
+                                })
+                                .addOnFailureListener(e ->
+                                        escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc,
+                                                fechaNac, email, telefono, domicilio, oficina,
+                                                inmobId, "", adminId));
+                    })
+                    .addOnFailureListener(e ->
+                            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
+                                    email, telefono, domicilio, oficina, "", "", adminId));
+        } else {
+            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
+                    email, telefono, domicilio, oficina, "", "", adminId);
+        }
+    }
+
+    private void escribirSolicitud(String nombre, String apellido, String tipoDoc,
+            String numDoc, String fechaNac, String email, String telefono,
+            String domicilio, String oficina, String inmobiliariaId,
+            String inmobiliariaNombre, String adminId) {
+
+        Map<String, Object> solicitud = new HashMap<>();
+        solicitud.put("nombres",             nombre);
+        solicitud.put("apellidos",           apellido);
+        solicitud.put("tipoDocumento",       tipoDoc);
+        solicitud.put("numeroDocumento",     numDoc);
+        solicitud.put("fechaNacimiento",     fechaNac);
+        solicitud.put("correo",              email);
+        solicitud.put("telefono",            telefono);
+        solicitud.put("domicilio",           domicilio);
+        solicitud.put("oficina",             oficina);
+        solicitud.put("fotoUrl",             "");
+        solicitud.put("inmobiliariaId",      inmobiliariaId);
+        solicitud.put("inmobiliariaNombre",  inmobiliariaNombre);
+        solicitud.put("adminId",             adminId);
+        solicitud.put("fechaSolicitud",      Timestamp.now());
+        solicitud.put("estado",              "pendiente");
+
+        db.collection("solicitudes").add(solicitud)
+                .addOnSuccessListener(ref -> {
+                    Toast.makeText(this,
+                            "Solicitud enviada. Esperando aprobación del superadmin.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnCrear.setEnabled(true);
+                    btnCrear.setText("Enviar solicitud");
+                    Toast.makeText(this,
+                            "Error al enviar solicitud. Intenta de nuevo.",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private String texto(TextInputEditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
     }
 }

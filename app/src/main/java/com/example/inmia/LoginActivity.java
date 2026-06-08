@@ -125,8 +125,12 @@ public class LoginActivity extends AppCompatActivity {
                                 intent = new Intent(this, AsesorHomeActivity.class);
                                 break;
                             case "admin":
-
-                                intent = new Intent(this, AdminHomeActivity.class);
+                                Boolean primeraVez = documentSnapshot.getBoolean("esPrimeraVez");
+                                if (Boolean.TRUE.equals(primeraVez)) {
+                                    intent = new Intent(this, RegistroInmobiliariaActivity.class);
+                                } else {
+                                    intent = new Intent(this, AdminHomeActivity.class);
+                                }
                                 break;
                             case "superadmin":
                                 intent = new Intent(this, SuperAdminHomeActivity.class);
