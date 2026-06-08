@@ -23,6 +23,8 @@ import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
@@ -42,6 +44,9 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
     // Botón y contenedor de oficinas extra
     private MaterialButton btnAgregarOficina;
     private LinearLayout layoutOficinasExtra;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     // URIs de fotos seleccionadas
     private Uri uriFoto1, uriFoto2, uriFoto3, uriFoto4;
@@ -74,6 +79,9 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_registro_inmobiliaria_inicio);
+
+        db    = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         // Vincular campos
         tilNombreEmpresa  = findViewById(R.id.tilNombreEmpresa);
@@ -327,18 +335,32 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
     // ── GUARDAR ──────────────────────────────────────────────────────────────
 
     private void guardarYContinuar() {
-        // TODO: guardar en Firebase cuando se integre el backend
+        btnGuardar.setEnabled(false);
+        btnGuardar.setText("Guardando...");
 
-        Toast.makeText(this,
-                "¡Inmobiliaria registrada exitosamente!",
-                Toast.LENGTH_LONG).show();
+        String adminId = mAuth.getCurrentUser() != null
+                ? mAuth.getCurrentUser().getUid() : "";
 
-        // Ir al Home del admin y limpiar el stack
-        Intent intent = new Intent(this, AdminHomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        db.collection("usuarios").document(adminId)
+                .update("esPrimeraVez", false)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this,
+                            "¡Inmobiliaria registrada exitosamente!",
+                            Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(this, AdminHomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnGuardar.setEnabled(true);
+                    btnGuardar.setText("Guardar y continuar");
+                    Toast.makeText(this,
+                            "Error al guardar: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
     private String getText(TextInputEditText et) {
