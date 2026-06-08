@@ -2,6 +2,7 @@ package com.example.inmia.superadmin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,13 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Solicitud;
-import com.example.inmia.superadmin.db.AppDatabase;
-import com.example.inmia.superadmin.db.SolicitudEntity;
-import com.example.inmia.superadmin.NotificacionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class SolicitudesActivity extends AppCompatActivity
         implements SolicitudAdapter.OnSolicitudListener {
@@ -27,177 +34,242 @@ public class SolicitudesActivity extends AppCompatActivity
     private List<Solicitud> listaSolicitudes;
     private TextView tvContador;
     private BottomNavigationView bottomNav;
+    private View layoutEmpty;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.sa_activity_solicitudes);
 
-        // Vincular vistas
+        db = FirebaseFirestore.getInstance();
+
         recyclerSolicitudes = findViewById(R.id.recyclerSolicitudes);
         tvContador          = findViewById(R.id.tvContador);
         bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
 
-        // Botón atrás
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // Inicializar datos
-        inicializarDatos();
-
-        // Configurar RecyclerView
-        recyclerSolicitudes.setLayoutManager(
-                new LinearLayoutManager(this));
+        listaSolicitudes = new ArrayList<>();
+        recyclerSolicitudes.setLayoutManager(new LinearLayoutManager(this));
         adapter = new SolicitudAdapter(this, listaSolicitudes, this);
         recyclerSolicitudes.setAdapter(adapter);
 
-        // Actualizar contador
-        actualizarContador();
-
-        // Bottom navigation
         bottomNav.setSelectedItemId(R.id.nav_usuarios);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                finish();
-                return true;
-            } else if (id == R.id.nav_usuarios) {
-                irAGestionUsuarios();
-                return true;
-            } else if (id == R.id.nav_reportes) {
-                startActivity(new Intent(this, ReportesActivity.class));
-                return true;
-            } else if (id == R.id.nav_logs) {
-                startActivity(new Intent(this, LogsActivity.class));
-                return true;
-            } else if (id == R.id.nav_perfil) {
-                startActivity(new Intent(this, PerfilActivity.class));
-                return true;
-            }
+            if (id == R.id.nav_inicio)   { finish(); return true; }
+            if (id == R.id.nav_usuarios) { irAGestionUsuarios(); return true; }
+            if (id == R.id.nav_reportes) { startActivity(new Intent(this, ReportesActivity.class)); return true; }
+            if (id == R.id.nav_logs)     { startActivity(new Intent(this, LogsActivity.class)); return true; }
+            if (id == R.id.nav_perfil)   { startActivity(new Intent(this, PerfilActivity.class)); return true; }
             return false;
         });
+
+        cargarSolicitudes();
     }
 
-    // ── Datos hardcodeados ───────────────────────────────────────────────────
-
-    private void inicializarDatos() {
-        listaSolicitudes = new ArrayList<>();
-
-        // Cargar solicitudes reales desde Room (creadas por el admin de inmobiliaria)
-        List<SolicitudEntity> desdeRoom =
-                AppDatabase.getInstance(this).solicitudDao().obtenerPendientes();
-        for (SolicitudEntity e : desdeRoom) {
-            String iniciales = obtenerIniciales(e.nombre, e.apellidos);
-            listaSolicitudes.add(new Solicitud(
-                    e.id,
-                    e.nombre + " " + e.apellidos,
-                    e.inmobiliaria,
-                    iniciales,
-                    e.correo,
-                    e.telefono,
-                    "Recién enviado",
-                    e.documento,
-                    e.fechaNac,
-                    e.domicilio
-            ));
-        }
-
-        // Si no hay solicitudes reales, mostrar datos de demo
-        if (listaSolicitudes.isEmpty()) {
-            listaSolicitudes.add(new Solicitud(
-                    "María García López", "INMIA San Isidro", "MG",
-                    "m.garcia@inmia.com", "+51 987 654 321", "Hace 2 horas",
-                    "DNI · 45678901", "15/03/1995", "Av. Javier Prado 1234, San Isidro"));
-            listaSolicitudes.add(new Solicitud(
-                    "Carlos Ramos Torres", "INMIA Miraflores", "CR",
-                    "c.ramos@inmia.com", "+51 912 345 678", "Hace 5 horas",
-                    "DNI · 32156789", "22/07/1990", "Calle Las Flores 567, Miraflores"));
-            listaSolicitudes.add(new Solicitud(
-                    "Juan Sánchez Pérez", "INMIA Surco", "JS",
-                    "j.sanchez@inmia.com", "+51 956 789 012", "Ayer 11:30 pm",
-                    "DNI · 78234561", "08/11/1988", "Jr. Los Pinos 890, Surco"));
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarSolicitudes();
     }
 
-    private String obtenerIniciales(String nombre, String apellidos) {
-        String n = (nombre != null && !nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)) : "";
-        String a = (apellidos != null && !apellidos.isEmpty()) ? String.valueOf(apellidos.charAt(0)) : "";
-        return (n + a).toUpperCase();
+    // ── FIRESTORE ─────────────────────────────────────────────────────────────
+
+    private void cargarSolicitudes() {
+        db.collection("solicitudes")
+                .whereEqualTo("estado", "pendiente")
+                .get()
+                .addOnSuccessListener(query -> {
+                    listaSolicitudes.clear();
+                    for (QueryDocumentSnapshot doc : query) {
+                        listaSolicitudes.add(docToSolicitud(doc));
+                    }
+                    adapter.notifyDataSetChanged();
+                    actualizarContador();
+                    if (layoutEmpty != null) {
+                        layoutEmpty.setVisibility(listaSolicitudes.isEmpty() ? View.VISIBLE : View.GONE);
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al cargar solicitudes", Toast.LENGTH_SHORT).show());
     }
 
-    // ── Callbacks del adapter ────────────────────────────────────────────────
+    private Solicitud docToSolicitud(QueryDocumentSnapshot doc) {
+        String nombres    = str(doc, "nombres");
+        String apellidos  = str(doc, "apellidos");
+        String oficina    = str(doc, "oficina");
+        String inmobId    = str(doc, "inmobiliariaId");
+        String inmobNombre = str(doc, "inmobiliariaNombre");
+        String correo     = str(doc, "correo");
+        String telefono   = str(doc, "telefono");
+        String tipoDoc    = str(doc, "tipoDocumento");
+        String numDoc     = str(doc, "numeroDocumento");
+        String fechaNac   = str(doc, "fechaNacimiento");
+        String domicilio  = str(doc, "domicilio");
+        String fotoUrl    = str(doc, "fotoUrl");
+        Timestamp ts      = doc.getTimestamp("fechaSolicitud");
+        String espera     = calcularTiempoEspera(ts);
+
+        return new Solicitud(doc.getId(), nombres, apellidos, oficina, inmobId,
+                inmobNombre, correo, telefono, espera, tipoDoc, numDoc, fechaNac, domicilio, fotoUrl);
+    }
+
+    private String str(QueryDocumentSnapshot doc, String campo) {
+        String val = doc.getString(campo);
+        return val != null ? val : "";
+    }
+
+    private String calcularTiempoEspera(Timestamp ts) {
+        if (ts == null) return "Recién enviado";
+        long diff  = System.currentTimeMillis() - ts.toDate().getTime();
+        long horas = diff / (1000 * 60 * 60);
+        if (horas < 1)  return "Hace menos de 1 hora";
+        if (horas == 1) return "Hace 1 hora";
+        if (horas < 24) return "Hace " + horas + " horas";
+        long dias = horas / 24;
+        return dias == 1 ? "Ayer" : "Hace " + dias + " días";
+    }
+
+    // ── CALLBACKS DEL ADAPTER ─────────────────────────────────────────────────
 
     @Override
     public void onHabilitar(Solicitud solicitud, int position) {
-        if (solicitud.getRoomId() > 0) {
-            AppDatabase.getInstance(this)
-                    .solicitudDao().marcarProcesada(solicitud.getRoomId());
-        }
-        adapter.eliminarItem(position);
-        actualizarContador();
-
-        NotificacionHelper.enviar(
-                this,
-                "Asesor habilitado",
-                solicitud.getNombre() + " ha sido habilitado como asesor de ventas.",
-                NotificacionHelper.TIPO_ASESOR_HABILITADO
-        );
-
-        Toast.makeText(this,
-                solicitud.getNombre() + " ha sido habilitado como asesor",
-                Toast.LENGTH_SHORT).show();
-
-        if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
+        habilitarAsesor(solicitud, position);
     }
 
     @Override
     public void onRechazar(Solicitud solicitud, int position) {
-        if (solicitud.getRoomId() > 0) {
-            AppDatabase.getInstance(this)
-                    .solicitudDao().marcarProcesada(solicitud.getRoomId());
-        }
-        adapter.eliminarItem(position);
-        actualizarContador();
-
-        NotificacionHelper.enviar(
-                this,
-                "Solicitud rechazada",
-                "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
-                NotificacionHelper.TIPO_ASESOR_RECHAZADO
-        );
-
-        Toast.makeText(this,
-                "Solicitud de " + solicitud.getNombre() + " rechazada",
-                Toast.LENGTH_SHORT).show();
-
-        if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
+        rechazarSolicitud(solicitud, position);
     }
 
     @Override
     public void onVerPerfil(Solicitud solicitud) {
         Intent intent = new Intent(this, PerfilAsesorActivity.class);
-        intent.putExtra(PerfilAsesorActivity.EXTRA_NOMBRE,
-                solicitud.getNombre());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA,
-                solicitud.getInmobiliaria());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_DOCUMENTO,
-                solicitud.getDocumento());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_FECHA_NAC,
-                solicitud.getFechaNac());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_CORREO,
-                solicitud.getCorreo());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_TELEFONO,
-                solicitud.getTelefono());
-        intent.putExtra(PerfilAsesorActivity.EXTRA_DOMICILIO,
-                solicitud.getDomicilio());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_FIRESTORE_ID,    solicitud.getFirestoreId());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_NOMBRE,          solicitud.getNombre() + " " + solicitud.getApellidos());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_APELLIDOS,       solicitud.getApellidos());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA,    solicitud.getInmobiliariaNombre());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_INMOBILIARIA_ID, solicitud.getInmobiliariaId());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_OFICINA,         solicitud.getOficina());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOCUMENTO,       solicitud.getDocumento());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_FECHA_NAC,       solicitud.getFechaNac());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_CORREO,          solicitud.getCorreo());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_TELEFONO,        solicitud.getTelefono());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_DOMICILIO,       solicitud.getDomicilio());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_FOTO_URL,        solicitud.getFotoUrl());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_TIPO_DOCUMENTO,  solicitud.getTipoDocumento());
+        intent.putExtra(PerfilAsesorActivity.EXTRA_NUM_DOCUMENTO,   solicitud.getNumeroDocumento());
         startActivity(intent);
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ── HABILITAR ─────────────────────────────────────────────────────────────
+
+    private void habilitarAsesor(Solicitud solicitud, int position) {
+        String correo = solicitud.getCorreo();
+        if (correo.isEmpty()) {
+            Toast.makeText(this, "El asesor no tiene correo registrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String tempPassword = UUID.randomUUID().toString().substring(0, 12) + "!A1";
+
+        FirebaseApp secondaryApp;
+        try {
+            secondaryApp = FirebaseApp.initializeApp(this,
+                    FirebaseApp.getInstance().getOptions(), "creacion_asesor");
+        } catch (IllegalStateException e) {
+            secondaryApp = FirebaseApp.getInstance("creacion_asesor");
+        }
+
+        FirebaseAuth secondaryAuth = FirebaseAuth.getInstance(secondaryApp);
+        final FirebaseApp appRef = secondaryApp;
+
+        secondaryAuth.createUserWithEmailAndPassword(correo, tempPassword)
+                .addOnSuccessListener(result -> {
+                    String uid = result.getUser().getUid();
+                    secondaryAuth.signOut();
+                    try { appRef.delete(); } catch (Exception ignored) {}
+
+                    FirebaseAuth.getInstance().sendPasswordResetEmail(correo);
+                    guardarAsesorEnUsuarios(uid, solicitud, position);
+                })
+                .addOnFailureListener(e -> {
+                    try { appRef.delete(); } catch (Exception ignored) {}
+                    String msg = e.getMessage() != null ? e.getMessage() : "";
+                    if (msg.contains("already in use")) {
+                        Toast.makeText(this, "Este correo ya tiene cuenta registrada", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Error al crear cuenta: " + msg, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void guardarAsesorEnUsuarios(String uid, Solicitud solicitud, int position) {
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombres",         solicitud.getNombre());
+        datos.put("apellidos",       solicitud.getApellidos());
+        datos.put("tipoDocumento",   solicitud.getTipoDocumento());
+        datos.put("numeroDocumento", solicitud.getNumeroDocumento());
+        datos.put("fechaNacimiento", solicitud.getFechaNac());
+        datos.put("correo",          solicitud.getCorreo());
+        datos.put("telefono",        solicitud.getTelefono());
+        datos.put("domicilio",       solicitud.getDomicilio());
+        datos.put("oficina",          solicitud.getOficina());
+        datos.put("fotoUrl",          solicitud.getFotoUrl());
+        datos.put("inmobiliariaId",   solicitud.getInmobiliariaId());
+        datos.put("rol",              "asesor");
+        datos.put("activo",          true);
+        datos.put("fechaCreacion",   FieldValue.serverTimestamp());
+
+        db.collection("usuarios").document(uid).set(datos)
+                .addOnSuccessListener(unused -> {
+                    actualizarEstadoSolicitud(solicitud.getFirestoreId(), "aprobado");
+                    adapter.eliminarItem(position);
+                    actualizarContador();
+
+                    NotificacionHelper.enviar(this,
+                            "Asesor habilitado",
+                            solicitud.getNombre() + " " + solicitud.getApellidos()
+                                    + " ha sido habilitado como asesor.",
+                            NotificacionHelper.TIPO_ASESOR_HABILITADO);
+
+                    Toast.makeText(this,
+                            solicitud.getNombre() + " habilitado. Se envió correo para establecer contraseña.",
+                            Toast.LENGTH_LONG).show();
+
+                    if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al guardar asesor: " + e.getMessage(), Toast.LENGTH_LONG).show());
+    }
+
+    // ── RECHAZAR ──────────────────────────────────────────────────────────────
+
+    private void rechazarSolicitud(Solicitud solicitud, int position) {
+        actualizarEstadoSolicitud(solicitud.getFirestoreId(), "rechazado");
+        adapter.eliminarItem(position);
+        actualizarContador();
+
+        NotificacionHelper.enviar(this,
+                "Solicitud rechazada",
+                "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
+                NotificacionHelper.TIPO_ASESOR_RECHAZADO);
+
+        Toast.makeText(this, "Solicitud rechazada.", Toast.LENGTH_SHORT).show();
+
+        if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
+    }
+
+    private void actualizarEstadoSolicitud(String firestoreId, String estado) {
+        if (firestoreId == null || firestoreId.isEmpty()) return;
+        db.collection("solicitudes").document(firestoreId).update("estado", estado);
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
 
     private void actualizarContador() {
         int total = listaSolicitudes.size();

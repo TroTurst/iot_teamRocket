@@ -52,7 +52,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     private TextView tvNuevosEsteMes;
     private TextView tvSubtituloNuevos;
 
-    private int totalSolicitudes = 3;
+    private int totalSolicitudes = 0;
 
     private FirebaseFirestore db;
 
@@ -90,11 +90,11 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
 
         solicitarPermisoNotificaciones();
         configurarBadge();
-        configurarSolicitudes();
         configurarSubtituloMes();
 
         cargarNombreSuperAdmin();
         cargarDashboard();
+        cargarTotalSolicitudes();
 
         frameNotificaciones.setOnClickListener(v ->
                 startActivity(new Intent(this, NotificacionesSuperAdminActivity.class)));
@@ -175,6 +175,17 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         db.collection("citas").get()
                 .addOnSuccessListener(q -> tvContadorCitas.setText(String.valueOf(q.size())))
                 .addOnFailureListener(e -> tvContadorCitas.setText("—"));
+    }
+
+    private void cargarTotalSolicitudes() {
+        db.collection("solicitudes")
+                .whereEqualTo("estado", "pendiente")
+                .get()
+                .addOnSuccessListener(query -> {
+                    totalSolicitudes = query.size();
+                    configurarSolicitudes();
+                })
+                .addOnFailureListener(e -> configurarSolicitudes());
     }
 
     private void cargarNombreSuperAdmin() {

@@ -21,9 +21,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CrearAdminActivity extends AppCompatActivity {
@@ -38,6 +41,13 @@ public class CrearAdminActivity extends AppCompatActivity {
     // Campos de contacto
     private TextInputLayout tilCorreo, tilTelefono, tilDomicilio;
     private TextInputEditText etCorreo, etTelefono, etDomicilio;
+
+    // Campos laborales
+    private TextInputLayout tilInmobiliaria;
+    private AutoCompleteTextView actvInmobiliaria;
+    private final List<String> inmobNombres = new ArrayList<>();
+    private final List<String> inmobIds     = new ArrayList<>();
+    private String selectedInmobiliariaId   = "";
 
     // Campos de seguridad
     private TextInputLayout tilPassword, tilConfirmPassword;
@@ -83,12 +93,17 @@ public class CrearAdminActivity extends AppCompatActivity {
         etPassword         = findViewById(R.id.etPassword);
         etConfirmPassword  = findViewById(R.id.etConfirmPassword);
 
+        // Vincular vistas — laborales
+        tilInmobiliaria  = findViewById(R.id.tilInmobiliaria);
+        actvInmobiliaria = findViewById(R.id.actvInmobiliaria);
+
         // Botón y overlay
         btnCrearCuenta = findViewById(R.id.btnCrearCuenta);
         layoutLoading  = findViewById(R.id.layoutLoading);
 
         // Configurar dropdown tipo de documento
         configurarTipoDocumento();
+        cargarInmobiliarias();
 
         // Configurar DatePicker para fecha de nacimiento
         etFechaNacimiento.setOnClickListener(v -> mostrarDatePicker());
@@ -103,6 +118,28 @@ public class CrearAdminActivity extends AppCompatActivity {
                 registrarAdmin();
             }
         });
+    }
+
+    private void cargarInmobiliarias() {
+        FirebaseFirestore.getInstance().collection("inmobiliarias").get()
+                .addOnSuccessListener(query -> {
+                    inmobNombres.clear();
+                    inmobIds.clear();
+                    for (QueryDocumentSnapshot doc : query) {
+                        String nombre = doc.getString("nombre");
+                        if (nombre != null && !nombre.isEmpty()) {
+                            inmobNombres.add(nombre);
+                            inmobIds.add(doc.getId());
+                        }
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            this, android.R.layout.simple_dropdown_item_1line, inmobNombres);
+                    actvInmobiliaria.setAdapter(adapter);
+                    actvInmobiliaria.setOnItemClickListener((parent, view, pos, id) ->
+                            selectedInmobiliariaId = inmobIds.get(pos));
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "No se pudieron cargar las inmobiliarias", Toast.LENGTH_SHORT).show());
     }
 
     private void configurarTipoDocumento() {
@@ -147,6 +184,7 @@ public class CrearAdminActivity extends AppCompatActivity {
         tilCorreo.setError(null);
         tilTelefono.setError(null);
         tilDomicilio.setError(null);
+        tilInmobiliaria.setError(null);
         tilPassword.setError(null);
         tilConfirmPassword.setError(null);
 
@@ -202,6 +240,12 @@ public class CrearAdminActivity extends AppCompatActivity {
         // Validar domicilio
         if (TextUtils.isEmpty(domicilio)) {
             tilDomicilio.setError(getString(R.string.error_campo_requerido));
+            valido = false;
+        }
+
+        // Validar inmobiliaria
+        if (selectedInmobiliariaId.isEmpty()) {
+            tilInmobiliaria.setError("Selecciona una inmobiliaria");
             valido = false;
         }
 
@@ -282,6 +326,7 @@ public class CrearAdminActivity extends AppCompatActivity {
         datos.put("correo",           etCorreo.getText().toString().trim());
         datos.put("telefono",         etTelefono.getText().toString().trim());
         datos.put("domicilio",        etDomicilio.getText().toString().trim());
+        datos.put("inmobiliariaId",   selectedInmobiliariaId);
         datos.put("rol",              "admin");
         datos.put("activo",           true);
         datos.put("fechaCreacion",    FieldValue.serverTimestamp());
