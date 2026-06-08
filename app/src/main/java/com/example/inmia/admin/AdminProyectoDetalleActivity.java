@@ -106,7 +106,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
-        FrameLayout frameNotificaciones = findViewById(R.id.frameNotificaciones);
         View btnBack = findViewById(R.id.btnBackProyectoDetalle);
         View btnEditar = findViewById(R.id.btnEditarProyectoDetalle);
 
@@ -208,9 +207,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        frameNotificaciones.setOnClickListener(v ->
-                Toast.makeText(this, "Tienes " + totalNotificaciones + " notificaciones", Toast.LENGTH_SHORT).show());
 
         btnBack.setOnClickListener(v -> finish());
         btnEditar.setOnClickListener(v -> abrirEdicionProyecto());
@@ -448,28 +444,13 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     }
 
     private void abrirEdicionProyecto() {
-        Tipologia tipologia = currentTipologia;
-        if (currentProyecto == null || tipologia == null) {
-            Toast.makeText(this, "No hay tipología seleccionada", Toast.LENGTH_SHORT).show();
+        if (currentProyecto == null || currentProyecto.getId() == null) {
+            Toast.makeText(this, "No hay proyecto seleccionado", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int[] imagenesArray = tipologia.getImagenes() != null ? tipologia.getImagenes() : new int[0];
-
         Intent intent = new Intent(this, AdminProyectoEditarActivity.class);
         intent.putExtra(AdminProyectoEditarActivity.EXTRA_PROYECTO_ID, currentProyecto.getId());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_PROYECTO_TITULO, currentProyecto.getNombre());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_UBICACION, currentProyecto.getUbicacion());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_DESCRIPCION, tipologia.getDescripcion());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_PRECIO, tipologia.getPrecio());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_AREA, tipologia.getArea());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_DORMITORIOS, tipologia.getDormitorios());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_BANOS, tipologia.getBanos());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_ESTACIONAMIENTO, tipologia.getEstacionamiento());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_ESTADO, tipologia.getEstado());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_IMAGEN_HERO, tipologia.getImagenHero());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_IMAGENES, imagenesArray);
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_TIPOLOGIA_ACTUAL, tipologia.getNombre());
         startActivity(intent);
     }
 

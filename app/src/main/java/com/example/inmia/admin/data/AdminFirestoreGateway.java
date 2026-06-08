@@ -497,6 +497,69 @@ public class AdminFirestoreGateway {
                 .addOnFailureListener(callback::onError);
     }
 
+    public void updateProject(String projectId, Proyecto proyecto, String companyId, FirestoreCallback<Void> callback) {
+        if (projectId == null || projectId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("projectId no puede ser vacío"));
+            return;
+        }
+        if (proyecto == null) {
+            callback.onError(new IllegalArgumentException("Proyecto no puede ser null"));
+            return;
+        }
+
+        Map<String, Object> projectData = new HashMap<>();
+        projectData.put("nombre", proyecto.getNombre() != null ? proyecto.getNombre() : "");
+        projectData.put("descripcion", proyecto.getDescripcion() != null ? proyecto.getDescripcion() : "");
+        projectData.put("estado", proyecto.getEstadoProyecto() != null ? proyecto.getEstadoProyecto() : "En planos");
+        projectData.put("inmobiliariaId", companyId);
+        projectData.put("inmobiliariaNombre", proyecto.getInmobiliaria() != null ? proyecto.getInmobiliaria() : "");
+        projectData.put("conAscensor", proyecto.isConAscensor());
+        projectData.put("petFriendly", proyecto.isPetFriendly());
+        projectData.put("antiguedad", proyecto.getAntiguedad() != null ? proyecto.getAntiguedad() : "");
+        projectData.put("fechaEntregaEstimada", proyecto.getFechaLanzamiento() != null ? proyecto.getFechaLanzamiento() : "");
+        projectData.put("qrUrl", proyecto.getQrCode() != null ? proyecto.getQrCode() : "");
+        projectData.put("areasComunes", proyecto.getExtras() != null ? proyecto.getExtras() : new ArrayList<>());
+        projectData.put("asesoresIds", proyecto.getVendedores() != null ? proyecto.getVendedores() : new ArrayList<>());
+
+        Map<String, Object> ubicacion = new HashMap<>();
+        ubicacion.put("direccion", proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "");
+        projectData.put("ubicacion", ubicacion);
+
+        List<Map<String, Object>> tipologiasList = new ArrayList<>();
+        if (proyecto.getTipologias() != null) {
+            for (Tipologia tip : proyecto.getTipologias()) {
+                Map<String, Object> tipologiaData = new HashMap<>();
+                tipologiaData.put("metrage", tip.getArea() != null ? tip.getArea().replace(" m²", "").replace("m²", "").replace(" m", "") : "0");
+                tipologiaData.put("numeroCuartos", tip.getDormitorios() != null ? tip.getDormitorios() : "0");
+                tipologiaData.put("precio", tip.getPrecio() != null ? tip.getPrecio().replaceAll("[^\\d.]", "") : "0");
+                tipologiaData.put("numeroBanos", tip.getBanos() != null ? tip.getBanos() : "0");
+                tipologiaData.put("estacionamiento", tip.getEstacionamiento() != null ? tip.getEstacionamiento() : "");
+                tipologiaData.put("descripcion", tip.getDescripcion() != null ? tip.getDescripcion() : "");
+                tipologiaData.put("nombre", tip.getNombre() != null ? tip.getNombre() : "");
+                tipologiaData.put("estado", tip.getEstado() != null ? tip.getEstado() : "Disponible");
+                tipologiaData.put("certificadoEnergetico", tip.getCertificadoEnergetico() != null ? tip.getCertificadoEnergetico() : "B");
+                tipologiaData.put("tipoPiso", tip.getTipoPiso() != null ? tip.getTipoPiso() : "estandar");
+                tipologiaData.put("ventilacion", tip.getVentilacion() != null ? tip.getVentilacion() : "natural");
+                tipologiaData.put("tipoAcabados", tip.getTipoAcabados() != null ? tip.getTipoAcabados() : "basico");
+                tipologiaData.put("patio", tip.isPatio());
+                tipologiaData.put("terraza", tip.isTerraza());
+                tipologiaData.put("balcon", tip.isBalcon());
+                tipologiaData.put("aireAcondicionado", tip.isAireAcondicionado());
+                tipologiaData.put("cocinaIntegrada", tip.isCocinaIntegrada());
+                tipologiaData.put("amueblado", tip.isAmueblado());
+                tipologiaData.put("persianasAutomaticas", tip.isPersianasAutomaticas());
+                tipologiaData.put("closets", tip.getClosets());
+                tipologiasList.add(tipologiaData);
+            }
+        }
+        projectData.put("tipologias", tipologiasList);
+
+        db.collection("proyectos").document(projectId)
+                .set(projectData)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
     private ReportSnapshot mapReportSnapshot(DocumentSnapshot doc, String fallbackPeriod) {
         Map<String, Object> totales = getMap(doc.get("totales"));
         int separaciones = getInt(totales, "separaciones", 0);
