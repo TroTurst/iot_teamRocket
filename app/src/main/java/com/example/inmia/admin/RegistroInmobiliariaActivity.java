@@ -143,6 +143,27 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
                 guardarYContinuar();
             }
         });
+
+        cargarNombreInmobiliaria();
+    }
+
+    private void cargarNombreInmobiliaria() {
+        String adminId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : "";
+        if (adminId.isEmpty()) return;
+
+        db.collection("usuarios").document(adminId).get()
+                .addOnSuccessListener(adminDoc -> {
+                    String inmobId = adminDoc.getString("inmobiliariaId");
+                    if (inmobId == null || inmobId.isEmpty()) return;
+
+                    db.collection("inmobiliarias").document(inmobId).get()
+                            .addOnSuccessListener(inmobDoc -> {
+                                String nombre = inmobDoc.getString("nombre");
+                                if (nombre != null && !nombre.isEmpty()) {
+                                    etNombreEmpresa.setText(nombre);
+                                }
+                            });
+                });
     }
 
     // ── GALERÍA ──────────────────────────────────────────────────────────────
