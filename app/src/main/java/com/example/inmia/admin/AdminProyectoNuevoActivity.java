@@ -12,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -40,6 +42,9 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     public static final String EXTRA_TIPOLOGIA_ACTUAL = "extra_tipologia_actual";
 
     private BottomNavigationView bottomNav;
+
+    private AdminRepository repository;
+    private String companyId;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -102,6 +107,9 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_proyecto_nuevo);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackEditarProyecto);
@@ -207,7 +215,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
             if (nuevoProyecto == null) {
                 return;
             }
-            AdminProyectoRepositoryMock.addProyecto(nuevoProyecto);
+            repository.addProject(companyId, nuevoProyecto);
             Toast.makeText(this, "Proyecto creado", Toast.LENGTH_SHORT).show();
             finish();
         });

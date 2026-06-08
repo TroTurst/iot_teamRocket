@@ -3,21 +3,33 @@ package com.example.inmia;
 public class UserCheck {
 
     // Roles disponibles
-    public static final String ROL_CLIENTE    = "cliente";
-    public static final String ROL_ASESOR     = "asesor";
-    public static final String ROL_ADMIN      = "admin";
-    public static final String ROL_SUPERADMIN = "superadmin";
+    public static final String ROL_CLIENTE = "CLIENTE";
+    public static final String ROL_ASESOR = "ASESOR";
+    public static final String ROL_ADMIN_EMPRESA = "ADMIN_EMPRESA";
+    public static final String ROL_SUPERADMIN = "SUPERADMIN";
 
-    public static final String ROL_ADMIN1      = "admin1";
+    private static final class UserSeed {
+        private final String email;
+        private final String password;
+        private final String role;
+        private final String companyId;
+        private final boolean needsCompanySetup;
 
-    // Usuarios hardcodeados — temporales hasta Firebase
-    private static final String[][] USUARIOS = {
-            // { email, contraseña, rol }
-            { "daniel@gmail.com",    "123456", ROL_CLIENTE    },
-            { "kiara@gmail.com",     "123456", ROL_ASESOR     },
-            { "paul@gmail.com",      "123456", ROL_ADMIN      },
-            { "inmia@gmail.com", "123456", ROL_SUPERADMIN },
-            { "paul2@gmail.com",      "123456", ROL_ADMIN1 }
+        private UserSeed(String email, String password, String role, String companyId, boolean needsCompanySetup) {
+            this.email = email;
+            this.password = password;
+            this.role = role;
+            this.companyId = companyId;
+            this.needsCompanySetup = needsCompanySetup;
+        }
+    }
+
+    private static final UserSeed[] USUARIOS = {
+            new UserSeed("daniel@gmail.com", "123456", ROL_CLIENTE, "", false),
+            new UserSeed("kiara@gmail.com", "123456", ROL_ASESOR, "", false),
+            new UserSeed("paul@gmail.com", "123456", ROL_ADMIN_EMPRESA, "", true),
+            new UserSeed("paul2@gmail.com", "123456", ROL_ADMIN_EMPRESA, "company_01", false),
+            new UserSeed("inmia@gmail.com", "123456", ROL_SUPERADMIN, "", false)
     };
 
     /**
@@ -25,9 +37,9 @@ public class UserCheck {
      * Retorna el rol si es correcto, null si no coincide.
      */
     public static String getRol(String email, String password) {
-        for (String[] usuario : USUARIOS) {
-            if (usuario[0].equals(email) && usuario[1].equals(password)) {
-                return usuario[2]; // retorna el rol
+        for (UserSeed usuario : USUARIOS) {
+            if (usuario.email.equals(email) && usuario.password.equals(password)) {
+                return usuario.role; // retorna el rol
             }
         }
         return null; // credenciales incorrectas
@@ -38,11 +50,29 @@ public class UserCheck {
      * Útil para ForgotPassword más adelante.
      */
     public static boolean emailExiste(String email) {
-        for (String[] usuario : USUARIOS) {
-            if (usuario[0].equals(email)) {
+        for (UserSeed usuario : USUARIOS) {
+            if (usuario.email.equals(email)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public static boolean needsCompanySetup(String email) {
+        for (UserSeed usuario : USUARIOS) {
+            if (usuario.email.equals(email)) {
+                return usuario.needsCompanySetup;
+            }
+        }
+        return false;
+    }
+
+    public static String getCompanyId(String email) {
+        for (UserSeed usuario : USUARIOS) {
+            if (usuario.email.equals(email)) {
+                return usuario.companyId;
+            }
+        }
+        return "";
     }
 }

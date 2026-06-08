@@ -14,10 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminProyectosActivity extends AppCompatActivity {
@@ -26,10 +29,12 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
 
-    // Hardcodeado - luego vendra de Firebase
-    private int totalNotificaciones = 5;
+    private int totalNotificaciones;
 
+    private AdminFirestoreGateway gateway;
+    private String companyId;
     private AdminProyectoAdapter adapter;
+    private final List<Proyecto> proyectos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,8 @@ public class AdminProyectosActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_proyectos);
+
+        gateway = new AdminFirestoreGateway();
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -54,9 +61,6 @@ public class AdminProyectosActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerViewProyectos.setLayoutManager(layoutManager);
 
-        // Crear lista de proyectos con datos mock (fuente única compartida con el detalle)
-        List<Proyecto> proyectos = AdminProyectoRepositoryMock.getProyectos();
-
         adapter = new AdminProyectoAdapter(this, proyectos);
         recyclerViewProyectos.setAdapter(adapter);
 
@@ -67,6 +71,52 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_proyectos);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarBadge();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarBadge();
+                    }
+                });
+
+                gateway.observeProjectsByCompany(companyId, context.getCompanyName(), new AdminFirestoreGateway.FirestoreListCallback<Proyecto>() {
+                    @Override
+                    public void onSuccess(List<Proyecto> value) {
+                        proyectos.clear();
+                        if (value != null) {
+                            proyectos.addAll(value);
+                        }
+                        adapter.setProyectos(proyectos);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminProyectosActivity.this,
+                                "Error al cargar proyectos",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminProyectosActivity.this,
+                        "No se pudo resolver la inmobiliaria",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,
@@ -115,13 +165,6 @@ public class AdminProyectosActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (adapter != null) {
-            adapter.setProyectos(AdminProyectoRepositoryMock.getProyectos());
-        }
-    }
 
     private void configurarBadge() {
         if (totalNotificaciones > 0) {
@@ -144,5 +187,5 @@ public class AdminProyectosActivity extends AppCompatActivity {
         finish();
     }
 
-    // Datos mock se obtienen desde AdminProyectoRepositoryMock
+    // Datos mock se obtienen desde AdminRepository (local) hasta conectar Firebase.
 }

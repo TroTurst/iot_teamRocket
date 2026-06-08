@@ -12,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminRepository;
+import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,6 +44,9 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private TextView tvTituloFormulario;
     private TextView tvSubtituloFormulario;
+
+    private AdminRepository repository;
+    private String companyId;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -110,6 +115,9 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_admin_proyecto_editar);
+
+        repository = AdminRepositoryProvider.get();
+        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         tvTituloFormulario = findViewById(R.id.tvTituloFormularioProyecto);
@@ -265,7 +273,8 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             if (modoNuevo) {
                 Proyecto nuevoProyecto = construirProyectoDesdeFormulario();
                 if (nuevoProyecto != null) {
-                    AdminProyectoRepositoryMock.addProyecto(nuevoProyecto);
+                    repository.addProject(companyId, nuevoProyecto);
+                    Toast.makeText(this, "Proyecto creado", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 guardarEdicionProyecto();
@@ -300,7 +309,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
     private void cargarDatosDesdeIntent(boolean modoNuevo) {
         if (!modoNuevo && proyectoId != null) {
-            Proyecto proyecto = AdminProyectoRepositoryMock.getProyectoById(proyectoId);
+            Proyecto proyecto = repository.getProjectById(companyId, proyectoId);
             if (proyecto != null) {
                 cargarDesdeProyecto(proyecto);
                 return;
@@ -607,7 +616,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             Toast.makeText(this, "No se encontro el proyecto", Toast.LENGTH_SHORT).show();
             return;
         }
-        Proyecto proyecto = AdminProyectoRepositoryMock.getProyectoById(proyectoId);
+        Proyecto proyecto = repository.getProjectById(companyId, proyectoId);
         if (proyecto == null) {
             Toast.makeText(this, "No se encontro el proyecto", Toast.LENGTH_SHORT).show();
             return;

@@ -3,6 +3,7 @@ package com.example.inmia.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -10,15 +11,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AdminPerfilActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNav;
-    private LinearLayout layoutCerrarSesion;
-    private LinearLayout layoutCambiarPassword;
-    private LinearLayout layoutNotificaciones;
-    private LinearLayout layoutSimularNotificacion;
+    private TextView tvNombreUsuario;
+    private TextView tvNombre;
+    private TextView tvCorreo;
+    private TextView tvAvatar;
+
+    private AdminFirestoreGateway gateway;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +35,20 @@ public class AdminPerfilActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_perfil);
 
-        bottomNav = findViewById(R.id.bottomNavAdmin);
-        layoutCerrarSesion = findViewById(R.id.layoutCerrarSesion);
-        layoutCambiarPassword = findViewById(R.id.layoutCambiarPassword);
-        layoutNotificaciones = findViewById(R.id.layoutNotificaciones);
-        layoutSimularNotificacion = findViewById(R.id.layoutSimularNotificacion);
+        gateway = new AdminFirestoreGateway();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
+        LinearLayout layoutCerrarSesion = findViewById(R.id.layoutCerrarSesion);
+        LinearLayout layoutCambiarPassword = findViewById(R.id.layoutCambiarPassword);
+        LinearLayout layoutNotificaciones = findViewById(R.id.layoutNotificaciones);
+        LinearLayout layoutSimularNotificacion = findViewById(R.id.layoutSimularNotificacion);
+
+        tvNombreUsuario = findViewById(R.id.tvNombreUsuario);
+        tvNombre = findViewById(R.id.tvNombre);
+        tvCorreo = findViewById(R.id.tvCorreo);
+        tvAvatar = findViewById(R.id.tvAvatar);
+
+        cargarPerfilDesdeFirebase();
 
         // Cerrar sesion - AlertDialog de confirmacion
         layoutCerrarSesion.setOnClickListener(v -> mostrarDialogoCerrarSesion());
@@ -60,21 +74,63 @@ public class AdminPerfilActivity extends AppCompatActivity {
             if (id == R.id.nav_inicio) {
                 navegarATab(AdminHomeActivity.class);
                 return true;
-            } else if (id == R.id.nav_proyectos) {
+            }
+            if (id == R.id.nav_proyectos) {
                 navegarATab(AdminProyectosActivity.class);
                 return true;
-            } else if (id == R.id.nav_asesores) {
+            }
+            if (id == R.id.nav_asesores) {
                 navegarATab(AdminAsesoresActivity.class);
                 return true;
-            } else if (id == R.id.nav_reportes) {
+            }
+            if (id == R.id.nav_reportes) {
                 navegarATab(AdminReportesActivity.class);
-                return true;
-            } else if (id == R.id.nav_perfil) {
                 return true;
             }
 
-            return false;
+            return id == R.id.nav_perfil;
         });
+    }
+
+    private void cargarPerfilDesdeFirebase() {
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                if (tvNombreUsuario != null) {
+                    tvNombreUsuario.setText(context.getDisplayName());
+                }
+                if (tvNombre != null) {
+                    tvNombre.setText(context.getDisplayName());
+                }
+                if (tvCorreo != null) {
+                    tvCorreo.setText(context.getEmail());
+                }
+                if (tvAvatar != null) {
+                    tvAvatar.setText(obtenerIniciales(context.getDisplayName()));
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminPerfilActivity.this,
+                        "No se pudo cargar el perfil",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String obtenerIniciales(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return "AD";
+        }
+        String[] partes = nombre.trim().split("\\s+");
+        StringBuilder iniciales = new StringBuilder();
+        for (int i = 0; i < partes.length && iniciales.length() < 2; i++) {
+            if (!partes[i].isEmpty()) {
+                iniciales.append(partes[i].charAt(0));
+            }
+        }
+        return iniciales.length() > 0 ? iniciales.toString().toUpperCase() : "AD";
     }
 
     private void navegarATab(Class<?> destino) {
