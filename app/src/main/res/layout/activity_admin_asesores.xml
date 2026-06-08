@@ -23,7 +23,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <ImageView
                     android:id="@+id/imgHeaderLogo"
@@ -44,7 +44,7 @@
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
                     android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"
@@ -81,7 +81,8 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:contentDescription="Notificaciones"
-                        android:src="@drawable/ic_notifications" />
+                        android:src="@drawable/ic_notifications"
+                        app:tint="#000000" />
 
                     <TextView
                         android:id="@+id/tvBadgeNotif"
@@ -107,7 +108,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="Asesores"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -136,6 +137,8 @@
                     android:textSize="13sp"
                     app:backgroundTint="@color/inmia_teal_dark"
                     app:cornerRadius="20dp"
+                    app:strokeColor="#000000"
+                    app:strokeWidth="2dp"
                     app:layout_constraintBottom_toBottomOf="@id/tvSubGreeting"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tvSubGreeting" />
@@ -189,7 +192,7 @@
                                 android:imeOptions="actionSearch"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:textColor="#5A8A8A"
+android:textColor="#000000"
                                 android:textColorHint="#9CB7B7"
                                 android:textSize="16sp" />
 

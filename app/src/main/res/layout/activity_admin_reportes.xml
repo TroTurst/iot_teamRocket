@@ -21,7 +21,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <!-- Logo inmia + nombre -->
                 <ImageView
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
@@ -68,7 +68,8 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
-                        android:contentDescription="@string/admin_notificaciones_cd"/>
+                        android:contentDescription="@string/admin_notificaciones_cd"
+                        app:tint="#000000"/>
 
                     <TextView
                         android:id="@+id/tvBadgeNotif"
@@ -93,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/admin_reportes_section"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -110,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/admin_reportes_header"
-                    android:textColor="@color/inmia_teal_dark"
+                    android:textColor="#000000"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.15"
@@ -152,7 +153,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/admin_reportes_graficos_titulo"
-                        android:textColor="@color/inmia_text"
+                        android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -194,7 +195,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="@string/admin_reportes_meta_ventas_pct_demo"
-                            android:textColor="@color/inmia_text"
+                            android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -229,7 +230,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="@string/admin_reportes_tasa_cierre_pct_demo"
-                            android:textColor="@color/inmia_text"
+                            android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -264,7 +265,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="@string/admin_reportes_leads_pct_demo"
-                            android:textColor="@color/inmia_text"
+                            android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>

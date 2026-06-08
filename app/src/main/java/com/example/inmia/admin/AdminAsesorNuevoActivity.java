@@ -8,14 +8,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
-import com.example.inmia.superadmin.NotificacionHelper;
-import com.example.inmia.superadmin.db.AppDatabase;
-import com.example.inmia.superadmin.db.SolicitudEntity;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class AdminAsesorNuevoActivity extends AppCompatActivity {
+
+    private AdminFirestoreGateway gateway;
+    private String companyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,8 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_asesor_nuevo);
 
+        gateway = new AdminFirestoreGateway();
+
         View btnBack = findViewById(R.id.btnBackNuevoAsesor);
         MaterialButton btnCrear = findViewById(R.id.btnCrearAsesor);
 
@@ -36,47 +40,66 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         TextInputEditText etEmail = findViewById(R.id.etEmailAsesor);
         TextInputEditText etTelefono = findViewById(R.id.etTelefonoAsesor);
         TextInputEditText etZona = findViewById(R.id.etZonaAsesor);
-        TextInputEditText etEspecialidad = findViewById(R.id.etEspecialidadAsesor);
-        TextInputEditText etEstado = findViewById(R.id.etEstadoAsesor);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
         bottomNav.setSelectedItemId(R.id.nav_asesores);
 
         btnBack.setOnClickListener(v -> finish());
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL,
+                new AdminFirestoreGateway.FirestoreCallback<AdminFirestoreGateway.AdminContext>() {
+            @Override
+            public void onSuccess(AdminFirestoreGateway.AdminContext context) {
+                companyId = context.getCompanyId();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminAsesorNuevoActivity.this,
+                        "Error al obtener contexto de empresa",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         btnCrear.setOnClickListener(v -> {
-            String nombre    = etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
-            String apellido  = etApellido.getText() != null ? etApellido.getText().toString().trim() : "";
-            String dni       = etDni.getText() != null ? etDni.getText().toString().trim() : "";
-            String email     = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
-            String telefono  = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
-            String zona      = etZona.getText() != null ? etZona.getText().toString().trim() : "";
+            String nombre   = etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
+            String apellido = etApellido.getText() != null ? etApellido.getText().toString().trim() : "";
+            String dni      = etDni.getText() != null ? etDni.getText().toString().trim() : "";
+            String email    = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
+            String telefono = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
+            String zona     = etZona.getText() != null ? etZona.getText().toString().trim() : "";
 
-            // Guardar solicitud pendiente en Room
-            SolicitudEntity solicitud = new SolicitudEntity();
-            solicitud.nombre       = nombre;
-            solicitud.apellidos    = apellido;
-            solicitud.inmobiliaria = zona;
-            solicitud.correo       = email;
-            solicitud.telefono     = telefono;
-            solicitud.documento    = "DNI · " + dni;
-            solicitud.fechaNac     = "";
-            solicitud.domicilio    = "";
-            solicitud.timestamp    = System.currentTimeMillis();
-            solicitud.pendiente    = true;
-            AppDatabase.getInstance(this).solicitudDao().insertar(solicitud);
+            if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty()) {
+                Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            // Notificar al superadmin
-            NotificacionHelper.enviar(
-                    this,
-                    "Nueva solicitud de asesor",
-                    nombre + " " + apellido + " solicita ser habilitado como asesor.",
-                    NotificacionHelper.TIPO_NUEVA_SOLICITUD_ASESOR
-            );
+            if (companyId == null || companyId.isEmpty()) {
+                Toast.makeText(this, "Error: No se encontró la empresa", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            Toast.makeText(this,
-                    "Solicitud enviada. Esperando aprobación del superadmin.",
-                    Toast.LENGTH_LONG).show();
-            finish();
+            gateway.saveAsesor(nombre, apellido, email, telefono, dni, zona, companyId,
+                    new AdminFirestoreGateway.FirestoreCallback<String>() {
+                @Override
+                public void onSuccess(String asesorId) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(AdminAsesorNuevoActivity.this,
+                                "Asesor creado exitosamente",
+                                Toast.LENGTH_LONG).show();
+                        finish();
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(AdminAsesorNuevoActivity.this,
+                                "Error al crear asesor: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
         });
 
         bottomNav.setOnItemSelectedListener(item -> {
@@ -107,5 +130,3 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         finish();
     }
 }
-
-

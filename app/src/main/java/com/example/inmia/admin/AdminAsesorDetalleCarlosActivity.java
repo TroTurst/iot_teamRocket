@@ -214,9 +214,9 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         TextView tvZonaTrabajo = findViewById(R.id.tvZonaTrabajoCarlos);
         TextView tvCitas = findViewById(R.id.tvCitasCarlos);
         TextView tvVentas = findViewById(R.id.tvVentasCarlos);
-        TextView tvMetaVentas = findViewById(R.id.tvMetaVentasCarlos);
-        TextView tvMetaCitas = findViewById(R.id.tvMetaCitasCarlos);
-        TextView tvMetaGanancias = findViewById(R.id.tvMetaGananciasCarlos);
+        TextInputEditText etMetaVentas = findViewById(R.id.etMetaVentasCarlos);
+        TextInputEditText etMetaCitas = findViewById(R.id.etMetaCitasCarlos);
+        TextInputEditText etMetaGanancias = findViewById(R.id.etMetaGananciasCarlos);
         ImageView imgFoto = findViewById(R.id.imgFotoCarlos);
 
         tvNombreHeader.setText(asesor.getNombre());
@@ -229,9 +229,9 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         tvZonaTrabajo.setText(asesor.getZonaTrabajo());
         tvCitas.setText(String.valueOf(asesor.getCitasMensualActual()));
         tvVentas.setText(String.valueOf(asesor.getVentasMensualActual()));
-        tvMetaVentas.setText(String.valueOf(asesor.getMetaVentasMensual()));
-        tvMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
-        tvMetaGanancias.setText(formatearSoles(asesor.getMetaGananciasMensual()));
+        etMetaVentas.setText(String.valueOf(asesor.getMetaVentasMensual()));
+        etMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
+        etMetaGanancias.setText(String.valueOf(asesor.getMetaGananciasMensual()));
 
         if (asesor.getFotoResId() != 0) {
             imgFoto.setImageResource(asesor.getFotoResId());
@@ -263,11 +263,30 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                     int metaCitas = parseIntSafe(etMetaCitas.getText());
                     int metaGanancias = parseIntSafe(etMetaGanancias.getText());
 
-                    asesor.setMetaVentasMensual(metaVentas);
-                    asesor.setMetaCitasMensual(metaCitas);
-                    asesor.setMetaGananciasMensual(metaGanancias);
+                    gateway.updateAsesorMetas(asesor.getId(), metaVentas, metaCitas, metaGanancias,
+                            new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                        "Metas actualizadas",
+                                        Toast.LENGTH_SHORT).show();
+                                currentAsesor.setMetaVentasMensual(metaVentas);
+                                currentAsesor.setMetaCitasMensual(metaCitas);
+                                currentAsesor.setMetaGananciasMensual(metaGanancias);
+                                poblarPerfil(currentAsesor);
+                            });
+                        }
 
-                    poblarPerfil(asesor);
+                        @Override
+                        public void onError(Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                        "Error al guardar metas: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 })
                 .setNegativeButton(R.string.admin_metas_cancelar, null)
                 .show();

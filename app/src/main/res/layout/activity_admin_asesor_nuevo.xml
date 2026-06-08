@@ -22,7 +22,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <FrameLayout
                     android:id="@+id/btnBackNuevoAsesor"
@@ -66,7 +66,7 @@
                     android:layout_marginTop="92dp"
                     android:gravity="center"
                     android:text="Completa los datos del asesor para registrarlo"
-                    android:textColor="#5F8F8F"
+                    android:textColor="#000000"
                     android:textSize="13sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="14dp"
                         android:text="Datos del asesor"
-                        android:textColor="@color/inmia_text"
+android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 

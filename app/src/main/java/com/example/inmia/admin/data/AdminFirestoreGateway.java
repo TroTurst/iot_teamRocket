@@ -343,6 +343,50 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 });
     }
 
+    public void saveAsesor(String nombres, String apellidos, String correo, String telefono,
+                           String documento, String zonaTrabajo, String companyId,
+                           FirestoreCallback<String> callback) {
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombres", nombres);
+        datos.put("apellidos", apellidos);
+        datos.put("correo", correo);
+        datos.put("telefono", telefono);
+        datos.put("numeroDocumento", documento);
+        datos.put("zonaTrabajo", zonaTrabajo);
+        datos.put("domicilio", zonaTrabajo);
+        datos.put("rol", "asesor");
+        datos.put("activo", true);
+        datos.put("inmobiliariaId", companyId);
+        datos.put("metaVentasMensual", 0);
+        datos.put("metaCitasMensual", 0);
+        datos.put("metaGananciasMensual", 0);
+        datos.put("ventasMensualActual", 0);
+        datos.put("citasMensualActual", 0);
+        datos.put("gananciasMensualActual", 0);
+
+        db.collection("usuarios")
+                .add(datos)
+                .addOnSuccessListener(docRef -> callback.onSuccess(docRef.getId()))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void updateAsesorMetas(String asesorId, int metaVentas, int metaCitas, int metaGanancias, FirestoreCallback<Void> callback) {
+        if (asesorId == null || asesorId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("asesorId vacío"));
+            return;
+        }
+
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("metaVentasMensual", metaVentas);
+        datos.put("metaCitasMensual", metaCitas);
+        datos.put("metaGananciasMensual", metaGanancias);
+
+        db.collection("usuarios").document(asesorId)
+                .update(datos)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
     public void observeAdvisorById(String advisorId, FirestoreCallback<Asesor> callback) {
         if (advisorId == null || advisorId.trim().isEmpty()) {
             callback.onError(new IllegalArgumentException("advisorId vacío"));
