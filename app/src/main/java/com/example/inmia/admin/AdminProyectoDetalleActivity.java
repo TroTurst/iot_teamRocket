@@ -299,6 +299,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         // Textos principales
         tvNombreProyecto.setText(p.getNombre());
         tvUbicacionProyecto.setText(p.getUbicacion());
+        tvDescripcionProyecto.setText(p.getDescripcion());
         if (p.getImagenHeroPrincipal() != 0) {
             imgHeroProyecto.setImageResource(p.getImagenHeroPrincipal());
         }
@@ -332,7 +333,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         tvNombreProyecto.setText(currentProyecto.getNombre());
         tvUbicacionProyecto.setText(currentProyecto.getUbicacion());
-        tvDescripcionProyecto.setText(tipologia.getDescripcion());
         tvPrecioProyecto.setText(tipologia.getPrecio());
         if (tipologia.getImagenHero() != 0) {
             heroImageResActual = tipologia.getImagenHero();

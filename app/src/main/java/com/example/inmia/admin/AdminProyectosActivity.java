@@ -28,6 +28,9 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private TextView tvStatEnPlanos;
+    private TextView tvStatEnConstruccion;
+    private TextView tvStatEntregados;
 
     private int totalNotificaciones;
 
@@ -50,7 +53,10 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        tvStatEnPlanos = findViewById(R.id.tvStatEnPlanos);
+        tvStatEnConstruccion = findViewById(R.id.tvStatEnConstruccion);
+        tvStatEntregados = findViewById(R.id.tvStatEntregados);
         EditText etBuscarProyecto = findViewById(R.id.etBuscarProyecto);
         ImageView btnFiltroMock = findViewById(R.id.btnFiltroMock);
 
@@ -106,6 +112,32 @@ public class AdminProyectosActivity extends AppCompatActivity {
                         Toast.makeText(AdminProyectosActivity.this,
                                 "Error al cargar proyectos",
                                 Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                gateway.observeProjectStatsByCompany(companyId, new AdminFirestoreGateway.FirestoreCallback<AdminFirestoreGateway.ProjectStats>() {
+                    @Override
+                    public void onSuccess(AdminFirestoreGateway.ProjectStats stats) {
+                        runOnUiThread(() -> {
+                            if (tvStatEnPlanos != null) {
+                                tvStatEnPlanos.setText(String.valueOf(stats.getEnPlanos()));
+                            }
+                            if (tvStatEnConstruccion != null) {
+                                tvStatEnConstruccion.setText(String.valueOf(stats.getEnConstruccion()));
+                            }
+                            if (tvStatEntregados != null) {
+                                tvStatEntregados.setText(String.valueOf(stats.getEntregados()));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> {
+                            if (tvStatEnPlanos != null) tvStatEnPlanos.setText("0");
+                            if (tvStatEnConstruccion != null) tvStatEnConstruccion.setText("0");
+                            if (tvStatEntregados != null) tvStatEntregados.setText("0");
+                        });
                     }
                 });
             }
