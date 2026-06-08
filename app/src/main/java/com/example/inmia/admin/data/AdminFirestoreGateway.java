@@ -466,7 +466,7 @@ public class AdminFirestoreGateway {
         if (proyecto.getTipologias() != null) {
             for (Tipologia tip : proyecto.getTipologias()) {
                 Map<String, Object> tipologiaData = new HashMap<>();
-                tipologiaData.put("metrage", tip.getArea() != null ? tip.getArea().replace(" m²", "").replace("m²", "").replace(" m", "") : "0");
+                tipologiaData.put("metraje", tip.getArea() != null ? tip.getArea().replace(" m²", "").replace("m²", "").replace(" m", "") : "0");
                 tipologiaData.put("numeroCuartos", tip.getDormitorios() != null ? tip.getDormitorios() : "0");
                 tipologiaData.put("precio", tip.getPrecio() != null ? tip.getPrecio().replaceAll("[^\\d.]", "") : "0");
                 tipologiaData.put("numeroBanos", tip.getBanos() != null ? tip.getBanos() : "0");
@@ -529,7 +529,7 @@ public class AdminFirestoreGateway {
         if (proyecto.getTipologias() != null) {
             for (Tipologia tip : proyecto.getTipologias()) {
                 Map<String, Object> tipologiaData = new HashMap<>();
-                tipologiaData.put("metrage", tip.getArea() != null ? tip.getArea().replace(" m²", "").replace("m²", "").replace(" m", "") : "0");
+                tipologiaData.put("metraje", tip.getArea() != null ? tip.getArea().replace(" m²", "").replace("m²", "").replace(" m", "") : "0");
                 tipologiaData.put("numeroCuartos", tip.getDormitorios() != null ? tip.getDormitorios() : "0");
                 tipologiaData.put("precio", tip.getPrecio() != null ? tip.getPrecio().replaceAll("[^\\d.]", "") : "0");
                 tipologiaData.put("numeroBanos", tip.getBanos() != null ? tip.getBanos() : "0");
