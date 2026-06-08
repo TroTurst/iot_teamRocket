@@ -464,6 +464,49 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 });
     }
 
+    public void saveMonthlyReportHardcoded(String companyId, String period, FirestoreCallback<Void> callback) {
+        String reportId = companyId + "_mensual_" + period;
+
+        Map<String, Object> totales = new HashMap<>();
+        totales.put("separaciones", 45);
+        totales.put("ventas", 28);
+        totales.put("citas", 62);
+        totales.put("montoTotal", 8400000);
+
+        Map<String, Object> asesor1 = new HashMap<>();
+        asesor1.put("nombre", "Carlos Mendoza");
+        asesor1.put("ventas", 12);
+        asesor1.put("citas", 28);
+        asesor1.put("monto", 3600000);
+
+        Map<String, Object> asesor2 = new HashMap<>();
+        asesor2.put("nombre", "Maria Garcia");
+        asesor2.put("ventas", 9);
+        asesor2.put("citas", 20);
+        asesor2.put("monto", 2700000);
+
+        Map<String, Object> asesor3 = new HashMap<>();
+        asesor3.put("nombre", "Juan Perez");
+        asesor3.put("ventas", 7);
+        asesor3.put("citas", 14);
+        asesor3.put("monto", 2100000);
+
+        Map<String, Object> porAsesor = new HashMap<>();
+        porAsesor.put("asesor1", asesor1);
+        porAsesor.put("asesor2", asesor2);
+        porAsesor.put("asesor3", asesor3);
+
+        Map<String, Object> reportData = new HashMap<>();
+        reportData.put("periodo", period);
+        reportData.put("totales", totales);
+        reportData.put("porAsesor", porAsesor);
+
+        db.collection("reportes").document(reportId)
+                .set(reportData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
     public void observeProjectStatsByCompany(String companyId, FirestoreCallback<ProjectStats> callback) {
         if (companyId == null || companyId.trim().isEmpty()) {
             callback.onSuccess(new ProjectStats(0, 0, 0));
