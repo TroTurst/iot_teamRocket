@@ -2,6 +2,7 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -67,6 +68,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
     private List<Tipologia> tipologiasAgregadas = new ArrayList<>();
     private TipologiasAgregadasAdapter tipologiasAdapter;
+    private int tipologiaEditandoIndex = -1;
 
     private Proyecto proyectoOriginal;
 
@@ -117,10 +119,17 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         etTipoAcabados = findViewById(R.id.etTipoAcabados);
 
         rvTipologiasAgregadas.setLayoutManager(new LinearLayoutManager(this));
-        tipologiasAdapter = new TipologiasAgregadasAdapter(tipologiasAgregadas, tipologia -> {
-            tipologiasAgregadas.remove(tipologia);
-            tipologiasAdapter.notifyDataSetChanged();
-        });
+        tipologiasAdapter = new TipologiasAgregadasAdapter(tipologiasAgregadas,
+                tipologia -> {
+                    tipologiasAgregadas.remove(tipologia);
+                    tipologiasAdapter.notifyDataSetChanged();
+                },
+                (tipologia, position) -> {
+                    tipologiaEditandoIndex = position;
+                    btnAgregarTipologia.setText("Actualizar tipología");
+                    populateFormWithTipologia(tipologia);
+                }
+        );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
         configurarSpinners();
@@ -233,6 +242,36 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         spinnerCertificadoEnergetico.setAdapter(certificadoAdapter);
     }
 
+    private void populateFormWithTipologia(Tipologia tipologia) {
+        etArea.setText(tipologia.getArea().replace(" m²", "").replace("m²", ""));
+        etDormitorios.setText(tipologia.getDormitorios());
+        etBanos.setText(tipologia.getBanos());
+        etPrecio.setText(tipologia.getPrecio().replaceAll("[^\\d.]", ""));
+        etDescripcion.setText(tipologia.getDescripcion());
+        etEstacionamiento.setText(tipologia.getEstacionamiento());
+
+        String[] certificados = {"A+", "A", "B+", "B", "C+", "C", "D"};
+        String cert = tipologia.getCertificadoEnergetico();
+        for (int i = 0; i < certificados.length; i++) {
+            if (certificados[i].equals(cert)) {
+                spinnerCertificadoEnergetico.setSelection(i);
+                break;
+            }
+        }
+
+        switchPatio.setChecked(tipologia.isPatio());
+        switchTerraza.setChecked(tipologia.isTerraza());
+        switchBalcon.setChecked(tipologia.isBalcon());
+        switchAireAcondicionado.setChecked(tipologia.isAireAcondicionado());
+        switchCocinaIntegrada.setChecked(tipologia.isCocinaIntegrada());
+        switchAmueblado.setChecked(tipologia.isAmueblado());
+        switchPersianas.setChecked(tipologia.isPersianasAutomaticas());
+        etClosets.setText(String.valueOf(tipologia.getClosets()));
+        etTipoPiso.setText(tipologia.getTipoPiso());
+        etVentilacion.setText(tipologia.getVentilacion());
+        etTipoAcabados.setText(tipologia.getTipoAcabados());
+    }
+
     private void agregarTipologiaDesdeFormulario() {
         String area = texto(etArea);
         String dormitoriosStr = texto(etDormitorios);
@@ -241,6 +280,8 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         String descripcion = texto(etDescripcion);
         String estacionamiento = texto(etEstacionamiento);
         String estado = spinnerEstadoProyecto.getSelectedItem().toString();
+
+        Log.d("AdminEditar", "FORMULARIO: area='" + area + "', dormitorios='" + dormitoriosStr + "', precio='" + precio + "'");
 
         if (area.isEmpty() || dormitoriosStr.isEmpty()) {
             Toast.makeText(this, "Ingresa área y dormitorios mínimo", Toast.LENGTH_SHORT).show();
@@ -255,7 +296,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         String certificado = spinnerCertificadoEnergetico.getSelectedItem().toString();
 
         Tipologia tipologia = new Tipologia(
-                "tip_" + System.currentTimeMillis(),
+                tipologiaEditandoIndex >= 0 ? tipologiasAgregadas.get(tipologiaEditandoIndex).getId() : "tip_" + System.currentTimeMillis(),
                 nombre,
                 descripcion.isEmpty() ? "Tipología " + nombre : descripcion,
                 area,
@@ -280,11 +321,21 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
                 texto(etTipoAcabados).isEmpty() ? "basico" : texto(etTipoAcabados)
         );
 
-        tipologiasAgregadas.add(tipologia);
-        tipologiasAdapter.notifyItemInserted(tipologiasAgregadas.size() - 1);
+        if (tipologiaEditandoIndex >= 0) {
+            Tipologia oldTip = tipologiasAgregadas.get(tipologiaEditandoIndex);
+            tipologiasAgregadas.set(tipologiaEditandoIndex, tipologia);
+            Tipologia newTip = tipologiasAgregadas.get(tipologiaEditandoIndex);
+            Log.d("AdminEditar", "UPDATE: old area=" + oldTip.getArea() + ", new area=" + newTip.getArea());
+            tipologiasAdapter.notifyItemChanged(tipologiaEditandoIndex);
+            Toast.makeText(this, "Tipología actualizada", Toast.LENGTH_SHORT).show();
+        } else {
+            tipologiasAgregadas.add(tipologia);
+            tipologiasAdapter.notifyItemInserted(tipologiasAgregadas.size() - 1);
+            Toast.makeText(this, "Tipología agregada", Toast.LENGTH_SHORT).show();
+        }
 
-        Toast.makeText(this, "Tipología agregada", Toast.LENGTH_SHORT).show();
-
+        tipologiaEditandoIndex = -1;
+        btnAgregarTipologia.setText("Agregar tipología");
         limpiarCamposTipologia();
     }
 
@@ -347,17 +398,27 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             proyecto.setQrCode(proyectoOriginal.getQrCode());
         }
 
+        Log.d("AdminEditar", "tipologiasAgregadas tiene " + tipologiasAgregadas.size() + " tipologias");
+        for (int i = 0; i < tipologiasAgregadas.size(); i++) {
+            Tipologia t = tipologiasAgregadas.get(i);
+            Log.d("AdminEditar", "Tipologia " + i + ": nombre=" + t.getNombre() + ", area=" + t.getArea() + ", precio=" + t.getPrecio());
+        }
+        Log.d("AdminEditar", "proyectoId a actualizar: " + proyectoId);
+
         gateway.updateProject(proyectoId, proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Log.d("AdminEditar", "Proyecto actualizado exitosamente en Firebase");
                 runOnUiThread(() -> {
                     Toast.makeText(AdminProyectoEditarActivity.this, "Proyecto actualizado", Toast.LENGTH_LONG).show();
+                    setResult(RESULT_OK);
                     finish();
                 });
             }
 
             @Override
             public void onError(Exception e) {
+                Log.e("AdminEditar", "Error actualizando proyecto: " + e.getMessage());
                 runOnUiThread(() -> {
                     Toast.makeText(AdminProyectoEditarActivity.this, "Error al actualizar: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });

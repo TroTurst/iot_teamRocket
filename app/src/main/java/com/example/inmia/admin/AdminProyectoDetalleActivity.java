@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -184,6 +184,8 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                 gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
                     @Override
                     public void onSuccess(Proyecto proyecto) {
+                        Log.d("AdminDetalle", "Proyecto cargado inicialmente: " + proyecto.getNombre() + " (id: " + proyecto.getId() + ")");
+                        Log.d("AdminDetalle", "Tipologias count: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
                         currentProyecto = proyecto;
                         bindProyecto(currentProyecto);
                         configurarRecyclerTipologias(currentProyecto);
@@ -495,7 +497,29 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("AdminDetalle", "onResume called");
         if (mapaAdminProyecto != null) mapaAdminProyecto.onResume();
+        if (currentProyecto != null) {
+            Log.d("AdminDetalle", "Recargando proyecto con getProjectById: " + currentProyecto.getNombre() + " (id: " + currentProyecto.getId() + ")");
+            gateway.getProjectById(currentProyecto.getId(), new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                @Override
+                public void onSuccess(Proyecto proyecto) {
+                    Log.d("AdminDetalle", "Proyecto recargado OK, tipologias: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
+                    currentProyecto = proyecto;
+                    runOnUiThread(() -> {
+                        bindProyecto(currentProyecto);
+                        configurarRecyclerTipologias(currentProyecto);
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e("AdminDetalle", "Error recargando proyecto: " + e.getMessage());
+                }
+            });
+        } else {
+            Log.d("AdminDetalle", "currentProyecto es null, no se recarga");
+        }
     }
 
     @Override

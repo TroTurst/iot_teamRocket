@@ -18,14 +18,20 @@ public class TipologiasAgregadasAdapter extends RecyclerView.Adapter<TipologiasA
 
     private final List<Tipologia> tipologias;
     private final OnTipologiaRemoveListener removeListener;
+    private final OnTipologiaEditListener editListener;
 
     public interface OnTipologiaRemoveListener {
         void onRemove(Tipologia tipologia);
     }
 
-    public TipologiasAgregadasAdapter(List<Tipologia> tipologias, OnTipologiaRemoveListener removeListener) {
+    public interface OnTipologiaEditListener {
+        void onEdit(Tipologia tipologia, int position);
+    }
+
+    public TipologiasAgregadasAdapter(List<Tipologia> tipologias, OnTipologiaRemoveListener removeListener, OnTipologiaEditListener editListener) {
         this.tipologias = tipologias;
         this.removeListener = removeListener;
+        this.editListener = editListener;
     }
 
     @NonNull
@@ -39,7 +45,7 @@ public class TipologiasAgregadasAdapter extends RecyclerView.Adapter<TipologiasA
     @Override
     public void onBindViewHolder(@NonNull TipologiaViewHolder holder, int position) {
         Tipologia tipologia = tipologias.get(position);
-        holder.bind(tipologia);
+        holder.bind(tipologia, position);
     }
 
     @Override
@@ -61,13 +67,18 @@ public class TipologiasAgregadasAdapter extends RecyclerView.Adapter<TipologiasA
             btnEliminarTipologia = itemView.findViewById(R.id.btnEliminarTipologia);
         }
 
-        void bind(Tipologia tipologia) {
+        void bind(Tipologia tipologia, int position) {
             tvNombreTipologia.setText(tipologia.getNombre());
             tvDetallesTipologia.setText(tipologia.getArea() + " · " + tipologia.getDormitorios() + "d · " + tipologia.getBanos() + "b");
             tvPrecioTipologia.setText(tipologia.getPrecio());
             btnEliminarTipologia.setOnClickListener(v -> {
                 if (removeListener != null) {
                     removeListener.onRemove(tipologia);
+                }
+            });
+            itemView.setOnClickListener(v -> {
+                if (editListener != null) {
+                    editListener.onEdit(tipologia, position);
                 }
             });
         }

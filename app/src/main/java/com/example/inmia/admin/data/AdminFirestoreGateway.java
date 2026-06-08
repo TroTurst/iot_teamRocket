@@ -14,6 +14,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -279,7 +280,7 @@ public class AdminFirestoreGateway {
                 });
     }
 
-    public void observeProjectById(String projectId, FirestoreCallback<Proyecto> callback) {
+public void observeProjectById(String projectId, FirestoreCallback<Proyecto> callback) {
         if (projectId == null || projectId.trim().isEmpty()) {
             callback.onError(new IllegalArgumentException("projectId vacío"));
             return;
@@ -297,6 +298,24 @@ public class AdminFirestoreGateway {
                     }
                     callback.onSuccess(mapProyecto(value, safeString(value.getString("inmobiliariaId"), "")));
                 });
+    }
+
+    public void getProjectById(String projectId, FirestoreCallback<Proyecto> callback) {
+        if (projectId == null || projectId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("projectId vacío"));
+            return;
+        }
+
+        db.collection("proyectos").document(projectId)
+                .get()
+                .addOnSuccessListener(value -> {
+                    if (value == null || !value.exists()) {
+                        callback.onError(new IllegalStateException("No se encontró el proyecto"));
+                        return;
+                    }
+                    callback.onSuccess(mapProyecto(value, safeString(value.getString("inmobiliariaId"), "")));
+                })
+                .addOnFailureListener(callback::onError);
     }
 
     public void observeAdvisorsByCompany(String companyId, FirestoreListCallback<Asesor> callback) {
@@ -507,6 +526,9 @@ public class AdminFirestoreGateway {
             return;
         }
 
+        Log.d("AdminFirestore", "updateProject called with projectId: " + projectId);
+        Log.d("AdminFirestore", "Proyecto nombre: " + proyecto.getNombre() + ", tipologias count: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
+
         Map<String, Object> projectData = new HashMap<>();
         projectData.put("nombre", proyecto.getNombre() != null ? proyecto.getNombre() : "");
         projectData.put("descripcion", proyecto.getDescripcion() != null ? proyecto.getDescripcion() : "");
@@ -555,9 +577,15 @@ public class AdminFirestoreGateway {
         projectData.put("tipologias", tipologiasList);
 
         db.collection("proyectos").document(projectId)
-                .set(projectData)
-                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
-                .addOnFailureListener(callback::onError);
+                .set(projectData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("AdminFirestore", "updateProject success for projectId: " + projectId);
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("AdminFirestore", "updateProject failed: " + e.getMessage());
+                    callback.onError(e);
+                });
     }
 
     private ReportSnapshot mapReportSnapshot(DocumentSnapshot doc, String fallbackPeriod) {

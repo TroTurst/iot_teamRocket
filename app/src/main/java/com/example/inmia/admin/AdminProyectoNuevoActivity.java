@@ -111,10 +111,14 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         etTipoAcabados = findViewById(R.id.etTipoAcabados);
 
         rvTipologiasAgregadas.setLayoutManager(new LinearLayoutManager(this));
-        tipologiasAdapter = new TipologiasAgregadasAdapter(tipologiasAgregadas, tipologia -> {
-            tipologiasAgregadas.remove(tipologia);
-            tipologiasAdapter.notifyDataSetChanged();
-        });
+        tipologiasAdapter = new TipologiasAgregadasAdapter(tipologiasAgregadas,
+                tipologia -> {
+                    tipologiasAgregadas.remove(tipologia);
+                    tipologiasAdapter.notifyDataSetChanged();
+                },
+                (tipologia, position) -> {
+                }
+        );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
         configurarSpinners();
