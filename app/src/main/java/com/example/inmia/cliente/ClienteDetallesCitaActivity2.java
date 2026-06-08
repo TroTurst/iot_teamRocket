@@ -77,12 +77,6 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
         }
 
-        if (btnHablarAsesor != null) {
-            btnHablarAsesor.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteChatActivity.class);
-                startActivity(intent);
-            });
-        }
 
         if (btnCancelarCita != null) {
             btnCancelarCita.setOnClickListener(v -> cancelarCitaActual());
@@ -140,14 +134,18 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                     });
                 }
 
-                // Consultar Asesor
                 if (asesorId != null) {
                     db.collection("usuarios").document(asesorId).get().addOnSuccessListener(docAsesor -> {
                         if (docAsesor.exists()) {
-                            String nombreCompleto = docAsesor.getString("nombres") + " " + docAsesor.getString("apellidos");
-                            tvNombreAsesorCita.setText(nombreCompleto);
+                            String nombreAsesor = docAsesor.getString("nombres");
+                            tvNombreAsesorCita.setText(nombreAsesor != null ? nombreAsesor : "Asesor");
+
                             String telefono = docAsesor.getString("telefono");
                             tvTelefonoAsesorCita.setText(telefono != null ? telefono : "No registrado");
+
+                            if (btnHablarAsesor != null && nombreAsesor != null) {
+                                btnHablarAsesor.setOnClickListener(v -> buscarOAbrirChat(nombreAsesor));
+                            }
                         }
                     });
                 }
@@ -181,6 +179,38 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                     Toast.makeText(this, "Error al cancelar la cita", Toast.LENGTH_SHORT).show();
                     btnCancelarCita.setEnabled(true);
                     btnCancelarCita.setText("Cancelar cita");
+                });
+    }
+
+    private void buscarOAbrirChat(String nombreAsesor) {
+        String miUid = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        btnHablarAsesor.setText("Buscando chat...");
+        btnHablarAsesor.setEnabled(false);
+
+        db.collection("chats")
+                .whereEqualTo("clienteId", miUid)
+                .whereEqualTo("asesorNombre", nombreAsesor)
+                .get()
+                .addOnSuccessListener(query -> {
+                    btnHablarAsesor.setText("Hablar con el asesor");
+                    btnHablarAsesor.setEnabled(true);
+
+                    if (!query.isEmpty()) {
+                        // ¡Encontramos el chat! Sacamos su ID y nos vamos
+                        String chatId = query.getDocuments().get(0).getId();
+                        Intent intent = new Intent(this, ClienteChatActivity.class);
+                        intent.putExtra("CHAT_ID", chatId);
+                        intent.putExtra("ASESOR_NOMBRE", nombreAsesor);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Aún no tienes un chat creado con " + nombreAsesor, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnHablarAsesor.setText("Hablar con el asesor");
+                    btnHablarAsesor.setEnabled(true);
+                    Toast.makeText(this, "Error de red al buscar chat", Toast.LENGTH_SHORT).show();
                 });
     }
 }

@@ -30,6 +30,7 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
     private TextView tvNombreProyectoDetalle, tvInmobiliariaProyectoDetalle, tvUbicacionProyectoDetalle;
     private TextView tvEstadoReserva, tvFechaHoraCita, tvNombreAsesorCita, tvDetallesTipologiaCita, tvTelefonoAsesorCita;
     private ImageView imgProyectoDetalleCita, imgMiniaturaProyecto;
+    private MaterialButton btnHablarAsesor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +74,7 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
         }
 
         MaterialButton btnHablarAsesor = findViewById(R.id.btnHablarAsesor);
-        if (btnHablarAsesor != null) {
-            btnHablarAsesor.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ClienteChatActivity.class);
-                startActivity(intent);
-            });
-        }
+        btnHablarAsesor = findViewById(R.id.btnHablarAsesor);
     }
 
     private void cargarDetallesDeCita(String idCita) {
@@ -120,11 +116,18 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
                 if (asesorId != null) {
                     db.collection("usuarios").document(asesorId).get().addOnSuccessListener(docAsesor -> {
                         if (docAsesor.exists()) {
-                            String nombreCompleto = docAsesor.getString("nombres") + " " + docAsesor.getString("apellidos");
-                            tvNombreAsesorCita.setText(nombreCompleto);
+                            String nombreAsesor = docAsesor.getString("nombres");
+                            String apellidosAsesor = docAsesor.getString("apellidos");
+
+                            String nombreCompleto = (nombreAsesor != null ? nombreAsesor : "") + " " + (apellidosAsesor != null ? apellidosAsesor : "");
+                            tvNombreAsesorCita.setText(nombreCompleto.trim());
 
                             String telefono = docAsesor.getString("telefono");
                             tvTelefonoAsesorCita.setText(telefono != null ? telefono : "No registrado");
+
+                            if (btnHablarAsesor != null && nombreAsesor != null) {
+                                btnHablarAsesor.setOnClickListener(v -> buscarOAbrirChat(nombreAsesor));
+                            }
                         }
                     });
                 }
@@ -138,5 +141,36 @@ public class ClienteDetallesCitaActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void buscarOAbrirChat(String nombreAsesor) {
+        String miUid = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        btnHablarAsesor.setText("Buscando chat...");
+        btnHablarAsesor.setEnabled(false);
+
+        db.collection("chats")
+                .whereEqualTo("clienteId", miUid)
+                .whereEqualTo("asesorNombre", nombreAsesor)
+                .get()
+                .addOnSuccessListener(query -> {
+                    btnHablarAsesor.setText("Hablar con el asesor");
+                    btnHablarAsesor.setEnabled(true);
+
+                    if (!query.isEmpty()) {
+                        String chatId = query.getDocuments().get(0).getId();
+                        Intent intent = new Intent(this, ClienteChatActivity.class);
+                        intent.putExtra("CHAT_ID", chatId);
+                        intent.putExtra("ASESOR_NOMBRE", nombreAsesor);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Aún no tienes un chat creado con " + nombreAsesor, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnHablarAsesor.setText("Hablar con el asesor");
+                    btnHablarAsesor.setEnabled(true);
+                    Toast.makeText(this, "Error de red al buscar chat", Toast.LENGTH_SHORT).show();
+                });
     }
 }

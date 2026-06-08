@@ -1,7 +1,10 @@
 package com.example.inmia.cliente;
+
 import com.example.inmia.models.Proyecto;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,6 +41,7 @@ public class ClienteHomeActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ProyectosAdapter adapter;
     private List<Proyecto> misProyectos;
+    private List<Proyecto> proyectosOriginales = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,6 @@ public class ClienteHomeActivity extends AppCompatActivity {
 
         cargarProyectosDesdeFirestore();
         inyectarProyectoUnico();
-
     }
 
     private void inicializarVistas() {
@@ -88,6 +91,7 @@ public class ClienteHomeActivity extends AppCompatActivity {
 
                     if (snapshot != null) {
                         misProyectos.clear();
+                        proyectosOriginales.clear(); // Limpiamos también el respaldo
 
                         for (QueryDocumentSnapshot doc : snapshot) {
                             com.example.inmia.models.Proyecto nuevoProyecto = new com.example.inmia.models.Proyecto();
@@ -121,6 +125,7 @@ public class ClienteHomeActivity extends AppCompatActivity {
                             nuevoProyecto.setTipologias(listaTipologias);
 
                             misProyectos.add(nuevoProyecto);
+                            proyectosOriginales.add(nuevoProyecto); // <-- Guardamos en el respaldo
                         }
 
                         adapter.notifyDataSetChanged();
@@ -133,9 +138,38 @@ public class ClienteHomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, ClienteBuzonNotificacionesActivity.class));
         });
 
-        etSearch.setFocusable(false);
-        etSearch.setOnClickListener(v -> {
-            startActivity(new Intent(this, ClienteExplorarMapaActivity.class));
+        // Buscador Dinámico en tiempo real
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String textoBusqueda = s.toString().toLowerCase().trim();
+                misProyectos.clear(); // Limpiamos la lista actual mostrada
+
+                if (textoBusqueda.isEmpty()) {
+                    // Si el buscador está vacío, mostramos todos
+                    misProyectos.addAll(proyectosOriginales);
+                } else {
+                    // Filtramos buscando coincidencias en el nombre
+                    for (com.example.inmia.models.Proyecto p : proyectosOriginales) {
+                        if (p.getNombre() != null && p.getNombre().toLowerCase().contains(textoBusqueda)) {
+                            misProyectos.add(p);
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged(); // Actualizamos el RecyclerView
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // El botón de ubicación abre el mapa
+        btnLocation.setOnClickListener(v -> {
+            Intent intent = new Intent(ClienteHomeActivity.this, ClienteExplorarMapaActivity.class);
+            startActivity(intent);
         });
 
         if (bottomNav != null) {
@@ -160,10 +194,6 @@ public class ClienteHomeActivity extends AppCompatActivity {
                 return false;
             });
         }
-        btnLocation.setOnClickListener(v -> {
-            Intent intent = new Intent(ClienteHomeActivity.this, ClienteExplorarMapaActivity.class);
-            startActivity(intent);
-        });
 
         frameNotificaciones.setOnLongClickListener(v -> {
             lanzarNotificacionDemo();
@@ -269,7 +299,4 @@ public class ClienteHomeActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }
