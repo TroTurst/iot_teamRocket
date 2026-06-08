@@ -117,38 +117,48 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
 
         String tipoDocFinal = tipoDoc.isEmpty() ? "DNI" : tipoDoc;
-        if (!adminId.isEmpty()) {
-            db.collection("usuarios").document(adminId).get()
-                    .addOnSuccessListener(adminDoc -> {
-                        String inmobId = (adminDoc.exists()
-                                && adminDoc.getString("inmobiliariaId") != null)
-                                ? adminDoc.getString("inmobiliariaId") : "";
-                        if (inmobId.isEmpty()) {
-                            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
-                                    email, telefono, domicilio, oficina, "", "", adminId);
-                            return;
-                        }
-                        db.collection("inmobiliarias").document(inmobId).get()
-                                .addOnSuccessListener(inmobDoc -> {
-                                    String nomInmob = (inmobDoc.exists()
-                                            && inmobDoc.getString("nombre") != null)
-                                            ? inmobDoc.getString("nombre") : "";
+        if (adminId.isEmpty()) {
+            btnCrear.setEnabled(true);
+            btnCrear.setText("Enviar solicitud");
+            Toast.makeText(this, "Error: sesión no válida. Vuelve a iniciar sesión.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        db.collection("usuarios").document(adminId).get()
+                .addOnSuccessListener(adminDoc -> {
+                    String inmobId = (adminDoc.exists()
+                            && adminDoc.getString("inmobiliariaId") != null)
+                            ? adminDoc.getString("inmobiliariaId") : "";
+                    if (inmobId.isEmpty()) {
+                        btnCrear.setEnabled(true);
+                        btnCrear.setText("Enviar solicitud");
+                        Toast.makeText(this,
+                                "Tu cuenta no tiene una inmobiliaria asociada. Contacta al superadmin.",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    db.collection("inmobiliarias").document(inmobId).get()
+                            .addOnSuccessListener(inmobDoc -> {
+                                String nomInmob = (inmobDoc.exists()
+                                        && inmobDoc.getString("nombre") != null)
+                                        ? inmobDoc.getString("nombre") : "";
+                                escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc,
+                                        fechaNac, email, telefono, domicilio, oficina,
+                                        inmobId, nomInmob, adminId);
+                            })
+                            .addOnFailureListener(e ->
+                                    // Tenemos el ID aunque falle leer el nombre
                                     escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc,
                                             fechaNac, email, telefono, domicilio, oficina,
-                                            inmobId, nomInmob, adminId);
-                                })
-                                .addOnFailureListener(e ->
-                                        escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc,
-                                                fechaNac, email, telefono, domicilio, oficina,
-                                                inmobId, "", adminId));
-                    })
-                    .addOnFailureListener(e ->
-                            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
-                                    email, telefono, domicilio, oficina, "", "", adminId));
-        } else {
-            escribirSolicitud(nombre, apellido, tipoDocFinal, numDoc, fechaNac,
-                    email, telefono, domicilio, oficina, "", "", adminId);
-        }
+                                            inmobId, "", adminId));
+                })
+                .addOnFailureListener(e -> {
+                    btnCrear.setEnabled(true);
+                    btnCrear.setText("Enviar solicitud");
+                    Toast.makeText(this,
+                            "Error al verificar tu cuenta. Intenta de nuevo.",
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void escribirSolicitud(String nombre, String apellido, String tipoDoc,

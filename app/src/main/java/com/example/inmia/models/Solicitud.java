@@ -18,12 +18,13 @@ public class Solicitud {
     private String fechaNac;
     private String domicilio;
     private String fotoUrl;
+    private String adminId;
 
     public Solicitud(String firestoreId, String nombre, String apellidos,
                      String oficina, String inmobiliariaId, String inmobiliariaNombre,
                      String correo, String telefono, String tiempoEspera,
                      String tipoDocumento, String numeroDocumento,
-                     String fechaNac, String domicilio, String fotoUrl) {
+                     String fechaNac, String domicilio, String fotoUrl, String adminId) {
         this.firestoreId       = firestoreId;
         this.nombre            = nombre;
         this.apellidos         = apellidos;
@@ -40,6 +41,7 @@ public class Solicitud {
         this.fechaNac          = fechaNac;
         this.domicilio         = domicilio;
         this.fotoUrl           = fotoUrl != null ? fotoUrl : "";
+        this.adminId           = adminId != null ? adminId : "";
     }
 
     private static String obtenerIniciales(String nombre, String apellidos) {
@@ -65,4 +67,5 @@ public class Solicitud {
     public String getFechaNac()        { return fechaNac; }
     public String getDomicilio()       { return domicilio; }
     public String getFotoUrl()         { return fotoUrl; }
+    public String getAdminId()         { return adminId; }
 }

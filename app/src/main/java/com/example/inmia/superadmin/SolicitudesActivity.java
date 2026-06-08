@@ -111,11 +111,12 @@ public class SolicitudesActivity extends AppCompatActivity
         String fechaNac   = str(doc, "fechaNacimiento");
         String domicilio  = str(doc, "domicilio");
         String fotoUrl    = str(doc, "fotoUrl");
+        String adminId    = str(doc, "adminId");
         Timestamp ts      = doc.getTimestamp("fechaSolicitud");
         String espera     = calcularTiempoEspera(ts);
 
         return new Solicitud(doc.getId(), nombres, apellidos, oficina, inmobId,
-                inmobNombre, correo, telefono, espera, tipoDoc, numDoc, fechaNac, domicilio, fotoUrl);
+                inmobNombre, correo, telefono, espera, tipoDoc, numDoc, fechaNac, domicilio, fotoUrl, adminId);
     }
 
     private String str(QueryDocumentSnapshot doc, String campo) {
@@ -209,6 +210,26 @@ public class SolicitudesActivity extends AppCompatActivity
     }
 
     private void guardarAsesorEnUsuarios(String uid, Solicitud solicitud, int position) {
+        String inmobId = solicitud.getInmobiliariaId();
+        String adminId = solicitud.getAdminId();
+
+        if (!inmobId.isEmpty() || adminId.isEmpty()) {
+            escribirAsesorEnFirestore(uid, solicitud, inmobId, position);
+        } else {
+            // Fallback: solicitud antigua sin inmobiliariaId, se recupera desde el doc del admin
+            db.collection("usuarios").document(adminId).get()
+                    .addOnSuccessListener(adminDoc -> {
+                        String resolvedId = adminDoc.getString("inmobiliariaId");
+                        escribirAsesorEnFirestore(uid, solicitud,
+                                resolvedId != null ? resolvedId : "", position);
+                    })
+                    .addOnFailureListener(e ->
+                            escribirAsesorEnFirestore(uid, solicitud, "", position));
+        }
+    }
+
+    private void escribirAsesorEnFirestore(String uid, Solicitud solicitud,
+                                           String inmobiliariaId, int position) {
         Map<String, Object> datos = new HashMap<>();
         datos.put("nombres",         solicitud.getNombre());
         datos.put("apellidos",       solicitud.getApellidos());
@@ -218,10 +239,10 @@ public class SolicitudesActivity extends AppCompatActivity
         datos.put("correo",          solicitud.getCorreo());
         datos.put("telefono",        solicitud.getTelefono());
         datos.put("domicilio",       solicitud.getDomicilio());
-        datos.put("oficina",          solicitud.getOficina());
-        datos.put("fotoUrl",          solicitud.getFotoUrl());
-        datos.put("inmobiliariaId",   solicitud.getInmobiliariaId());
-        datos.put("rol",              "asesor");
+        datos.put("oficina",         solicitud.getOficina());
+        datos.put("fotoUrl",         solicitud.getFotoUrl());
+        datos.put("inmobiliariaId",  inmobiliariaId);
+        datos.put("rol",             "asesor");
         datos.put("activo",          true);
         datos.put("fechaCreacion",   FieldValue.serverTimestamp());
 
@@ -244,7 +265,8 @@ public class SolicitudesActivity extends AppCompatActivity
                     if (listaSolicitudes.isEmpty()) irAGestionUsuarios();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error al guardar asesor: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                        Toast.makeText(this, "Error al guardar asesor: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
     }
 
     // ── RECHAZAR ──────────────────────────────────────────────────────────────
