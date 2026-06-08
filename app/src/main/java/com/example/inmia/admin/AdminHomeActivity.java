@@ -10,8 +10,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminRepository;
-import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,8 +20,9 @@ public class AdminHomeActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private TextView tvNombreEmpresa;
 
-    private AdminRepository repository;
+    private AdminFirestoreGateway gateway;
     private String companyId;
     private int totalNotificaciones = 5;
 
@@ -35,16 +36,46 @@ public class AdminHomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_home);
 
-        repository = AdminRepositoryProvider.get();
-        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
-        totalNotificaciones = repository.getUnreadNotifications(companyId);
+        gateway = new AdminFirestoreGateway();
 
         bottomNav           = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
+        tvNombreEmpresa     = findViewById(R.id.tvNombreEmpresa);
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_inicio);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+                if (tvNombreEmpresa != null) {
+                    tvNombreEmpresa.setText(context.getCompanyName());
+                }
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarBadge();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarBadge();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminHomeActivity.this,
+                        "No se pudo cargar el perfil del admin",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,

@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminRepository;
-import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminAsesoresActivity extends AppCompatActivity {
@@ -29,8 +30,9 @@ public class AdminAsesoresActivity extends AppCompatActivity {
     private TextView tvBadgeNotif;
 
     private int totalNotificaciones;
-    private AdminRepository repository;
+    private AdminFirestoreGateway gateway;
     private String companyId;
+    private final List<Asesor> asesores = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,7 @@ public class AdminAsesoresActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_asesores);
 
-        repository = AdminRepositoryProvider.get();
-        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
-        totalNotificaciones = repository.getUnreadNotifications(companyId);
+        gateway = new AdminFirestoreGateway();
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -56,7 +56,6 @@ public class AdminAsesoresActivity extends AppCompatActivity {
 
         RecyclerView recyclerViewAsesores = findViewById(R.id.recyclerViewAsesores);
         recyclerViewAsesores.setLayoutManager(new LinearLayoutManager(this));
-        List<Asesor> asesores = repository.getAdvisors(companyId);
         AdminAsesorAdapter adapter = new AdminAsesorAdapter(this, asesores, asesor -> {
             Intent intent = new Intent(this, AdminAsesorDetalleCarlosActivity.class);
             intent.putExtra("asesor_id", asesor.getId());
@@ -66,6 +65,52 @@ public class AdminAsesoresActivity extends AppCompatActivity {
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_asesores);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarBadge();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarBadge();
+                    }
+                });
+
+                gateway.observeAdvisorsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<Asesor>() {
+                    @Override
+                    public void onSuccess(List<Asesor> value) {
+                        asesores.clear();
+                        if (value != null) {
+                            asesores.addAll(value);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminAsesoresActivity.this,
+                                "Error al cargar asesores",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminAsesoresActivity.this,
+                        "No se pudo resolver la inmobiliaria",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,

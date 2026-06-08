@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminRepository;
-import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
@@ -41,7 +41,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private int totalNotificaciones;
 
-    private AdminRepository repository;
+    private AdminFirestoreGateway gateway;
     private String companyId;
 
     private ImageView imgHeroProyecto;
@@ -98,9 +98,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_proyecto_detalle);
 
-        repository = AdminRepositoryProvider.get();
-        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
-        totalNotificaciones = repository.getUnreadNotifications(companyId);
+        gateway = new AdminFirestoreGateway();
 
         Context ctx = getApplicationContext();
         SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
@@ -157,18 +155,59 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         configurarSeleccion();
         configurarRecyclerMiniaturas();
 
-        // Cargar proyecto seleccionado
         String proyectoId = getIntent() != null ? getIntent().getStringExtra(EXTRA_PROYECTO_ID) : null;
-        currentProyecto = repository.getProjectById(companyId, proyectoId);
-        if (currentProyecto == null) {
+        if (proyectoId == null || proyectoId.trim().isEmpty()) {
             Toast.makeText(this, "No se encontró el proyecto seleccionado", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        bindProyecto(currentProyecto);
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+                totalNotificaciones = 0;
 
-        configurarRecyclerTipologias(currentProyecto);
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarSeleccion();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarSeleccion();
+                    }
+                });
+
+                gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                    @Override
+                    public void onSuccess(Proyecto proyecto) {
+                        currentProyecto = proyecto;
+                        bindProyecto(currentProyecto);
+                        configurarRecyclerTipologias(currentProyecto);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminProyectoDetalleActivity.this,
+                                "No se encontró el proyecto seleccionado",
+                                Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminProyectoDetalleActivity.this,
+                        "No se pudo cargar el proyecto",
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
         frameNotificaciones.setOnClickListener(v ->
                 Toast.makeText(this, "Tienes " + totalNotificaciones + " notificaciones", Toast.LENGTH_SHORT).show());

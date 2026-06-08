@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminRepository;
-import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.example.inmia.models.CitaAsesor;
@@ -27,11 +27,14 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
-    private AdminRepository repository;
+    private AdminFirestoreGateway gateway;
     private String companyId;
+    private String asesorId;
+    private Asesor currentAsesor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +46,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_asesor_detalle_carlos);
 
-        repository = AdminRepositoryProvider.get();
-        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
+        gateway = new AdminFirestoreGateway();
 
         View btnBack = findViewById(R.id.btnBackDetalleCarlos);
         View btnDetalleCita = findViewById(R.id.btnDetalleCitaCarlos);
@@ -55,27 +57,103 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         NestedScrollView scrollView = findViewById(R.id.scrollViewAsesorDetalleCarlos);
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
 
-        Asesor asesor = cargarAsesor();
-        if (asesor == null) {
+        asesorId = getIntent().getStringExtra("asesor_id");
+        if (TextUtils.isEmpty(asesorId)) {
             Toast.makeText(this, "No se encontró asesor", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        poblarPerfil(asesor);
 
         RecyclerView recyclerViewProyectos = findViewById(R.id.recyclerViewProyectosCarlos);
         recyclerViewProyectos.setLayoutManager(new LinearLayoutManager(this));
-        List<Proyecto> proyectos = filtrarProyectosPorAsesor(asesor.getNombre());
-        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, proyectos);
+        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, new ArrayList<>());
         recyclerViewProyectos.setAdapter(adapter);
 
         RecyclerView recyclerViewCitas = findViewById(R.id.recyclerViewCitasCarlos);
         recyclerViewCitas.setLayoutManager(new LinearLayoutManager(this));
-        List<CitaAsesor> citas = cargarCitasMock();
+        List<CitaAsesor> citas = new ArrayList<>();
         AdminCitasAdapter citasAdapter = new AdminCitasAdapter(citas);
         recyclerViewCitas.setAdapter(citasAdapter);
 
         bottomNav.setSelectedItemId(R.id.nav_asesores);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        View badge = findViewById(R.id.tvBadgeNotif);
+                        if (badge instanceof TextView) {
+                            ((TextView) badge).setText(String.valueOf(count != null ? count : 0));
+                            badge.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        View badge = findViewById(R.id.tvBadgeNotif);
+                        if (badge instanceof TextView) {
+                            badge.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+                gateway.observeAdvisorById(asesorId, new AdminFirestoreGateway.FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(Asesor asesor) {
+                        currentAsesor = asesor;
+                        poblarPerfil(asesor);
+
+                        gateway.observeProjectsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<>() {
+                            @Override
+                            public void onSuccess(List<Proyecto> value) {
+                                List<Proyecto> filtrados = new ArrayList<>();
+                                if (value != null) {
+                                    for (Proyecto proyecto : value) {
+                                        if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(asesorId)) {
+                                            filtrados.add(proyecto);
+                                        }
+                                    }
+                                }
+                                adapter.setProyectos(filtrados);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                adapter.setProyectos(new ArrayList<>());
+                            }
+                        });
+
+                        gateway.observeCitasByAdvisor(asesorId, new AdminFirestoreGateway.FirestoreListCallback<>() {
+                            @Override
+                            public void onSuccess(List<CitaAsesor> value) {
+                                citasAdapter.setCitas(value);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                citasAdapter.setCitas(new ArrayList<>());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminAsesorDetalleCarlosActivity.this, "No se encontró asesor", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminAsesorDetalleCarlosActivity.this, "No se pudo cargar el asesor", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -93,7 +171,13 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
             }
         });
 
-        btnAsignarMetas.setOnClickListener(v -> mostrarDialogoMetas(asesor));
+        btnAsignarMetas.setOnClickListener(v -> {
+            if (currentAsesor != null) {
+                mostrarDialogoMetas(currentAsesor);
+            } else {
+                Toast.makeText(this, "Cargando asesor...", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -117,16 +201,6 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
             return false;
         });
-    }
-
-    private Asesor cargarAsesor() {
-        String asesorId = getIntent().getStringExtra("asesor_id");
-        Asesor asesor = repository.getAdvisorById(companyId, asesorId);
-        if (asesor == null) {
-            List<Asesor> asesores = repository.getAdvisors(companyId);
-            asesor = !asesores.isEmpty() ? asesores.get(0) : null;
-        }
-        return asesor;
     }
 
     private void poblarPerfil(Asesor asesor) {
@@ -162,16 +236,6 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         if (asesor.getFotoResId() != 0) {
             imgFoto.setImageResource(asesor.getFotoResId());
         }
-    }
-
-    private List<Proyecto> filtrarProyectosPorAsesor(String nombreAsesor) {
-        List<Proyecto> filtrados = new ArrayList<>();
-        for (Proyecto proyecto : repository.getProjects(companyId)) {
-            if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(nombreAsesor)) {
-                filtrados.add(proyecto);
-            }
-        }
-        return filtrados;
     }
 
     private void navegarATab(Class<?> destino) {
@@ -221,18 +285,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
     }
 
     private String formatearSoles(int valor) {
-        return "S/ " + String.format("%,d", valor);
+        return String.format(Locale.getDefault(), "S/ %,d", valor);
     }
 
-    private List<CitaAsesor> cargarCitasMock() {
-        List<CitaAsesor> citas = new ArrayList<>();
-
-        citas.add(new CitaAsesor("Mariana Torres", "12/05/2026", "10:00", "Palm Living", "Confirmada"));
-        citas.add(new CitaAsesor("Alberto Rios", "14/05/2026", "12:30", "Vista Verde", "En proceso"));
-        citas.add(new CitaAsesor("Paula Reyes", "16/05/2026", "09:15", "Mirador Sur", "Completada"));
-        citas.add(new CitaAsesor("Diego Salazar", "18/05/2026", "16:00", "Skyline Tower", "Cancelada"));
-        citas.add(new CitaAsesor("Lucia Paredes", "20/05/2026", "11:45", "Costa Azul", "Confirmada"));
-
-        return citas;
-    }
 }

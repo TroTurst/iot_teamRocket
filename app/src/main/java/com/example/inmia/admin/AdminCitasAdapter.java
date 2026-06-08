@@ -66,6 +66,14 @@ public class AdminCitasAdapter extends RecyclerView.Adapter<AdminCitasAdapter.Ci
         return citas != null ? citas.size() : 0;
     }
 
+    public void setCitas(List<CitaAsesor> nuevasCitas) {
+        citas.clear();
+        if (nuevasCitas != null) {
+            citas.addAll(nuevasCitas);
+        }
+        notifyItemRangeChanged(0, getItemCount());
+    }
+
     public static class CitaViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvCliente;
         private final TextView tvFecha;

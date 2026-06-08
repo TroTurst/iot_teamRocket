@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminRepository;
-import com.example.inmia.admin.data.AdminRepositoryProvider;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminFirestoreGateway.ReportSnapshot;
 import com.example.inmia.admin.data.AdminSessionDefaults;
-import com.example.inmia.models.Asesor;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class AdminReportesActivity extends AppCompatActivity {
@@ -37,9 +37,8 @@ public class AdminReportesActivity extends AppCompatActivity {
     private TextView tvLeadsPct;
     private RecyclerView recyclerViewReportes;
 
-    // Hardcodeado - luego vendra de Firebase
     private int totalNotificaciones;
-    private AdminRepository repository;
+    private AdminFirestoreGateway gateway;
     private String companyId;
 
     @Override
@@ -52,9 +51,7 @@ public class AdminReportesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_reportes);
 
-        repository = AdminRepositoryProvider.get();
-        companyId = repository.getCompanyIdForEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL);
-        totalNotificaciones = repository.getUnreadNotifications(companyId);
+        gateway = new AdminFirestoreGateway();
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
@@ -71,8 +68,66 @@ public class AdminReportesActivity extends AppCompatActivity {
         recyclerViewReportes.setLayoutManager(new LinearLayoutManager(this));
 
         configurarBadge();
-        cargarReporteMock();
         bottomNav.setSelectedItemId(R.id.nav_reportes);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarBadge();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarBadge();
+                    }
+                });
+
+                String periodoActual = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(new Date());
+                gateway.observeMonthlyReportByCompany(companyId, periodoActual, new AdminFirestoreGateway.FirestoreCallback<ReportSnapshot>() {
+                    @Override
+                    public void onSuccess(ReportSnapshot snapshot) {
+                        if (snapshot == null) {
+                            return;
+                        }
+
+                        recyclerViewReportes.setAdapter(new AdminReporteAdapter(snapshot.getItems()));
+                        tvPeriodoReporte.setText(getString(R.string.admin_reportes_periodo_demo) + " · " + snapshot.getPeriodLabel());
+
+                        pbMetaVentas.setProgress(snapshot.getMetaVentasPct());
+                        pbTasaCierre.setProgress(snapshot.getTasaCierrePct());
+                        pbLeads.setProgress(snapshot.getLeadsPct());
+
+                        tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getMetaVentasPct()));
+                        tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getTasaCierrePct()));
+                        tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getLeadsPct()));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        tvPeriodoReporte.setText("Sin reporte disponible");
+                        recyclerViewReportes.setAdapter(new AdminReporteAdapter(new java.util.ArrayList<>()));
+                        pbMetaVentas.setProgress(0);
+                        pbTasaCierre.setProgress(0);
+                        pbLeads.setProgress(0);
+                        tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, 0));
+                        tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, 0));
+                        tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, 0));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                tvPeriodoReporte.setText("No se pudo cargar el reporte");
+            }
+        });
 
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,
@@ -123,74 +178,5 @@ public class AdminReportesActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
-    }
-
-    private void cargarReporteMock() {
-        List<Asesor> asesores = repository.getAdvisors(companyId);
-        if (asesores == null || asesores.isEmpty()) {
-            return;
-        }
-
-        int totalMetaVentas = 0;
-        int totalMetaCitas = 0;
-        int totalMetaGanancias = 0;
-        int totalVentas = 0;
-        int totalCitas = 0;
-        int asesoresActivos = 0;
-
-        Asesor mejorAsesor = asesores.get(0);
-        for (Asesor asesor : asesores) {
-            totalMetaVentas += asesor.getMetaVentasMensual();
-            totalMetaCitas += asesor.getMetaCitasMensual();
-            totalMetaGanancias += asesor.getMetaGananciasMensual();
-            totalVentas += asesor.getVentasMensualActual();
-            totalCitas += asesor.getCitasMensualActual();
-            if ("Activo".equalsIgnoreCase(asesor.getEstado())) {
-                asesoresActivos++;
-            }
-            if (asesor.getVentasMensualActual() > mejorAsesor.getVentasMensualActual()) {
-                mejorAsesor = asesor;
-            }
-        }
-
-        int promedioMetaVentas = Math.round(totalMetaVentas / (float) asesores.size());
-        int promedioMetaCitas = Math.round(totalMetaCitas / (float) asesores.size());
-        int promedioMetaGanancias = Math.round(totalMetaGanancias / (float) asesores.size());
-
-        int pendientes = Math.max(0, totalCitas - totalVentas);
-
-        List<ReporteItem> items = new ArrayList<>();
-        items.add(ReporteItem.media(promedioMetaVentas, promedioMetaCitas, formatearSoles(promedioMetaGanancias)));
-        items.add(ReporteItem.mejor(mejorAsesor.getNombre(),
-                mejorAsesor.getVentasMensualActual(),
-                mejorAsesor.getCitasMensualActual(),
-                formatearSoles(mejorAsesor.getGananciasMensualActual())));
-        items.add(ReporteItem.estado(totalVentas, asesoresActivos, pendientes));
-
-        recyclerViewReportes.setAdapter(new AdminReporteAdapter(items));
-
-        tvPeriodoReporte.setText(getString(R.string.admin_reportes_periodo_demo));
-
-        int metaVentasPct = calcularPorcentaje(totalVentas, totalMetaVentas);
-        int tasaCierrePct = calcularPorcentaje(totalVentas, totalCitas);
-        int leadsPct = 80;
-
-        pbMetaVentas.setProgress(metaVentasPct);
-        pbTasaCierre.setProgress(tasaCierrePct);
-        pbLeads.setProgress(leadsPct);
-        tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, metaVentasPct));
-        tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, tasaCierrePct));
-        tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, leadsPct));
-    }
-
-    private int calcularPorcentaje(int actual, int meta) {
-        if (meta <= 0) {
-            return 0;
-        }
-        return Math.min(100, Math.round((actual * 100f) / meta));
-    }
-
-    private String formatearSoles(int valor) {
-        return String.format(Locale.US, "S/ %,d", valor);
     }
 }
