@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="2dp"
-                    android:text="@string/admin_reportes_periodo_demo"
+                    android:text="Cargando..."
                     android:textColor="#5F8F8F"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -186,7 +186,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="76"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -194,7 +194,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="@string/admin_reportes_meta_ventas_pct_demo"
+                            android:text="0%"
                             android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -221,7 +221,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="64"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -229,7 +229,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="@string/admin_reportes_tasa_cierre_pct_demo"
+                            android:text="0%"
                             android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -256,7 +256,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="83"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -264,7 +264,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="@string/admin_reportes_leads_pct_demo"
+                            android:text="0%"
                             android:textColor="#000000"
                             android:textSize="11sp"
                             android:textStyle="bold" />
@@ -320,7 +320,7 @@
                                 android:id="@+id/tvNombreAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Carlos Mendoza"
+                                android:text="Sin datos"
                                 android:textColor="#000000"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -329,7 +329,7 @@
                                 android:id="@+id/tvZonaAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Miraflores"
+                                android:text="-"
                                 android:textColor="#7A9E9E"
                                 android:textSize="12sp" />
                         </LinearLayout>
@@ -352,7 +352,7 @@
                                 android:id="@+id/tvVentasAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="12"
+                                android:text="0"
                                 android:textColor="#000000"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
@@ -376,7 +376,7 @@
                                 android:id="@+id/tvCitasAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="28"
+                                android:text="0"
                                 android:textColor="#000000"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
@@ -400,7 +400,7 @@
                                 android:id="@+id/tvMontoAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="S/ 1.2M"
+                                android:text="S/ 0"
                                 android:textColor="#000000"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />

@@ -699,7 +699,6 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
         List<ReporteItem> items = new ArrayList<>();
         items.add(ReporteItem.media(ventas, citas, formatSoles(montoTotal)));
-        items.add(ReporteItem.mejor(nombreMejorAsesor, ventasMejorAsesor, citasMejorAsesor, formatSoles(montoMejorAsesor)));
         items.add(ReporteItem.estado(ventas, Math.max(1, porAsesor.size()), Math.max(0, separaciones - ventas)));
 
         return new ReportSnapshot(periodo, items, metaVentasPct, tasaCierrePct, leadsPct);
