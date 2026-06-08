@@ -24,7 +24,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <ImageView
                     android:id="@+id/imgHeaderLogo"
@@ -45,7 +45,7 @@
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
                     android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"
@@ -80,7 +80,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:letterSpacing="0.02"
                     android:text="@string/admin_asesor_profile_title"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="6dp"
-                    android:text="@string/admin_asesor_nombre_demo"
+                    android:text=""
                     android:textColor="@color/inmia_teal_dark"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -151,8 +151,8 @@
                                 android:id="@+id/tvNombreCarlos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/admin_asesor_nombre_demo"
-                                android:textColor="@color/inmia_text"
+                                android:text=""
+                                android:textColor="#000000"
                                 android:textSize="24sp"
                                 android:textStyle="bold" />
 
@@ -161,7 +161,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="@string/admin_asesor_rol_demo"
+                                android:text=""
                                 android:textColor="#6F8F8F"
                                 android:textSize="13sp" />
 
@@ -170,7 +170,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="@string/admin_asesor_email_demo"
+                                android:text=""
                                 android:textColor="@color/inmia_teal_dark"
                                 android:textSize="12sp" />
 
@@ -179,7 +179,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="@string/admin_asesor_telefono_demo"
+                                android:text=""
                                 android:textColor="#6F8F8F"
                                 android:textSize="12sp" />
                         </LinearLayout>
@@ -221,7 +221,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="@string/admin_asesor_dni_demo"
+                                    android:text=""
                                     android:textColor="#1D2735"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -280,7 +280,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@string/admin_asesor_zona_demo"
+                        android:text=""
                         android:textColor="#6F8F8F"
                         android:textSize="13sp" />
 
@@ -335,7 +335,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="@string/admin_asesor_citas_demo"
+                                    android:text="0"
                                     android:textColor="#1D2735"
                                     android:textSize="20sp"
                                     android:textStyle="bold" />
@@ -372,7 +372,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="@string/admin_asesor_ventas_demo"
+                                    android:text="0"
                                     android:textColor="#1D2735"
                                     android:textSize="20sp"
                                     android:textStyle="bold" />
@@ -404,12 +404,13 @@
                                 android:textSize="10sp"
                                 android:textStyle="bold" />
 
-                            <TextView
-                                android:id="@+id/tvMetaVentasCarlos"
-                                android:layout_width="wrap_content"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etMetaVentasCarlos"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="@string/admin_asesor_meta_ventas_demo"
+                                android:inputType="number"
+                                android:hint="0"
                                 android:textColor="#1D2735"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
@@ -447,12 +448,13 @@
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/tvMetaCitasCarlos"
-                                    android:layout_width="wrap_content"
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etMetaCitasCarlos"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="@string/admin_asesor_meta_citas_demo"
+                                    android:inputType="number"
+                                    android:hint="0"
                                     android:textColor="#1D2735"
                                     android:textSize="18sp"
                                     android:textStyle="bold" />
@@ -484,12 +486,13 @@
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
 
-                                <TextView
-                                    android:id="@+id/tvMetaGananciasCarlos"
-                                    android:layout_width="wrap_content"
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etMetaGananciasCarlos"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="@string/admin_asesor_meta_ganancias_demo"
+                                    android:inputType="number"
+                                    android:hint="0"
                                     android:textColor="#1D2735"
                                     android:textSize="18sp"
                                     android:textStyle="bold" />
@@ -507,7 +510,9 @@
                         android:textColor="#FFFFFF"
                         android:textSize="13sp"
                         app:backgroundTint="@color/inmia_teal_dark"
-                        app:cornerRadius="21dp" />
+                        app:cornerRadius="21dp"
+                        app:strokeColor="#000000"
+                        app:strokeWidth="2dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -554,7 +559,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/admin_asesor_historial_citas"
-                            android:textColor="@color/inmia_text"
+                            android:textColor="#000000"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -587,7 +592,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/admin_asesor_proyectos_activos"
-                            android:textColor="@color/inmia_text"
+                            android:textColor="#000000"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 

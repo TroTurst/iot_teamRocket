@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
+import com.example.inmia.models.Separacion;
 
 public class SeparacionAdapter extends RecyclerView.Adapter<SeparacionAdapter.ViewHolder> {
 
@@ -32,23 +35,33 @@ public class SeparacionAdapter extends RecyclerView.Adapter<SeparacionAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Separacion sep = listaSeparaciones.get(position);
 
-        holder.tvEstadoSeparacion.setText(sep.getEstado());
+        holder.tvEstadoSeparacion.setText(sep.getEstado().toUpperCase());
         holder.tvNombreProyecto.setText(sep.getNombre());
         holder.tvUbicacion.setText(sep.getUbicacion());
         holder.tvEmpresa.setText(sep.getEmpresa());
-        holder.imgSeparacion.setImageResource(sep.getImagenResId());
 
-        if (sep.getEstado().equalsIgnoreCase("Aprobada")) {
-            holder.tvEstadoSeparacion.setTextColor(Color.parseColor("#4CAF50"));
-        } else if (sep.getEstado().equalsIgnoreCase("No aprobada")) {
+        if (sep.getImagenUrl() != null && !sep.getImagenUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(sep.getImagenUrl())
+                    .placeholder(R.drawable.onboarding1)
+                    .into(holder.imgSeparacion);
+        } else {
+            holder.imgSeparacion.setImageResource(R.drawable.onboarding1);
+        }
+
+        String estadoLimpio = sep.getEstado().trim().toLowerCase();
+        if (estadoLimpio.equals("aprobada")) {
+            holder.tvEstadoSeparacion.setTextColor(Color.parseColor("#2ECC71"));
+        } else if (estadoLimpio.equals("no aprobada") || estadoLimpio.equals("rechazada")) {
             holder.tvEstadoSeparacion.setTextColor(Color.parseColor("#FF4C4C"));
         } else {
-            holder.tvEstadoSeparacion.setTextColor(Color.parseColor("#18C0C1"));
+            holder.tvEstadoSeparacion.setTextColor(Color.parseColor("#FFA000"));
         }
 
         holder.btnDetallesSeparacion.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), ClienteSeparacionAprobadaActivity.class);
-            intent.putExtra("PROYECTO_NOMBRE", sep.getNombre());
+            intent.putExtra("SEPARACION_ID", sep.getId());
+            intent.putExtra("ESTADO_SEPARACION", estadoLimpio);
             v.getContext().startActivity(intent);
         });
     }

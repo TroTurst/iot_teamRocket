@@ -82,6 +82,14 @@ public class ChatThreadAdapter extends RecyclerView.Adapter<ChatThreadAdapter.Ch
         removeThreadById(id);
     }
 
+    public void updateThreads(List<ChatThread> threads) {
+        allThreads.clear();
+        allThreads.addAll(threads);
+        visibleThreads.clear();
+        visibleThreads.addAll(threads);
+        notifyDataSetChanged();
+    }
+
     private void showMenu(View anchor, ChatThread thread) {
         PopupMenu menu = new PopupMenu(anchor.getContext(), anchor);
         menu.inflate(R.menu.menu_chat_thread);

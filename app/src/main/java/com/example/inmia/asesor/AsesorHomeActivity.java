@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,17 +16,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAdapter.Listener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
     private RecyclerView recyclerHomeCitas;
+    private TextView tvCitasHoyCount;
+    private TextView tvSeparacionesCount;
+    private TextView tvProyectosCount;
     private HomeCitaAdapter homeCitaAdapter;
-
-    // Hardcodeado — luego vendrá de Firebase
-    private int totalNotificaciones = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +43,12 @@ public class AsesorHomeActivity extends AppCompatActivity {
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
         framePerfil         = findViewById(R.id.framePerfil);
         recyclerHomeCitas    = findViewById(R.id.recyclerHomeCitas);
+        tvCitasHoyCount = findViewById(R.id.tvCitasHoyCount);
+        tvSeparacionesCount = findViewById(R.id.tvSeparacionesCount);
+        tvProyectosCount = findViewById(R.id.tvProyectosCount);
 
-        // Configurar badge inicial
+        AsesorCitaStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
         configurarBadge();
 
         // Click en campanita
@@ -58,9 +61,10 @@ public class AsesorHomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, AsesorPerfilActivity.class));
         });
 
-        homeCitaAdapter = new HomeCitaAdapter(buildMockHomeCitas());
+        homeCitaAdapter = new HomeCitaAdapter(AsesorCitaStore.getTodayItems(this), this);
         recyclerHomeCitas.setLayoutManager(new LinearLayoutManager(this));
         recyclerHomeCitas.setAdapter(homeCitaAdapter);
+        actualizarResumen();
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -86,28 +90,8 @@ public class AsesorHomeActivity extends AppCompatActivity {
         });
     }
 
-    private List<HomeCita> buildMockHomeCitas() {
-        List<HomeCita> citas = new ArrayList<>();
-        citas.add(new HomeCita(
-            "10:00",
-            "AM",
-            "Juan Perez",
-            "Edificio Catalina Sky",
-            "Pendiente",
-            false
-        ));
-        citas.add(new HomeCita(
-            "02:00",
-            "PM",
-            "Maria Garcia",
-            "Condominio Pueblo Libre",
-            "Confirmada",
-            true
-        ));
-        return citas;
-    }
-
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -117,7 +101,40 @@ public class AsesorHomeActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (homeCitaAdapter != null) {
+            homeCitaAdapter.updateItems(AsesorCitaStore.getTodayItems(this));
+        }
+        actualizarResumen();
+        configurarBadge();
+    }
+
+    private void actualizarResumen() {
+        if (tvCitasHoyCount != null) {
+            tvCitasHoyCount.setText(String.valueOf(AsesorCitaStore.getTodayItems(this).size()));
+        }
+        if (tvSeparacionesCount != null) {
+            tvSeparacionesCount.setText(String.valueOf(AsesorSeparacionStore.countByStatus(this, "Aprobada")));
+        }
+        if (tvProyectosCount != null) {
+            tvProyectosCount.setText(String.valueOf(AsesorSeparacionStore.getItems(this).size()));
+        }
+    }
+
+    @Override
+    public void onCitaSelected(HomeCita item) {
+        Intent intent = new Intent(this, AsesorCitaDetailActivity.class);
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CLIENTE, item.getClient());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_PROYECTO, item.getProject());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_ESTADO, item.getStatus());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CONFIRMADA, item.isConfirmed());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_KEY, AsesorCitaStore.buildKey(item.getClient(), item.getProject()));
+        startActivity(intent);
     }
 }

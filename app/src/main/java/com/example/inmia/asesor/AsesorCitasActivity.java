@@ -2,8 +2,11 @@ package com.example.inmia.asesor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -30,13 +33,14 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
     private View btnCalendar;
+    private View btnLimpiarFiltrosCitas;
+    private EditText etCitasSearch;
     private AutoCompleteTextView dropdownEstado;
     private AutoCompleteTextView dropdownProyecto;
     private AutoCompleteTextView dropdownHorario;
     private RecyclerView recyclerCitas;
     private CitaItemAdapter citaAdapter;
-
-    private int totalNotificaciones = 2;
+    private List<CitaItem> allCitas = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +57,25 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         framePerfil = findViewById(R.id.framePerfil);
         btnCalendar = findViewById(R.id.btnCalendar);
+        btnLimpiarFiltrosCitas = findViewById(R.id.btnLimpiarFiltrosCitas);
+        etCitasSearch = findViewById(R.id.etCitasSearch);
         dropdownEstado = findViewById(R.id.dropdownEstado);
         dropdownProyecto = findViewById(R.id.dropdownProyecto);
         dropdownHorario = findViewById(R.id.dropdownHorario);
         recyclerCitas = findViewById(R.id.recyclerCitas);
 
+        AsesorCitaStore.seedIfEmpty(this);
+        AsesorNotificacionStore.seedIfEmpty(this);
         configurarBadge();
         configurarDropdowns();
         configurarCalendario();
+        configurarFiltros();
+        cargarCitas();
 
-        citaAdapter = new CitaItemAdapter(buildMockCitas(), this);
+        citaAdapter = new CitaItemAdapter(new ArrayList<>(), this);
         recyclerCitas.setLayoutManager(new LinearLayoutManager(this));
         recyclerCitas.setAdapter(citaAdapter);
+        aplicarFiltros();
 
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
@@ -99,7 +110,16 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarCitas();
+        aplicarFiltros();
+        configurarBadge();
+    }
+
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -109,49 +129,56 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
     }
 
     public void openCitaDetalle(View view) {
+        if (!allCitas.isEmpty()) {
+            abrirDetalleCita(allCitas.get(0));
+            return;
+        }
         startActivity(new Intent(this, AsesorCitaDetailActivity.class));
     }
 
     @Override
     public void onCitaSelected(CitaItem item) {
-        startActivity(new Intent(this, AsesorCitaDetailActivity.class));
+        abrirDetalleCita(item);
     }
 
-    private List<CitaItem> buildMockCitas() {
-        List<CitaItem> citas = new ArrayList<>();
-        citas.add(new CitaItem(
-            "Confirmada",
-            R.color.inmia_success,
-            1f,
-            "Los Alamos",
-            "Juan Perez",
-            "Surco, Primavera 123",
-            "Fecha y hora 12/05/2026 - 10:30AM"
-        ));
-        citas.add(new CitaItem(
-            "Pendiente",
-            R.color.inmia_warning,
-            1f,
-            "Catalina Sky",
-            "Maria Garcia",
-            "Miraflores, Av. Benavides 410",
-            "Fecha y hora 14/05/2026 - 4:00PM"
-        ));
-        citas.add(new CitaItem(
-            "Terminada",
-            R.color.inmia_neutral,
-            0.7f,
-            "Pueblo Libre",
-            "Carlos Ruiz",
-            "Pueblo Libre, Av. Bolivar 512",
-            "Fecha y hora 10/05/2026 - 11:30AM"
-        ));
-        return citas;
+    private void cargarCitas() {
+        allCitas = AsesorCitaStore.getCitaItems(this);
+    }
+
+    private void configurarFiltros() {
+        if (etCitasSearch != null) {
+            etCitasSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    aplicarFiltros();
+                }
+            });
+        }
+
+        if (dropdownEstado != null) {
+            dropdownEstado.setOnItemClickListener((parent, view, position, id) -> aplicarFiltros());
+        }
+        if (dropdownProyecto != null) {
+            dropdownProyecto.setOnItemClickListener((parent, view, position, id) -> aplicarFiltros());
+        }
+        if (dropdownHorario != null) {
+            dropdownHorario.setOnItemClickListener((parent, view, position, id) -> aplicarFiltros());
+        }
+
+        if (btnLimpiarFiltrosCitas != null) {
+            btnLimpiarFiltrosCitas.setOnClickListener(v -> limpiarFiltros());
+        }
     }
 
     private void configurarDropdowns() {
@@ -178,6 +205,124 @@ public class AsesorCitasActivity extends AppCompatActivity implements CitaItemAd
         dropdownEstado.setAdapter(estadoAdapter);
         dropdownProyecto.setAdapter(proyectoAdapter);
         dropdownHorario.setAdapter(horarioAdapter);
+
+        dropdownEstado.setText("", false);
+        dropdownProyecto.setText("", false);
+        dropdownHorario.setText("", false);
+    }
+
+    private void limpiarFiltros() {
+        if (etCitasSearch != null) {
+            etCitasSearch.setText("");
+        }
+        if (dropdownEstado != null) {
+            dropdownEstado.setText("", false);
+        }
+        if (dropdownProyecto != null) {
+            dropdownProyecto.setText("", false);
+        }
+        if (dropdownHorario != null) {
+            dropdownHorario.setText("", false);
+        }
+        aplicarFiltros();
+    }
+
+    private void aplicarFiltros() {
+        String texto = etCitasSearch != null && etCitasSearch.getText() != null
+            ? etCitasSearch.getText().toString().trim().toLowerCase(Locale.getDefault())
+            : "";
+        String estado = dropdownEstado != null && dropdownEstado.getText() != null
+            ? dropdownEstado.getText().toString().trim()
+            : "";
+        String proyecto = dropdownProyecto != null && dropdownProyecto.getText() != null
+            ? dropdownProyecto.getText().toString().trim().toLowerCase(Locale.getDefault())
+            : "";
+        String horario = dropdownHorario != null && dropdownHorario.getText() != null
+            ? dropdownHorario.getText().toString().trim()
+            : "";
+
+        List<CitaItem> filtradas = new ArrayList<>();
+        for (CitaItem cita : allCitas) {
+            if (!texto.isEmpty() && !coincideBusqueda(cita, texto)) {
+                continue;
+            }
+            if (!estado.isEmpty() && !"Todas".equalsIgnoreCase(estado) && !estado.equalsIgnoreCase(cita.getStatus())) {
+                continue;
+            }
+            if (!proyecto.isEmpty() && !cita.getProject().toLowerCase(Locale.getDefault()).contains(proyecto)) {
+                continue;
+            }
+            if (!horario.isEmpty() && !coincideHorario(cita, horario)) {
+                continue;
+            }
+            filtradas.add(cita);
+        }
+
+        if (citaAdapter != null) {
+            citaAdapter.updateItems(filtradas);
+        }
+    }
+
+    private boolean coincideBusqueda(CitaItem cita, String texto) {
+        return contiene(cita.getStatus(), texto)
+            || contiene(cita.getProject(), texto)
+            || contiene(cita.getClient(), texto)
+            || contiene(cita.getLocation(), texto)
+            || contiene(cita.getDateTime(), texto);
+    }
+
+    private boolean coincideHorario(CitaItem cita, String horario) {
+        String detail = cita.getDateTime() == null ? "" : cita.getDateTime().toLowerCase(Locale.getDefault());
+        boolean contieneAm = detail.contains("am");
+        boolean contienePm = detail.contains("pm");
+        int hour = extraerHora(detail);
+
+        if ("Manana".equalsIgnoreCase(horario)) {
+            return contieneAm;
+        }
+        if ("Tarde".equalsIgnoreCase(horario)) {
+            return contienePm && hour > 0 && hour < 6;
+        }
+        if ("Noche".equalsIgnoreCase(horario)) {
+            return contienePm && hour >= 6;
+        }
+        return true;
+    }
+
+    private int extraerHora(String detail) {
+        try {
+            int dashIndex = detail.lastIndexOf('-');
+            if (dashIndex == -1) {
+                return 0;
+            }
+            String time = detail.substring(dashIndex + 1).trim();
+            String[] parts = time.split(":");
+            if (parts.length == 0) {
+                return 0;
+            }
+            String hourPart = parts[0].replaceAll("[^0-9]", "").trim();
+            if (hourPart.isEmpty()) {
+                return 0;
+            }
+            return Integer.parseInt(hourPart);
+        } catch (Exception ignored) {
+            return 0;
+        }
+    }
+
+    private boolean contiene(String value, String texto) {
+        return value != null && value.toLowerCase(Locale.getDefault()).contains(texto);
+    }
+
+    private void abrirDetalleCita(CitaItem item) {
+        Intent intent = new Intent(this, AsesorCitaDetailActivity.class);
+        String key = AsesorCitaStore.buildKey(item.getClient(), item.getProject());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_KEY, key);
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CLIENTE, item.getClient());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_PROYECTO, item.getProject());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_ESTADO, item.getStatus());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CONFIRMADA, item.getStatus().equalsIgnoreCase("Confirmada"));
+        startActivity(intent);
     }
 
     private void configurarCalendario() {

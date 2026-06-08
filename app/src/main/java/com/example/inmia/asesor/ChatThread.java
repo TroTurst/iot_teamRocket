@@ -7,13 +7,15 @@ public class ChatThread {
     private final String lastMessage;
     private final String time;
     private final int avatarResId;
+    private String fotoUrl;
 
-    public ChatThread(String id, String name, String lastMessage, String time, int avatarResId) {
+    public ChatThread(String id, String name, String lastMessage, String time, int avatarResId, String fotoUrl) {
         this.id = id;
         this.name = name;
         this.lastMessage = lastMessage;
         this.time = time;
         this.avatarResId = avatarResId;
+        this.fotoUrl =fotoUrl;
     }
 
     public String getId() {
@@ -35,4 +37,5 @@ public class ChatThread {
     public int getAvatarResId() {
         return avatarResId;
     }
+    public String getFotoUrl() { return fotoUrl; }
 }

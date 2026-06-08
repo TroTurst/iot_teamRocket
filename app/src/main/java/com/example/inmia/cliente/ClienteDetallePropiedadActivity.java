@@ -14,11 +14,16 @@ import android.widget.PopupMenu;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -26,37 +31,56 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClienteDetallePropiedadActivity extends AppCompatActivity {
 
-    // Vistas principales
     private TextView tvNombreProyecto, tvUbicacionProyecto, tvDescripcionProyecto, tvPrecioProyecto;
     private TextView tvInmobiliariaProyecto, tvReferenciaProyecto, tvAntiguedadProyecto, tvFechaLanzamientoProyecto, tvEstadoGeneralProyecto;
     private ChipGroup chipGroupProyectoFeatures, chipGroupProyectoExtras;
 
-    // Datos del departamento
-    private TextView tvAreaProyecto, tvDormitoriosProyecto, tvBanosProyecto, tvEstacionamientoProyecto, tvPrecioEstimadoProyecto, tvEstadoProyecto;
+    private TextView tvPriceMain, tvPriceSub;
 
-    // Ficha Tipología
+
     private TextView tvTipologiaNombre, tvTipologiaCertificado, tvTipologiaTipoPiso, tvTipologiaVentilacion, tvTipologiaAcabados;
+    private TextView tvAreaProyecto, tvDormitoriosProyecto, tvBanosProyecto, tvEstacionamientoProyecto, tvPrecioEstimadoProyecto, tvEstadoProyecto;
     private ChipGroup chipGroupTipologiaFeatures;
 
     private ImageView imgHeroProyecto;
     private View btnBack, btnCompartirQR, btnReservar;
+    private MaterialButton btnAgendarVisita;
+    private RecyclerView rvTipologias;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private String proyectoId = "";
+    private String proyectoNombre = "";
+    private String tipologiaSeleccionadaActual = "";
+
+    private double montoSeparacionActual = 0.0;
+    private String imagenProyectoUrl = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getSupportActionBar() != null) getSupportActionBar().hide();
-
         setContentView(R.layout.activity_detalle_propiedad_cliente);
+
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
+        if (getIntent() != null) {
+            if (getIntent().hasExtra("PROYECTO_ID")) proyectoId = getIntent().getStringExtra("PROYECTO_ID");
+            if (getIntent().hasExtra("PROYECTO_NOMBRE")) proyectoNombre = getIntent().getStringExtra("PROYECTO_NOMBRE");
+        }
 
         inicializarVistas();
         configurarListeners();
-        llenarDatosDemo();
         configurarMapa();
-        configurarRecyclerTipologias();
+
+        cargarDatosDeFirestore();
     }
 
     private void inicializarVistas() {
@@ -65,6 +89,9 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
         tvDescripcionProyecto = findViewById(R.id.tvDescripcionProyecto);
         tvPrecioProyecto = findViewById(R.id.tvPrecioProyecto);
         imgHeroProyecto = findViewById(R.id.imgHeroProyecto);
+
+        tvPriceMain = findViewById(R.id.tvPriceMain);
+        tvPriceSub = findViewById(R.id.tvPriceSub);
 
         tvInmobiliariaProyecto = findViewById(R.id.tvInmobiliariaProyecto);
         tvReferenciaProyecto = findViewById(R.id.tvReferenciaProyecto);
@@ -88,19 +115,152 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
         tvTipologiaAcabados = findViewById(R.id.tvTipologiaAcabados);
         chipGroupTipologiaFeatures = findViewById(R.id.chipGroupTipologiaFeatures);
 
+        rvTipologias = findViewById(R.id.recyclerViewTipologias);
+        rvTipologias.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+
         btnBack = findViewById(R.id.btnBack);
         btnCompartirQR = findViewById(R.id.btnCompartirQR);
         btnReservar = findViewById(R.id.btnReservar);
+        btnAgendarVisita = findViewById(R.id.btnAgendarVisita);
+    }
+
+    private void cargarDatosDeFirestore() {
+        if (proyectoId.isEmpty()) return;
+
+        db.collection("proyectos").document(proyectoId).get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        proyectoNombre = document.getString("nombre");
+                        tvNombreProyecto.setText(proyectoNombre);
+                        tvDescripcionProyecto.setText(document.getString("descripcion"));
+                        tvEstadoGeneralProyecto.setText(document.getString("estado"));
+
+                        Map<String, Object> ubicacion = (Map<String, Object>) document.get("ubicacion");
+                        if (ubicacion != null && ubicacion.get("direccion") != null) {
+                            tvUbicacionProyecto.setText(ubicacion.get("direccion").toString());
+                        }
+
+                        List<String> imagenesUrls = (List<String>) document.get("imagenesUrls");
+                        if (imagenesUrls != null && !imagenesUrls.isEmpty() && !imagenesUrls.get(0).isEmpty()) {
+                            imagenProyectoUrl = imagenesUrls.get(0);
+                            Glide.with(this).load(imagenProyectoUrl).placeholder(R.drawable.onboarding1).into(imgHeroProyecto);
+                        }
+
+                        List<String> areasComunes = (List<String>) document.get("areasComunes");
+                        chipGroupProyectoExtras.removeAllViews();
+                        if (areasComunes != null) {
+                            for (String area : areasComunes) agregarChip(chipGroupProyectoExtras, area.substring(0, 1).toUpperCase() + area.substring(1));
+                        }
+
+                        List<Map<String, Object>> tipologiasDB = (List<Map<String, Object>>) document.get("tipologias");
+                        List<Tipologia> listaTipologias = new ArrayList<>();
+
+                        if (tipologiasDB != null) {
+                            for (int i = 0; i < tipologiasDB.size(); i++) {
+                                Map<String, Object> mapaTipo = tipologiasDB.get(i);
+                                String metraje = mapaTipo.get("metraje") != null ? mapaTipo.get("metraje").toString() + " m²" : "N/A";
+                                String cuartos = mapaTipo.get("numeroCuartos") != null ? mapaTipo.get("numeroCuartos").toString() : "0";
+                                String precio = mapaTipo.get("precio") != null ? mapaTipo.get("precio").toString() : "0";
+                                String nombreTipo = "Departamento Tipo " + (i + 1);
+
+                                Tipologia tipo = new Tipologia(String.valueOf(i), nombreTipo, "Moderno", metraje, cuartos, "2", "Sí", precio, "Disponible", 0, null, false, "A+", false, true, false, true, Integer.parseInt(cuartos), "Laminado", false, "Natural", false, "Premium");
+                                listaTipologias.add(tipo);
+                            }
+                        }
+
+                        SimpleTipologiaAdapter adapter = new SimpleTipologiaAdapter(listaTipologias, this::actualizarFichaYPrecio);
+                        rvTipologias.setAdapter(adapter);
+
+                        if (!listaTipologias.isEmpty()) actualizarFichaYPrecio(listaTipologias.get(0));
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error cargando proyecto", Toast.LENGTH_SHORT).show());
+    }
+
+    private void actualizarFichaYPrecio(Tipologia tp) {
+        tipologiaSeleccionadaActual = tp.getNombre();
+
+        tvTipologiaNombre.setText(tp.getNombre());
+        tvTipologiaCertificado.setText(tp.getCertificadoEnergetico());
+        tvTipologiaTipoPiso.setText(tp.getTipoPiso());
+        tvTipologiaVentilacion.setText(tp.getVentilacion());
+        tvTipologiaAcabados.setText(tp.getTipoAcabados());
+        tvAreaProyecto.setText(tp.getArea());
+        tvDormitoriosProyecto.setText(tp.getDormitorios());
+
+        chipGroupTipologiaFeatures.removeAllViews();
+        if(tp.isBalcon()) agregarChip(chipGroupTipologiaFeatures, "Balcón");
+        if(tp.isCocinaIntegrada()) agregarChip(chipGroupTipologiaFeatures, "Cocina Integrada");
+
+        double precioNumerico = 0.0;
+        try {
+            String precioLimpio = tp.getPrecio().replaceAll("[^\\d.]", "");
+            precioNumerico = Double.parseDouble(precioLimpio);
+        } catch (Exception ignored) {}
+
+        montoSeparacionActual = precioNumerico / 4;
+
+        tvPrecioEstimadoProyecto.setText(String.format("S/ %,.2f", precioNumerico));
+        tvPrecioProyecto.setText(String.format("Desde S/ %,.2f", precioNumerico));
+        tvPriceMain.setText(String.format("Desde S/ %,.2f", precioNumerico));
+        tvPriceSub.setText(String.format("Separación: S/ %,.2f", montoSeparacionActual));
+    }
+
+    private void agregarChip(ChipGroup chipGroup, String texto) {
+        Chip chip = new Chip(this);
+        chip.setText(texto);
+        chip.setChipBackgroundColorResource(R.color.inmia_teal_light);
+        chip.setTextColor(getResources().getColor(R.color.inmia_teal_dark));
+        chipGroup.addView(chip);
     }
 
     private void configurarListeners() {
         btnBack.setOnClickListener(v -> onBackPressed());
+        btnCompartirQR.setOnClickListener(this::showPopupMenu);
 
-        btnCompartirQR.setOnClickListener(v -> showPopupMenu(v));
+        if (btnAgendarVisita != null) {
+            btnAgendarVisita.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ClienteRegistrarCitaActivity.class);
+                intent.putExtra("PROYECTO_ID", proyectoId);
+                intent.putExtra("PROYECTO_NOMBRE", proyectoNombre);
+                intent.putExtra("TIPOLOGIA_NOMBRE", tipologiaSeleccionadaActual);
+                startActivity(intent);
+            });
+        }
 
         btnReservar.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ClienteRegistrarCitaActivity.class);
-            startActivity(intent);
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser == null) {
+                Toast.makeText(this, "Debes iniciar sesión", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (montoSeparacionActual <= 0) {
+                Toast.makeText(this, "Cargando precios...", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(this, "Solicitando separación...", Toast.LENGTH_SHORT).show();
+
+            Map<String, Object> nuevaSeparacion = new HashMap<>();
+            nuevaSeparacion.put("clienteId", currentUser.getUid());
+            nuevaSeparacion.put("proyectoId", proyectoId);
+            nuevaSeparacion.put("nombreProyecto", proyectoNombre);
+            nuevaSeparacion.put("ubicacion", tvUbicacionProyecto.getText().toString());
+            nuevaSeparacion.put("inmobiliariaNombre", tvInmobiliariaProyecto.getText().toString());
+            nuevaSeparacion.put("tipologia", tipologiaSeleccionadaActual);
+            nuevaSeparacion.put("montoSeparacion", montoSeparacionActual);
+            nuevaSeparacion.put("imagenUrl", imagenProyectoUrl);
+            nuevaSeparacion.put("estado", "En proceso");
+            nuevaSeparacion.put("fechaCreacion", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+            db.collection("separaciones").add(nuevaSeparacion)
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "¡Solicitud enviada a validación!", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(this, ClienteSeparacionesActivity.class);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error al solicitar", Toast.LENGTH_SHORT).show());
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
@@ -118,51 +278,6 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
         }
     }
 
-    private void llenarDatosDemo() {
-
-        tvNombreProyecto.setText("Palm Living");
-        tvUbicacionProyecto.setText("San Isidro, Lima");
-        tvDescripcionProyecto.setText("Moderno departamento con vista panorámica a la ciudad...");
-        imgHeroProyecto.setImageResource(R.drawable.onboarding1);
-        tvPrecioProyecto.setText("Desde S/ 648,000");
-
-        tvInmobiliariaProyecto.setText("GALEÓN INMOBILIARIA");
-        tvReferenciaProyecto.setText("REF-PL-890");
-        tvAntiguedadProyecto.setText("En construcción");
-        tvFechaLanzamientoProyecto.setText("Octubre 2026");
-        tvEstadoGeneralProyecto.setText("En preventa");
-
-
-        agregarChip(chipGroupProyectoFeatures, "Con Ascensor");
-        agregarChip(chipGroupProyectoFeatures, "Pet Friendly");
-        agregarChip(chipGroupProyectoExtras, "Piscina Infinity");
-        agregarChip(chipGroupProyectoExtras, "Coworking");
-
-
-        tvAreaProyecto.setText("85 m²");
-        tvDormitoriosProyecto.setText("3");
-        tvBanosProyecto.setText("2");
-        tvEstacionamientoProyecto.setText("1 incluido");
-        tvPrecioEstimadoProyecto.setText("S/ 648,000");
-        tvEstadoProyecto.setText("Disponible");
-        tvTipologiaNombre.setText("Flat 85m² Vista Calle");
-        tvTipologiaCertificado.setText("A+ (Alta Eficiencia)");
-        tvTipologiaTipoPiso.setText("Madera Estructurada");
-        tvTipologiaVentilacion.setText("Natural Cruzada");
-        tvTipologiaAcabados.setText("Premium");
-        agregarChip(chipGroupTipologiaFeatures, "Balcón amplio");
-        agregarChip(chipGroupTipologiaFeatures, "Cocina Equipada");
-
-    }
-
-    private void agregarChip(ChipGroup chipGroup, String texto) {
-        Chip chip = new Chip(this);
-        chip.setText(texto);
-        chip.setChipBackgroundColorResource(R.color.inmia_teal_light);
-        chip.setTextColor(getResources().getColor(R.color.inmia_teal_dark));
-        chipGroup.addView(chip);
-    }
-
     private void configurarMapa() {
         Configuration.getInstance().load(this, android.preference.PreferenceManager.getDefaultSharedPreferences(this));
         MapView mapa = findViewById(R.id.mapaClienteProyecto);
@@ -172,77 +287,25 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
         mapController.setCenter(new GeoPoint(-12.0975, -77.0366));
     }
 
-    private void configurarRecyclerTipologias() {
-        RecyclerView rv = findViewById(R.id.recyclerViewTipologias);
-        rv.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
-
-        List<Tipologia> lista = new ArrayList<>();
-        lista.add(new Tipologia("1", "Flat 85m² Vista Calle",
-                "Moderno", "85m²", "3",
-                "2", "Sí", "S/ 648,000",
-                "Disponible", 0, null,
-                false, "A+", false,
-                true, false, true,
-                2, "Madera", false,
-                "Natural", false, "Premium"));
-        lista.add(new Tipologia("2", "Flat 120m² Penthouse",
-                "Lujoso.", "120m²", "4",
-                "3", "Sí", "S/ 950,000",
-                "Disponible", 0, null,
-                false, "A+", false,
-                true, false, true,
-                3, "Porcelanato", false,
-                "Natural", false, "Lujo"));
-
-        SimpleTipologiaAdapter adapter = new SimpleTipologiaAdapter(lista, tp -> {
-            actualizarFicha(tp);
-        });
-        rv.setAdapter(adapter);
-
-        if (!lista.isEmpty()) actualizarFicha(lista.get(0));
-    }
-
-    private void actualizarFicha(Tipologia tp) {
-        tvTipologiaNombre.setText(tp.getNombre());
-        tvTipologiaCertificado.setText(tp.getCertificadoEnergetico());
-        tvTipologiaTipoPiso.setText(tp.getTipoPiso());
-        tvTipologiaVentilacion.setText(tp.getVentilacion());
-        tvTipologiaAcabados.setText(tp.getTipoAcabados());
-
-        chipGroupTipologiaFeatures.removeAllViews();
-        if(tp.isBalcon()) agregarChip(chipGroupTipologiaFeatures, "Balcón");
-        if(tp.isCocinaIntegrada()) agregarChip(chipGroupTipologiaFeatures, "Cocina Integrada");
-    }
-
-
-    private void descargarBrochureOQR() {
-        String url = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750";
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setTitle("Brochure Palm Living");
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Palm_Living.jpg");
-        DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        if (manager != null) manager.enqueue(request);
-        Toast.makeText(this, "Descarga iniciada", Toast.LENGTH_SHORT).show();
-    }
     private void showPopupMenu(View view) {
         PopupMenu popup = new PopupMenu(this, view);
-
         popup.getMenu().add("Compartir Proyecto");
         popup.getMenu().add("Descargar Brochure");
 
         popup.setOnMenuItemClickListener(item -> {
-            switch (item.getTitle().toString()) {
-                case "Compartir Proyecto":
-                    Toast.makeText(this, "proximamente", Toast.LENGTH_SHORT).show();
-                    return true;
-                case "Descargar Brochure":
-                    descargarBrochureOQR();
-                default:
-                    return false;
+            if (item.getTitle().toString().equals("Descargar Brochure")) {
+                String url = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750";
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                request.setTitle("Brochure " + proyectoNombre);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, proyectoNombre.replace(" ", "_") + ".jpg");
+                DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                if (manager != null) manager.enqueue(request);
+                Toast.makeText(this, "Descarga iniciada", Toast.LENGTH_SHORT).show();
+                return true;
             }
+            return false;
         });
-
         popup.show();
     }
 }

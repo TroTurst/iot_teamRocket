@@ -22,7 +22,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <FrameLayout
                     android:id="@+id/btnBackProyectoDetalle"
@@ -45,64 +45,26 @@
                         android:src="@android:drawable/ic_media_previous" />
                 </FrameLayout>
 
-                <LinearLayout
-                    android:id="@+id/layoutAccionesProyecto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <FrameLayout
+                    android:id="@+id/btnEditarProyectoDetalle"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_marginTop="44dp"
                     android:layout_marginEnd="20dp"
-                    android:orientation="horizontal"
+                    android:background="@drawable/badge_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <FrameLayout
-                        android:id="@+id/frameNotificaciones"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/admin_notifications"
-                            android:src="@drawable/ic_notifications" />
-
-                        <TextView
-                            android:id="@+id/tvBadgeNotif"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="top|end"
-                            android:layout_marginTop="2dp"
-                            android:layout_marginEnd="2dp"
-                            android:background="@drawable/badge_background"
-                            android:gravity="center"
-                            android:text="@string/app_name"
-                            android:textColor="#FFFFFF"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:id="@+id/btnEditarProyectoDetalle"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/badge_outline"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/admin_edit"
-                            android:padding="9dp"
-                            android:src="@android:drawable/ic_menu_edit" />
-                    </FrameLayout>
-                </LinearLayout>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/admin_edit"
+                        android:padding="9dp"
+                        android:src="@android:drawable/ic_menu_edit" />
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="0dp"
@@ -117,7 +79,7 @@
                     android:textColor="@color/inmia_text"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@id/layoutAccionesProyecto"
+                    app:layout_constraintEnd_toStartOf="@id/btnEditarProyectoDetalle"
                     app:layout_constraintStart_toEndOf="@id/btnBackProyectoDetalle"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -164,7 +126,6 @@
                         android:id="@+id/tvNombreProyecto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/project1_name"
                         android:textColor="#1D2735"
                         android:textSize="24sp"
                         android:textStyle="bold" />
@@ -188,7 +149,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                                android:text="@string/project1_location"
                             android:textColor="@color/inmia_teal_dark"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -198,7 +158,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/onboarding_desc_1"
                         android:textColor="#5F8F8F"
                         android:textSize="13sp"
                         android:lineSpacingMultiplier="1.35" />
@@ -221,7 +180,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                                android:text="@string/project1_price"
                             android:textColor="@color/inmia_text"
                             android:textSize="14sp"
                             android:textStyle="bold" />

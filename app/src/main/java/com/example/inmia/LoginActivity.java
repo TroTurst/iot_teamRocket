@@ -3,7 +3,9 @@ package com.example.inmia;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,7 +18,9 @@ import com.example.inmia.superadmin.SuperAdminHomeActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import android.content.SharedPreferences;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -24,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etEmail, etPassword;
     private MaterialButton btnLogin, btnRegister;
     private android.widget.TextView tvForgotPassword;
+
+    // Variables de Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +43,11 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        // Vincular vistas
+        // Inicializar Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+
         tilEmail         = findViewById(R.id.tilEmail);
         tilPassword      = findViewById(R.id.tilPassword);
         etEmail          = findViewById(R.id.etEmail);
@@ -50,63 +62,101 @@ public class LoginActivity extends AppCompatActivity {
                 String email    = etEmail.getText().toString().trim();
                 String password = etPassword.getText().toString().trim();
 
-                // Verificar credenciales con UserCheck
-                String rol = UserCheck.getRol(email, password);
+                btnLogin.setEnabled(false);
 
-                if (rol == null) {
-                    // Credenciales incorrectas
-                    tilPassword.setError(getString(R.string.error_credenciales));
-                } else {
-                    // Credenciales correctas → guardar sesión si es superadmin
-                    tilPassword.setError(null);
-                    if (UserCheck.ROL_SUPERADMIN.equals(rol)) {
-                        new SessionManager(this).guardarSesion("Superadmin", email);
-                    }
-                    redirigirSegunRol(rol);
-                }
+                // Autenticar con Firebase Auth
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, task -> {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null) {
+                                    verificarRolYRedirigir(user.getUid(), email);
+                                }
+                            } else {
+                                btnLogin.setEnabled(true);
+                                tilPassword.setError(getString(R.string.error_credenciales));
+                            }
+                        });
             }
         });
 
-        // Botón Crear Cuenta
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
 
-        // Olvidé mi contraseña
         tvForgotPassword.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
             startActivity(intent);
         });
     }
 
-    private void redirigirSegunRol(String rol) {
-        Intent intent;
+    private void verificarRolYRedirigir(String uid, String email) {
 
-        switch (rol) {
-            case UserCheck.ROL_CLIENTE:
-                intent = new Intent(this, ClienteHomeActivity.class);
-                break;
-            case UserCheck.ROL_ASESOR:
-                intent = new Intent(this, AsesorHomeActivity.class);
-                break;
-            case UserCheck.ROL_ADMIN:
-                intent = new Intent(this, RegistroInmobiliariaActivity.class);
-                break;
-            case UserCheck.ROL_SUPERADMIN:
-                intent = new Intent(this, SuperAdminHomeActivity.class);
-                break;
-            case UserCheck.ROL_ADMIN1:
-                intent = new Intent(this, AdminHomeActivity.class);
-                break;
-            default:
-                return;
-        }
 
-        // Limpiar el stack — no puede volver al login con el botón atrás
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        db.collection("usuarios").document(uid).get()
+
+                .addOnSuccessListener(documentSnapshot -> {
+                    btnLogin.setEnabled(true);
+
+                    if (documentSnapshot.exists()) {
+                        String rol = documentSnapshot.getString("rol");
+                        Boolean activoObj = documentSnapshot.getBoolean("activo");
+                        boolean activo = activoObj != null ? activoObj : false;
+
+                        if (!activo) {
+                            Toast.makeText(this, "Tu cuenta está desactivada o pendiente de aprobación.", Toast.LENGTH_LONG).show();
+                            mAuth.signOut();
+                            return;
+                        }
+
+
+                        if ("superadmin".equals(rol)) {
+                            new SessionManager(this).guardarSesion("Superadmin", email);
+                        }
+
+                        Intent intent;
+
+                        switch (rol != null ? rol : "") {
+                            case "cliente":
+                                intent = new Intent(this, ClienteHomeActivity.class);
+                                break;
+                            case "asesor":
+                                intent = new Intent(this, AsesorHomeActivity.class);
+                                break;
+                            case "admin":
+                                Boolean primeraVez = documentSnapshot.getBoolean("esPrimeraVez");
+                                if (Boolean.TRUE.equals(primeraVez)) {
+                                    intent = new Intent(this, RegistroInmobiliariaActivity.class);
+                                } else {
+                                    intent = new Intent(this, AdminHomeActivity.class);
+                                }
+                                break;
+                            case "superadmin":
+                                intent = new Intent(this, SuperAdminHomeActivity.class);
+                                break;
+                            default:
+                                Toast.makeText(this, "Rol desconocido en la base de datos.", Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                                return;
+                        }
+
+
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+
+                    } else {
+                        Toast.makeText(this, "No se encontró el perfil en la base de datos.", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    btnLogin.setEnabled(true);
+                    Log.e("FirestoreError", "Error al leer documento de usuario", e);
+                    Toast.makeText(this, "Error de conexión con la base de datos.", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                });
     }
 
     private boolean validarFormulario() {
@@ -114,7 +164,6 @@ public class LoginActivity extends AppCompatActivity {
 
         String email    = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
         String password = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
-
 
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError(getString(R.string.error_email_empty));
@@ -125,7 +174,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             tilEmail.setError(null);
         }
-
 
         if (TextUtils.isEmpty(password)) {
             tilPassword.setError(getString(R.string.error_password_empty));

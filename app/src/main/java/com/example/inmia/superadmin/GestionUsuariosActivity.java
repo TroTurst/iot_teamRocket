@@ -4,20 +4,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,20 +36,24 @@ public class GestionUsuariosActivity extends AppCompatActivity
     private TextView tvTituloLista;
     private MaterialButton btnNuevo, btnSolicitudes;
 
-    // RecyclerView
-    private RecyclerView recyclerUsuarios;
-    private UsuarioAdapter adapter;
+    // ViewPager2
+    private ViewPager2 viewPager;
+    private UsuariosPagerAdapter pagerAdapter;
+    private ProgressBar progressBar;
 
     // Bottom nav
     private BottomNavigationView bottomNav;
 
-    // Estado actual del tab
-    private String tabActual = "admins";
+    // 0=admins, 1=asesores, 2=clientes
+    private int tabActual = 0;
 
-    // ── Listas hardcodeadas por rol ──────────────────────────────────────────
+    // Listas por rol
     private List<Usuario> listaAdmins;
     private List<Usuario> listaAsesores;
     private List<Usuario> listaClientes;
+
+    // Firebase
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,8 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
         setContentView(R.layout.sa_activity_gestion_usuarios);
 
+        db = FirebaseFirestore.getInstance();
+
         // Vincular vistas
         tabAdmins      = findViewById(R.id.tabAdmins);
         tabAsesores    = findViewById(R.id.tabAsesores);
@@ -68,32 +76,42 @@ public class GestionUsuariosActivity extends AppCompatActivity
         tvTituloLista  = findViewById(R.id.tvTituloLista);
         btnNuevo       = findViewById(R.id.btnNuevo);
         btnSolicitudes = findViewById(R.id.btnSolicitudes);
-        recyclerUsuarios = findViewById(R.id.recyclerUsuarios);
+        viewPager      = findViewById(R.id.viewPagerUsuarios);
+        progressBar    = findViewById(R.id.progressBar);
         bottomNav      = findViewById(R.id.bottomNavSuperAdmin);
 
-        // Inicializar datos hardcodeados
-        inicializarDatos();
+        listaAdmins   = new ArrayList<>();
+        listaAsesores = new ArrayList<>();
+        listaClientes = new ArrayList<>();
 
-        // Configurar RecyclerView
-        recyclerUsuarios.setLayoutManager(
-                new LinearLayoutManager(this));
-        adapter = new UsuarioAdapter(this, listaAdmins, this);
-        recyclerUsuarios.setAdapter(adapter);
+        // Configurar ViewPager2 con listas vacías (se llenan al cargar Firebase)
+        pagerAdapter = new UsuariosPagerAdapter(
+                this, listaAdmins, listaAsesores, listaClientes, this);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setOffscreenPageLimit(2);
 
-        // Marcar tab activo en el nav
-        bottomNav.setSelectedItemId(R.id.nav_usuarios);
+        // Sincronizar tabs al deslizar
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                tabActual = position;
+                etBuscar.setText("");
+                actualizarTabVisual(position);
+            }
+        });
 
-        // Configurar tabs
-        tabAdmins.setOnClickListener(v  -> seleccionarTab("admins"));
-        tabAsesores.setOnClickListener(v -> seleccionarTab("asesores"));
-        tabClientes.setOnClickListener(v -> seleccionarTab("clientes"));
+        // Estado inicial del tab visual
+        actualizarTabVisual(0);
+
+        // Clicks en tabs navegan el pager con animación
+        tabAdmins.setOnClickListener(v   -> viewPager.setCurrentItem(0, true));
+        tabAsesores.setOnClickListener(v -> viewPager.setCurrentItem(1, true));
+        tabClientes.setOnClickListener(v -> viewPager.setCurrentItem(2, true));
 
         // Búsqueda en tiempo real
         etBuscar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s,
-                                                    int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s,
-                                                int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filtrarPorNombre(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
@@ -109,6 +127,9 @@ public class GestionUsuariosActivity extends AppCompatActivity
         // Botón Solicitudes
         btnSolicitudes.setOnClickListener(v ->
                 startActivity(new Intent(this, SolicitudesActivity.class)));
+
+        // Marcar tab activo en nav
+        bottomNav.setSelectedItemId(R.id.nav_usuarios);
 
         // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
@@ -130,137 +151,161 @@ public class GestionUsuariosActivity extends AppCompatActivity
             }
             return false;
         });
+
+        // Cargar datos desde Firestore
+        cargarUsuariosDeFirestore();
     }
 
-    // ── Datos hardcodeados ───────────────────────────────────────────────────
+    // ── Carga de datos desde Firestore ──────────────────────────────────────
 
-    // ── Listas con datos completos ───────────────────────────────────────────
+    private void cargarUsuariosDeFirestore() {
+        progressBar.setVisibility(View.VISIBLE);
+        final int[] finalizadas = {0};
 
-    private void inicializarDatos() {
-        // Admins
-        listaAdmins = new ArrayList<>();
-        listaAdmins.add(new Usuario(
-                "Cyndy Lillibridge", "Inmobiliaria Sofia", "CL", true, "admin",
-                "DNI · 87654321", "12/05/1988",
-                "cyndy@inmiasofia.com", "+51 994 123 456",
-                "Av. Santa Cruz 890, Miraflores"));
-        listaAdmins.add(new Usuario(
-                "John Travolta", "Inmobiliaria John", "JT", true, "admin",
-                "DNI · 12345678", "20/08/1985",
-                "john@inmiajohn.com", "+51 987 111 222",
-                "Jr. Los Olivos 123, San Borja"));
-        listaAdmins.add(new Usuario(
-                "Teresa Mertens", "Inmobiliaria I&M", "TM", true, "admin",
-                "DNI · 23456789", "05/03/1990",
-                "teresa@inmiaiym.com", "+51 976 333 444",
-                "Av. Arequipa 456, Lince"));
-        listaAdmins.add(new Usuario(
-                "Teddy Gallagher", "Inmobiliaria Oasis", "TG", false, "admin",
-                "DNI · 34567890", "18/11/1982",
-                "teddy@inmiaoasis.com", "+51 965 555 666",
-                "Calle Lima 789, Pueblo Libre"));
+        db.collection("usuarios").whereEqualTo("rol", "admin").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaAdmins.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar admins", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
 
-        // Asesores
-        listaAsesores = new ArrayList<>();
-        listaAsesores.add(new Usuario(
-                "María García", "INMIA San Isidro", "MG", true, "asesor",
-                "DNI · 45678901", "15/03/1995",
-                "m.garcia@inmia.com", "+51 987 654 321",
-                "Av. Javier Prado 1234, San Isidro"));
-        listaAsesores.add(new Usuario(
-                "Carlos Ramos", "INMIA Miraflores", "CR", true, "asesor",
-                "DNI · 32156789", "22/07/1990",
-                "c.ramos@inmia.com", "+51 912 345 678",
-                "Calle Las Flores 567, Miraflores"));
-        listaAsesores.add(new Usuario(
-                "Juan Sánchez", "INMIA Surco", "JS", false, "asesor",
-                "DNI · 78234561", "08/11/1988",
-                "j.sanchez@inmia.com", "+51 956 789 012",
-                "Jr. Los Pinos 890, Surco"));
+        db.collection("usuarios").whereEqualTo("rol", "asesor").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaAsesores.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar asesores", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
 
-        // Clientes
-        listaClientes = new ArrayList<>();
-        listaClientes.add(new Usuario(
-                "Ana Torres", "Sin inmobiliaria", "AT", true, "cliente",
-                "DNI · 56789012", "30/06/1998",
-                "ana.torres@gmail.com", "+51 945 111 222",
-                "Av. Brasil 321, Jesús María"));
-        listaClientes.add(new Usuario(
-                "Pedro Vargas", "Sin inmobiliaria", "PV", true, "cliente",
-                "DNI · 67890123", "14/02/1993",
-                "pedro.vargas@gmail.com", "+51 934 333 444",
-                "Calle Colón 654, Barranco"));
-        listaClientes.add(new Usuario(
-                "Lucía Mendoza", "Sin inmobiliaria", "LM", false, "cliente",
-                "DNI · 89012345", "25/09/2000",
-                "lucia.mendoza@gmail.com", "+51 923 555 666",
-                "Jr. Cusco 987, Cercado"));
+        db.collection("usuarios").whereEqualTo("rol", "cliente").get()
+            .addOnSuccessListener(query -> {
+                for (DocumentSnapshot doc : query.getDocuments()) {
+                    listaClientes.add(documentToUsuario(doc));
+                }
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            })
+            .addOnFailureListener(e -> {
+                Log.e("Firestore", "Error al cargar clientes", e);
+                finalizadas[0]++;
+                if (finalizadas[0] == 3) onTodasCargadas();
+            });
     }
 
-// ── Ver perfil — navegar con datos completos ──────────────────────────────
+    private void onTodasCargadas() {
+        progressBar.setVisibility(View.GONE);
+        pagerAdapter.getPageAdapter(0).actualizarLista(listaAdmins);
+        pagerAdapter.getPageAdapter(1).actualizarLista(listaAsesores);
+        pagerAdapter.getPageAdapter(2).actualizarLista(listaClientes);
+        actualizarTabVisual(tabActual);
+    }
+
+    private Usuario documentToUsuario(DocumentSnapshot doc) {
+        String nombres   = doc.getString("nombres");
+        String apellidos = doc.getString("apellidos");
+        if (nombres == null)   nombres   = "";
+        if (apellidos == null) apellidos = "";
+        String nombre = (nombres + " " + apellidos).trim();
+
+        // Iniciales: primera letra de nombres + primera letra de apellidos
+        String iniciales = "";
+        if (!nombres.isEmpty())   iniciales += Character.toUpperCase(nombres.charAt(0));
+        if (!apellidos.isEmpty()) iniciales += Character.toUpperCase(apellidos.charAt(0));
+        if (iniciales.isEmpty())  iniciales = "??";
+
+        Boolean activoObj = doc.getBoolean("activo");
+        boolean activo = activoObj != null && activoObj;
+
+        String rol = doc.getString("rol");
+        if (rol == null) rol = "";
+
+        // empresa: campo opcional; si no existe, se usa un valor por defecto según rol
+        String empresa = doc.getString("empresa");
+        if (empresa == null || empresa.isEmpty()) {
+            empresa = "cliente".equals(rol) ? "Sin inmobiliaria" : "INMIA";
+        }
+
+        // documento: combina tipo y número
+        String tipoDoc = doc.getString("tipoDocumento");
+        String numDoc  = doc.getString("numeroDocumento");
+        String documento = "";
+        if (tipoDoc != null && !tipoDoc.isEmpty()) {
+            documento = tipoDoc + " · " + (numDoc != null ? numDoc : "");
+        } else if (numDoc != null) {
+            documento = numDoc;
+        }
+
+        String fechaNac  = doc.getString("fechaNacimiento"); if (fechaNac == null)  fechaNac  = "";
+        String correo    = doc.getString("correo");          if (correo == null)    correo    = "";
+        String telefono  = doc.getString("telefono");        if (telefono == null)  telefono  = "";
+        String domicilio = doc.getString("domicilio");       if (domicilio == null) domicilio = "";
+
+        Usuario u = new Usuario(nombre, empresa, iniciales, activo, rol,
+                documento, fechaNac, correo, telefono, domicilio);
+        u.setUid(doc.getId());
+        return u;
+    }
+
+    // ── Ver perfil ───────────────────────────────────────────────────────────
 
     @Override
     public void onVerPerfil(Usuario usuario) {
         Intent intent = new Intent(this, PerfilUserActivity.class);
-        intent.putExtra(PerfilUserActivity.EXTRA_NOMBRE,       usuario.getNombre());
-        intent.putExtra(PerfilUserActivity.EXTRA_EMPRESA,      usuario.getEmpresa());
-        intent.putExtra(PerfilUserActivity.EXTRA_INICIALES,    usuario.getIniciales());
-        intent.putExtra(PerfilUserActivity.EXTRA_DOCUMENTO,    usuario.getDocumento());
-        intent.putExtra(PerfilUserActivity.EXTRA_FECHA_NAC,    usuario.getFechaNacimiento());
-        intent.putExtra(PerfilUserActivity.EXTRA_CORREO,       usuario.getCorreo());
-        intent.putExtra(PerfilUserActivity.EXTRA_TELEFONO,     usuario.getTelefono());
-        intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO,    usuario.getDomicilio());
-        intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,       usuario.isActivo());
-        intent.putExtra(PerfilUserActivity.EXTRA_ROL,          usuario.getRol());
+        intent.putExtra(PerfilUserActivity.EXTRA_NOMBRE,    usuario.getNombre());
+        intent.putExtra(PerfilUserActivity.EXTRA_EMPRESA,   usuario.getEmpresa());
+        intent.putExtra(PerfilUserActivity.EXTRA_INICIALES, usuario.getIniciales());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOCUMENTO, usuario.getDocumento());
+        intent.putExtra(PerfilUserActivity.EXTRA_FECHA_NAC, usuario.getFechaNacimiento());
+        intent.putExtra(PerfilUserActivity.EXTRA_CORREO,    usuario.getCorreo());
+        intent.putExtra(PerfilUserActivity.EXTRA_TELEFONO,  usuario.getTelefono());
+        intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO, usuario.getDomicilio());
+        intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,    usuario.isActivo());
+        intent.putExtra(PerfilUserActivity.EXTRA_ROL,       usuario.getRol());
         startActivity(intent);
     }
 
     // ── Tabs ─────────────────────────────────────────────────────────────────
 
-    private void seleccionarTab(String tab) {
-        tabActual = tab;
-
-        // Resetear todos los tabs
-        tabAdmins.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+    private void actualizarTabVisual(int position) {
+        tabAdmins.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAdmins.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabAsesores.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabAsesores.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabAsesores.setTextColor(getColor(R.color.inmia_teal_dark));
-        tabClientes.setBackground(
-                getDrawable(R.drawable.tab_unselected_bg_superadmin));
+        tabClientes.setBackground(getDrawable(R.drawable.tab_unselected_bg_superadmin));
         tabClientes.setTextColor(getColor(R.color.inmia_teal_dark));
 
-        switch (tab) {
-            case "admins":
-                tabAdmins.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+        switch (position) {
+            case 0:
+                tabAdmins.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAdmins.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de administradores (" + listaAdmins.size() + ")");
-                adapter.actualizarLista(listaAdmins);
+                tvTituloLista.setText("Lista de administradores (" + listaAdmins.size() + ")");
                 btnNuevo.setVisibility(View.VISIBLE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
-
-            case "asesores":
-                tabAsesores.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+            case 1:
+                tabAsesores.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabAsesores.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de asesores (" + listaAsesores.size() + ")");
-                adapter.actualizarLista(listaAsesores);
+                tvTituloLista.setText("Lista de asesores (" + listaAsesores.size() + ")");
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.VISIBLE);
                 break;
-
-            case "clientes":
-                tabClientes.setBackground(
-                        getDrawable(R.drawable.tab_selected_bg_superadmin));
+            case 2:
+                tabClientes.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));
                 tabClientes.setTextColor(getColor(android.R.color.white));
-                tvTituloLista.setText(
-                        "Lista de clientes (" + listaClientes.size() + ")");
-                adapter.actualizarLista(listaClientes);
+                tvTituloLista.setText("Lista de clientes (" + listaClientes.size() + ")");
                 btnNuevo.setVisibility(View.GONE);
                 btnSolicitudes.setVisibility(View.GONE);
                 break;
@@ -271,26 +316,27 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
     private void filtrarPorNombre(String query) {
         List<Usuario> listaBase = obtenerListaActual();
+        UsuarioAdapter currentAdapter = pagerAdapter.getPageAdapter(tabActual);
+
         if (query.isEmpty()) {
-            adapter.actualizarLista(listaBase);
+            currentAdapter.actualizarLista(listaBase);
             return;
         }
 
         List<Usuario> filtrada = new ArrayList<>();
         for (Usuario u : listaBase) {
-            if (u.getNombre().toLowerCase()
-                    .contains(query.toLowerCase())) {
+            if (u.getNombre().toLowerCase().contains(query.toLowerCase())) {
                 filtrada.add(u);
             }
         }
-        adapter.actualizarLista(filtrada);
+        currentAdapter.actualizarLista(filtrada);
     }
 
     private List<Usuario> obtenerListaActual() {
         switch (tabActual) {
-            case "asesores": return listaAsesores;
-            case "clientes": return listaClientes;
-            default:         return listaAdmins;
+            case 1: return listaAsesores;
+            case 2: return listaClientes;
+            default: return listaAdmins;
         }
     }
 
@@ -303,24 +349,19 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 .setTitle("Filtrar por estado")
                 .setItems(opciones, (dialog, which) -> {
                     List<Usuario> listaBase = obtenerListaActual();
-                    List<Usuario> filtrada  = new ArrayList<>();
+                    UsuarioAdapter currentAdapter = pagerAdapter.getPageAdapter(tabActual);
 
-                    switch (which) {
-                        case 0: // Todos
-                            adapter.actualizarLista(listaBase);
-                            return;
-                        case 1: // Activos
-                            for (Usuario u : listaBase) {
-                                if (u.isActivo()) filtrada.add(u);
-                            }
-                            break;
-                        case 2: // Inactivos
-                            for (Usuario u : listaBase) {
-                                if (!u.isActivo()) filtrada.add(u);
-                            }
-                            break;
+                    if (which == 0) {
+                        currentAdapter.actualizarLista(listaBase);
+                        return;
                     }
-                    adapter.actualizarLista(filtrada);
+
+                    boolean buscarActivos = (which == 1);
+                    List<Usuario> filtrada = new ArrayList<>();
+                    for (Usuario u : listaBase) {
+                        if (u.isActivo() == buscarActivos) filtrada.add(u);
+                    }
+                    currentAdapter.actualizarLista(filtrada);
                 })
                 .show();
     }

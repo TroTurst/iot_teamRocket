@@ -9,12 +9,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.example.inmia.models.Usuario;
 import com.example.inmia.superadmin.NotificacionHelper;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ public class UsuarioAdapter extends
 
     private final Context context;
     private List<Usuario> listaUsuarios;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Interfaz para el click en Ver perfil
     public interface OnVerPerfilListener {
@@ -77,49 +78,58 @@ public class UsuarioAdapter extends
         holder.switchEstado.setOnCheckedChangeListener(null);
         holder.switchEstado.setChecked(usuario.isActivo());
 
-        // Switch listener con AlertDialog
+        // Switch listener
         holder.switchEstado.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
-                    String titulo  = isChecked ? "¿Habilitar usuario?"
-                            : "¿Inhabilitar usuario?";
-                    String mensaje = isChecked
-                            ? "¿Estás seguro de habilitar a "
-                            + usuario.getNombre() + "?"
-                            : "¿Estás seguro de inhabilitar a "
-                            + usuario.getNombre() + "?";
-                    String btnOk   = isChecked ? "Habilitar" : "Inhabilitar";
+                    String titulo   = isChecked ? "¿Habilitar usuario?" : "¿Inhabilitar usuario?";
+                    String mensaje  = isChecked
+                            ? "¿Estás seguro de habilitar a " + usuario.getNombre() + "?"
+                            : "¿Estás seguro de inhabilitar a " + usuario.getNombre() + "?";
+                    String btnOk    = isChecked ? "Habilitar" : "Inhabilitar";
+                    int colorBtn    = isChecked ? R.color.inmia_success : R.color.inmia_danger;
+                    int iconoFondo  = isChecked ? R.drawable.bg_badge_teal : R.drawable.bg_badge_red_circle;
 
-                    new AlertDialog.Builder(context)
-                            .setTitle(titulo)
-                            .setMessage(mensaje)
-                            .setPositiveButton(btnOk, (dialog, which) -> {
-                                usuario.setActivo(isChecked);
-                                notifyItemChanged(position);
-
-                                // Notificación al activar / desactivar
-                                String tipoNotif = isChecked
-                                        ? NotificacionHelper.TIPO_USUARIO_ACTIVADO
-                                        : NotificacionHelper.TIPO_USUARIO_DESACTIVADO;
-                                String textoNotif = isChecked
-                                        ? usuario.getNombre() + " ha sido activado."
-                                        : usuario.getNombre() + " ha sido desactivado.";
-                                NotificacionHelper.enviar(
-                                        context,
-                                        isChecked ? "Usuario activado" : "Usuario desactivado",
-                                        textoNotif,
-                                        tipoNotif
-                                );
-                            })
-                            .setNegativeButton("Cancelar", (dialog, which) -> {
-                                // Revertir switch sin disparar listener
-                                holder.switchEstado
-                                        .setOnCheckedChangeListener(null);
-                                holder.switchEstado.setChecked(!isChecked);
-                                // Re-asignar listener
-                                onBindViewHolder(holder, position);
-                            })
-                            .setCancelable(false)
-                            .show();
+                    DialogHelper.mostrarDialogoAccion(
+                        context,
+                        titulo,
+                        mensaje,
+                        btnOk,
+                        "Cancelar",
+                        colorBtn,
+                        iconoFondo,
+                        () -> {
+                            usuario.setActivo(isChecked);
+                            notifyItemChanged(position);
+                            // Persistir cambio en Firestore
+                            String uid = usuario.getUid();
+                            if (uid != null && !uid.isEmpty()) {
+                                db.collection("usuarios").document(uid)
+                                    .update("activo", isChecked)
+                                    .addOnFailureListener(e -> {
+                                        // Revertir si falla la escritura en Firestore
+                                        usuario.setActivo(!isChecked);
+                                        notifyItemChanged(holder.getAdapterPosition());
+                                    });
+                            }
+                            String tipoNotif = isChecked
+                                    ? NotificacionHelper.TIPO_USUARIO_ACTIVADO
+                                    : NotificacionHelper.TIPO_USUARIO_DESACTIVADO;
+                            String textoNotif = isChecked
+                                    ? usuario.getNombre() + " ha sido activado."
+                                    : usuario.getNombre() + " ha sido desactivado.";
+                            NotificacionHelper.enviar(
+                                    context,
+                                    isChecked ? "Usuario activado" : "Usuario desactivado",
+                                    textoNotif,
+                                    tipoNotif
+                            );
+                        },
+                        () -> {
+                            holder.switchEstado.setOnCheckedChangeListener(null);
+                            holder.switchEstado.setChecked(!isChecked);
+                            onBindViewHolder(holder, position);
+                        }
+                    );
                 });
 
         // Ver perfil

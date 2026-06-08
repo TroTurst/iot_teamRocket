@@ -1,18 +1,21 @@
 package com.example.inmia.admin;
 
-import android.content.res.ColorStateList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -21,25 +24,14 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
-    public static final String EXTRA_PROYECTO_TITULO = "extra_proyecto_titulo";
-    public static final String EXTRA_UBICACION = "extra_ubicacion";
-    public static final String EXTRA_DESCRIPCION = "extra_descripcion";
-    public static final String EXTRA_PRECIO = "extra_precio";
-    public static final String EXTRA_AREA = "extra_area";
-    public static final String EXTRA_DORMITORIOS = "extra_dormitorios";
-    public static final String EXTRA_BANOS = "extra_banos";
-    public static final String EXTRA_ESTACIONAMIENTO = "extra_estacionamiento";
-    public static final String EXTRA_ESTADO = "extra_estado";
-    public static final String EXTRA_IMAGEN_HERO = "extra_imagen_hero";
-    public static final String EXTRA_IMAGENES = "extra_imagenes";
-    public static final String EXTRA_TIPOLOGIA_ACTUAL = "extra_tipologia_actual";
-
     private BottomNavigationView bottomNav;
+    private AdminFirestoreGateway gateway;
+    private String companyId;
+    private String companyName;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -49,13 +41,12 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private TextInputEditText etDormitorios;
     private TextInputEditText etBanos;
     private TextInputEditText etEstacionamiento;
-    private TextInputEditText etEstado;
-    private TextInputEditText etInmobiliaria;
+    private Spinner spinnerEstadoProyecto;
 
     private SwitchMaterial switchPetFriendly;
     private SwitchMaterial switchConAscensor;
 
-    private TextInputEditText etCertificadoEnergetico;
+    private Spinner spinnerCertificadoEnergetico;
     private SwitchMaterial switchPatio;
     private SwitchMaterial switchTerraza;
     private SwitchMaterial switchBalcon;
@@ -68,31 +59,13 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private TextInputEditText etVentilacion;
     private TextInputEditText etTipoAcabados;
 
-    private ImageView imgPreviewHero;
-    private ImageView imgMini1;
-    private ImageView imgMini2;
-    private ImageView imgMini3;
-    private ImageView imgMini4;
-    private TextView tvPreviewMore;
-    private TextView tvPreviewTitulo;
-    private TextView tvPreviewUbicacion;
-    private TextView tvPreviewPrecio;
-    private TextView tvPreviewDescripcion;
-    private TextView tvPreviewArea;
-    private TextView tvPreviewDormitorios;
-    private TextView tvPreviewBanos;
-    private TextView tvPreviewEstacionamiento;
-    private TextView tvPreviewEstado;
+    private MaterialButton btnAgregarTipologia;
+    private MaterialButton btnCrearProyecto;
+    private RecyclerView rvTipologiasAgregadas;
 
-    private MaterialButton btnTipologia45Edit;
-    private MaterialButton btnTipologia65Edit;
-    private MaterialButton btnTipologia90Edit;
-    private int[] imagenesProyecto;
-    private int imagenHeroProyecto;
+    private List<Tipologia> tipologiasAgregadas = new ArrayList<>();
+    private TipologiasAgregadasAdapter tipologiasAdapter;
 
-    private TipologiaData tipologia45;
-    private TipologiaData tipologia65;
-    private TipologiaData tipologia90;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,14 +76,13 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_proyecto_nuevo);
 
+        gateway = new AdminFirestoreGateway();
+
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackEditarProyecto);
-        MaterialButton btnPrevisualizar = findViewById(R.id.btnPrevisualizarProyecto);
-        MaterialButton btnConfirmar = findViewById(R.id.btnConfirmarEdicionProyecto);
-        btnTipologia45Edit = findViewById(R.id.btnTipologia45Edit);
-        btnTipologia65Edit = findViewById(R.id.btnTipologia65Edit);
-        btnTipologia90Edit = findViewById(R.id.btnTipologia90Edit);
-        MaterialButton btnAgregarTipologiaEdit = findViewById(R.id.btnAgregarTipologiaEdit);
+        btnAgregarTipologia = findViewById(R.id.btnAgregarTipologia);
+        btnCrearProyecto = findViewById(R.id.btnCrearProyecto);
+        rvTipologiasAgregadas = findViewById(R.id.rvTipologiasAgregadas);
 
         etTitulo = findViewById(R.id.etTituloProyecto);
         etUbicacion = findViewById(R.id.etUbicacionProyecto);
@@ -120,13 +92,12 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         etDormitorios = findViewById(R.id.etDormitoriosProyecto);
         etBanos = findViewById(R.id.etBanosProyecto);
         etEstacionamiento = findViewById(R.id.etEstacionamientoProyecto);
-        etEstado = findViewById(R.id.etEstadoProyecto);
-        etInmobiliaria = findViewById(R.id.etInmobiliariaProyecto);
+        spinnerEstadoProyecto = findViewById(R.id.spinnerEstadoProyecto);
 
         switchPetFriendly = findViewById(R.id.switchPetFriendly);
         switchConAscensor = findViewById(R.id.switchConAscensor);
 
-        etCertificadoEnergetico = findViewById(R.id.etCertificadoEnergetico);
+        spinnerCertificadoEnergetico = findViewById(R.id.spinnerCertificadoEnergetico);
         switchPatio = findViewById(R.id.switchPatio);
         switchTerraza = findViewById(R.id.switchTerraza);
         switchBalcon = findViewById(R.id.switchBalcon);
@@ -139,80 +110,27 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         etVentilacion = findViewById(R.id.etVentilacion);
         etTipoAcabados = findViewById(R.id.etTipoAcabados);
 
-        imgPreviewHero = findViewById(R.id.imgPreviewHeroProyecto);
-        imgMini1 = findViewById(R.id.imgMini1);
-        imgMini2 = findViewById(R.id.imgMini2);
-        imgMini3 = findViewById(R.id.imgMini3);
-        imgMini4 = findViewById(R.id.imgMini4);
-        tvPreviewMore = findViewById(R.id.tvPreviewMore);
-        tvPreviewTitulo = findViewById(R.id.tvPreviewTitulo);
-        tvPreviewUbicacion = findViewById(R.id.tvPreviewUbicacion);
-        tvPreviewPrecio = findViewById(R.id.tvPreviewPrecio);
-        tvPreviewDescripcion = findViewById(R.id.tvPreviewDescripcion);
-        tvPreviewArea = findViewById(R.id.tvPreviewArea);
-        tvPreviewDormitorios = findViewById(R.id.tvPreviewDormitorios);
-        tvPreviewBanos = findViewById(R.id.tvPreviewBanos);
-        tvPreviewEstacionamiento = findViewById(R.id.tvPreviewEstacionamiento);
-        tvPreviewEstado = findViewById(R.id.tvPreviewEstado);
+        rvTipologiasAgregadas.setLayoutManager(new LinearLayoutManager(this));
+        tipologiasAdapter = new TipologiasAgregadasAdapter(tipologiasAgregadas,
+                tipologia -> {
+                    tipologiasAgregadas.remove(tipologia);
+                    tipologiasAdapter.notifyDataSetChanged();
+                },
+                (tipologia, position) -> {
+                }
+        );
+        rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
-        tipologia45 = new TipologiaData(
-                "45 m² · 1d",
-                "Departamento compacto y moderno ideal para una persona o una pareja. Espacios funcionales, cocina integrada y vista despejada a la ciudad.",
-                R.drawable.onboarding1,
-                "45 m²",
-                "1",
-                "1",
-                "Sin estacionamiento",
-                "S/ 420,000",
-                "Disponible",
-                new int[]{R.drawable.onboarding1, R.drawable.onboarding2, R.drawable.onboarding3, R.drawable.images_2, R.drawable.onboarding2, R.drawable.onboarding1}
-        );
-        tipologia65 = new TipologiaData(
-                "65 m² · 2d",
-                "Departamento de dos dormitorios pensado para familias pequeñas. Sala amplia, iluminación natural y zona de trabajo independiente.",
-                R.drawable.onboarding2,
-                "65 m²",
-                "2",
-                "2",
-                "1 incluido",
-                "S/ 648,000",
-                "Disponible",
-                new int[]{R.drawable.onboarding2, R.drawable.onboarding3, R.drawable.onboarding1, R.drawable.images_2, R.drawable.onboarding3, R.drawable.onboarding2}
-        );
-        tipologia90 = new TipologiaData(
-                "90 m² · 3d",
-                "La tipología más amplia del proyecto, con tres dormitorios, ambientes premium y un diseño ideal para familias grandes o inversión de alto valor.",
-                R.drawable.onboarding3,
-                "90 m²",
-                "3",
-                "3",
-                "2 incluidos",
-                "S/ 915,000",
-                "Disponible",
-                new int[]{R.drawable.onboarding3, R.drawable.images_2, R.drawable.onboarding1, R.drawable.onboarding2, R.drawable.onboarding3, R.drawable.images_2, R.drawable.onboarding1}
-        );
+        configurarSpinners();
 
         cargarDatosDesdeIntent();
-        configurarSelectorTipologias();
-        prepararFormularioNuevo();
+        resolverContextoAdmin();
 
         btnBack.setOnClickListener(v -> finish());
-        btnPrevisualizar.setOnClickListener(v -> {
-            actualizarPrevisualizacion();
-            Toast.makeText(this, "Previsualización actualizada", Toast.LENGTH_SHORT).show();
-        });
-        btnConfirmar.setOnClickListener(v -> {
-            actualizarPrevisualizacion();
-            Proyecto nuevoProyecto = construirProyectoDesdeFormulario();
-            if (nuevoProyecto == null) {
-                return;
-            }
-            AdminProyectoRepositoryMock.addProyecto(nuevoProyecto);
-            Toast.makeText(this, "Proyecto creado", Toast.LENGTH_SHORT).show();
-            finish();
-        });
-        btnAgregarTipologiaEdit.setOnClickListener(v ->
-                Toast.makeText(this, "Agregar tipología próximamente", Toast.LENGTH_SHORT).show());
+
+        btnAgregarTipologia.setOnClickListener(v -> agregarTipologiaDesdeFormulario());
+
+        btnCrearProyecto.setOnClickListener(v -> crearProyecto());
 
         bottomNav.setSelectedItemId(R.id.nav_proyectos);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -236,145 +154,196 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         });
     }
 
+    private void resolverContextoAdmin() {
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+                companyName = context.getCompanyName();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                companyId = AdminSessionDefaults.DEFAULT_COMPANY_ID;
+                companyName = "Inmobiliaria";
+            }
+        });
+    }
+
     private void cargarDatosDesdeIntent() {
         Intent intent = getIntent();
-        etTitulo.setText(valor(intent.getStringExtra(EXTRA_PROYECTO_TITULO), ""));
-        etUbicacion.setText(valor(intent.getStringExtra(EXTRA_UBICACION), ""));
-        etDescripcion.setText(valor(intent.getStringExtra(EXTRA_DESCRIPCION), ""));
-        etPrecio.setText(valor(intent.getStringExtra(EXTRA_PRECIO), ""));
-        etArea.setText(valor(intent.getStringExtra(EXTRA_AREA), ""));
-        etDormitorios.setText(valor(intent.getStringExtra(EXTRA_DORMITORIOS), ""));
-        etBanos.setText(valor(intent.getStringExtra(EXTRA_BANOS), ""));
-        etEstacionamiento.setText(valor(intent.getStringExtra(EXTRA_ESTACIONAMIENTO), ""));
-        etEstado.setText(valor(intent.getStringExtra(EXTRA_ESTADO), ""));
-        imagenHeroProyecto = intent.getIntExtra(EXTRA_IMAGEN_HERO, 0);
-        imagenesProyecto = intent.getIntArrayExtra(EXTRA_IMAGENES);
-        if (imagenesProyecto == null || imagenesProyecto.length == 0) {
-            imagenesProyecto = new int[0];
+        if (intent != null) {
+            String titulo = intent.getStringExtra(EXTRA_PROYECTO_TITULO);
+            String ubicacion = intent.getStringExtra(EXTRA_UBICACION);
+            String descripcion = intent.getStringExtra(EXTRA_DESCRIPCION);
+            if (titulo != null && !titulo.isEmpty()) etTitulo.setText(titulo);
+            if (ubicacion != null && !ubicacion.isEmpty()) etUbicacion.setText(ubicacion);
+            if (descripcion != null && !descripcion.isEmpty()) etDescripcion.setText(descripcion);
+            String precio = intent.getStringExtra(EXTRA_PRECIO);
+            String area = intent.getStringExtra(EXTRA_AREA);
+            String dormitorios = intent.getStringExtra(EXTRA_DORMITORIOS);
+            String banos = intent.getStringExtra(EXTRA_BANOS);
+            String estacionamiento = intent.getStringExtra(EXTRA_ESTACIONAMIENTO);
+            String estado = intent.getStringExtra(EXTRA_ESTADO);
+            if (precio != null && !precio.isEmpty()) etPrecio.setText(precio);
+            if (area != null && !area.isEmpty()) etArea.setText(area);
+            if (dormitorios != null && !dormitorios.isEmpty()) etDormitorios.setText(dormitorios);
+            if (banos != null && !banos.isEmpty()) etBanos.setText(banos);
+            if (estacionamiento != null && !estacionamiento.isEmpty()) etEstacionamiento.setText(estacionamiento);
         }
     }
 
-    private void configurarSelectorTipologias() {
-        btnTipologia45Edit.setOnClickListener(v -> seleccionarTipologia(tipologia45));
-        btnTipologia65Edit.setOnClickListener(v -> seleccionarTipologia(tipologia65));
-        btnTipologia90Edit.setOnClickListener(v -> seleccionarTipologia(tipologia90));
+    private void configurarSpinners() {
+        String[] estadosProyecto = {"En planos", "En preventa", "En venta", "Entregado"};
+        ArrayAdapter<String> estadoAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, estadosProyecto);
+        estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerEstadoProyecto.setAdapter(estadoAdapter);
+
+        String[] certificados = {"A+", "A", "B+", "B", "C+", "C", "D"};
+        ArrayAdapter<String> certificadoAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, certificados);
+        certificadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCertificadoEnergetico.setAdapter(certificadoAdapter);
     }
 
-    private void prepararFormularioNuevo() {
-        configurarBotonTipologia(btnTipologia45Edit, false);
-        configurarBotonTipologia(btnTipologia65Edit, false);
-        configurarBotonTipologia(btnTipologia90Edit, false);
-        imagenHeroProyecto = 0;
-        imagenesProyecto = new int[0];
-        actualizarPrevisualizacion();
-    }
+    private void agregarTipologiaDesdeFormulario() {
+        String area = texto(etArea);
+        String dormitoriosStr = texto(etDormitorios);
+        String banosStr = texto(etBanos);
+        String precio = texto(etPrecio);
+        String descripcion = texto(etDescripcion);
+        String estacionamiento = texto(etEstacionamiento);
+        String estado = spinnerEstadoProyecto != null ? spinnerEstadoProyecto.getSelectedItem().toString() : "Disponible";
 
-    private void seleccionarTipologia(String codigo) {
-        if (codigo.contains("90")) {
-            seleccionarTipologia(tipologia90);
-        } else if (codigo.contains("65")) {
-            seleccionarTipologia(tipologia65);
-        } else {
-            seleccionarTipologia(tipologia45);
-        }
-    }
-
-    private void seleccionarTipologia(TipologiaData tipologia) {
-        aplicarTipologiaEnFormulario(tipologia);
-        marcarTipologiaSeleccionada(tipologia);
-        actualizarPrevisualizacion();
-    }
-
-    private void aplicarTipologiaEnFormulario(TipologiaData tipologia) {
-        etDescripcion.setText(tipologia.descripcion);
-        etPrecio.setText(tipologia.precio);
-        etArea.setText(tipologia.area);
-        etDormitorios.setText(tipologia.dormitorios);
-        etBanos.setText(tipologia.banos);
-        etEstacionamiento.setText(tipologia.estacionamiento);
-        etEstado.setText(tipologia.estado);
-
-        imagenHeroProyecto = tipologia.imagenHero;
-        imagenesProyecto = tipologia.imagenes;
-    }
-
-    private void marcarTipologiaSeleccionada(TipologiaData tipologia) {
-        if (tipologia == null) {
-            configurarBotonTipologia(btnTipologia45Edit, false);
-            configurarBotonTipologia(btnTipologia65Edit, false);
-            configurarBotonTipologia(btnTipologia90Edit, false);
+        if (area.isEmpty() || dormitoriosStr.isEmpty()) {
+            Toast.makeText(this, "Ingresa área y dormitorios mínimo", Toast.LENGTH_SHORT).show();
             return;
         }
-        configurarBotonTipologia(btnTipologia45Edit, tipologia == tipologia45);
-        configurarBotonTipologia(btnTipologia65Edit, tipologia == tipologia65);
-        configurarBotonTipologia(btnTipologia90Edit, tipologia == tipologia90);
+
+        int dormitorios = parseInt(dormitoriosStr);
+        int banos = banosStr.isEmpty() ? 0 : parseInt(banosStr);
+
+        String nombre = area + " m² · " + dormitorios + "d";
+
+        String certificado = spinnerCertificadoEnergetico != null ? spinnerCertificadoEnergetico.getSelectedItem().toString() : "B";
+
+        Tipologia tipologia = new Tipologia(
+                "tip_" + System.currentTimeMillis(),
+                nombre,
+                descripcion.isEmpty() ? "Tipología " + nombre : descripcion,
+                area,
+                dormitoriosStr,
+                banosStr,
+                estacionamiento.isEmpty() ? "-" : estacionamiento,
+                precio.isEmpty() ? "-" : precio,
+                estado.isEmpty() ? "Disponible" : estado,
+                R.drawable.onboarding1,
+                new int[]{R.drawable.onboarding1},
+                switchPatio != null && switchPatio.isChecked(),
+                certificado,
+                switchTerraza != null && switchTerraza.isChecked(),
+                switchBalcon != null && switchBalcon.isChecked(),
+                switchAireAcondicionado != null && switchAireAcondicionado.isChecked(),
+                switchCocinaIntegrada != null && switchCocinaIntegrada.isChecked(),
+                parseInt(texto(etClosets)),
+                texto(etTipoPiso).isEmpty() ? "estandar" : texto(etTipoPiso),
+                switchAmueblado != null && switchAmueblado.isChecked(),
+                texto(etVentilacion).isEmpty() ? "natural" : texto(etVentilacion),
+                switchPersianas != null && switchPersianas.isChecked(),
+                texto(etTipoAcabados).isEmpty() ? "basico" : texto(etTipoAcabados)
+        );
+
+        tipologiasAgregadas.add(tipologia);
+        tipologiasAdapter.notifyItemInserted(tipologiasAgregadas.size() - 1);
+
+        Toast.makeText(this, "Tipología agregada", Toast.LENGTH_SHORT).show();
+
+        limpiarCamposTipologia();
     }
 
-    private void configurarBotonTipologia(MaterialButton button, boolean selected) {
-        button.setBackgroundTintList(ColorStateList.valueOf(
-                selected ? ContextCompat.getColor(this, R.color.inmia_teal_dark) : ContextCompat.getColor(this, R.color.inmia_white)));
-        button.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.inmia_teal_dark)));
-        button.setStrokeWidth(1);
-        button.setTextColor(selected
-                ? ContextCompat.getColor(this, R.color.inmia_white)
-                : ContextCompat.getColor(this, R.color.inmia_teal_dark));
+    private void limpiarCamposTipologia() {
+        etArea.setText("");
+        etDormitorios.setText("");
+        etBanos.setText("");
+        etPrecio.setText("");
+        etDescripcion.setText("");
+        etEstacionamiento.setText("");
+        if (switchPatio != null) switchPatio.setChecked(false);
+        if (switchTerraza != null) switchTerraza.setChecked(false);
+        if (switchBalcon != null) switchBalcon.setChecked(false);
+        if (switchAireAcondicionado != null) switchAireAcondicionado.setChecked(false);
+        if (switchCocinaIntegrada != null) switchCocinaIntegrada.setChecked(false);
+        if (switchAmueblado != null) switchAmueblado.setChecked(false);
+        if (switchPersianas != null) switchPersianas.setChecked(false);
+        etClosets.setText("");
+        if (spinnerCertificadoEnergetico != null) spinnerCertificadoEnergetico.setSelection(1);
+        etTipoPiso.setText("");
+        etVentilacion.setText("");
+        etTipoAcabados.setText("");
     }
 
-    private void actualizarPrevisualizacion() {
+    private void crearProyecto() {
         String titulo = texto(etTitulo);
+        if (titulo.isEmpty()) {
+            Toast.makeText(this, "Ingresa el nombre del proyecto", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (tipologiasAgregadas.isEmpty()) {
+            Toast.makeText(this, "Agrega al menos una tipología", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String ubicacion = texto(etUbicacion);
         String descripcion = texto(etDescripcion);
-        String precio = texto(etPrecio);
-        String area = texto(etArea);
-        String dormitorios = texto(etDormitorios);
-        String banos = texto(etBanos);
-        String estacionamiento = texto(etEstacionamiento);
-        String estado = texto(etEstado);
+        String estado = spinnerEstadoProyecto != null ? spinnerEstadoProyecto.getSelectedItem().toString() : "En planos";
 
-        tvPreviewTitulo.setText(titulo);
-        tvPreviewUbicacion.setText(ubicacion);
-        tvPreviewPrecio.setText(precio);
-        tvPreviewDescripcion.setText(descripcion);
-        tvPreviewArea.setText(area);
-        tvPreviewDormitorios.setText(dormitorios);
-        tvPreviewBanos.setText(banos);
-        tvPreviewEstacionamiento.setText(estacionamiento);
-        tvPreviewEstado.setText(estado);
-        if (imagenesProyecto != null && imagenesProyecto.length > 0) {
-            if (imagenHeroProyecto != 0) {
-                imgPreviewHero.setImageResource(imagenHeroProyecto);
-            } else {
-                imgPreviewHero.setImageDrawable(null);
+        boolean petFriendly = switchPetFriendly != null && switchPetFriendly.isChecked();
+        boolean conAscensor = switchConAscensor != null && switchConAscensor.isChecked();
+
+        Proyecto proyecto = new Proyecto();
+        proyecto.setNombre(titulo);
+        proyecto.setUbicacion(ubicacion.isEmpty() ? "Sin ubicación" : ubicacion);
+        proyecto.setDescripcion(descripcion.isEmpty() ? "Sin descripción" : descripcion);
+        proyecto.setEstadoProyecto(estado.isEmpty() ? "En planos" : estado);
+        proyecto.setInmobiliaria(companyName != null ? companyName : "Inmobiliaria");
+        proyecto.setPetFriendly(petFriendly);
+        proyecto.setConAscensor(conAscensor);
+        proyecto.setAntiguedad("Nuevo");
+        proyecto.setTipologias(tipologiasAgregadas);
+        proyecto.setTipologiaPrincipal(tipologiasAgregadas.get(0));
+        proyecto.setImagenHeroPrincipal(R.drawable.onboarding1);
+
+        gateway.saveProject(proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
+            @Override
+            public void onSuccess(String projectId) {
+                runOnUiThread(() -> {
+                    Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
+                    finish();
+                });
             }
 
-            imgMini1.setImageResource(imagenesProyecto[0]);
-            imgMini2.setImageResource(imagenesProyecto[Math.min(1, imagenesProyecto.length - 1)]);
-            imgMini3.setImageResource(imagenesProyecto[Math.min(2, imagenesProyecto.length - 1)]);
-            imgMini4.setImageResource(imagenesProyecto[Math.min(3, imagenesProyecto.length - 1)]);
-
-            int restantes = Math.max(0, imagenesProyecto.length - 4);
-            if (restantes > 0) {
-                tvPreviewMore.setText(getString(R.string.admin_project_gallery_more, restantes));
-                tvPreviewMore.setVisibility(View.VISIBLE);
-            } else {
-                tvPreviewMore.setVisibility(View.GONE);
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(AdminProyectoNuevoActivity.this, "Error al crear proyecto: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
             }
-        } else {
-            imgPreviewHero.setImageDrawable(null);
-            imgMini1.setImageDrawable(null);
-            imgMini2.setImageDrawable(null);
-            imgMini3.setImageDrawable(null);
-            imgMini4.setImageDrawable(null);
-            tvPreviewMore.setVisibility(View.GONE);
-        }
+        });
     }
 
     private String texto(TextInputEditText editText) {
-        return editText.getText() != null ? editText.getText().toString().trim() : "";
+        return editText != null && editText.getText() != null ? editText.getText().toString().trim() : "";
     }
 
-    private String valor(String actual, String fallback) {
-        return actual != null && !actual.trim().isEmpty() ? actual : fallback;
+    private int parseInt(String value) {
+        if (value == null || value.trim().isEmpty()) return 0;
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     private void navegarATab(Class<?> destino) {
@@ -384,137 +353,13 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         finish();
     }
 
-    private Proyecto construirProyectoDesdeFormulario() {
-        String titulo = texto(etTitulo);
-        if (titulo.isEmpty()) {
-            Toast.makeText(this, "Ingresa un titulo de proyecto", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        String ubicacion = texto(etUbicacion);
-        String descripcion = texto(etDescripcion);
-        String precio = texto(etPrecio);
-        String area = texto(etArea);
-        String dormitorios = texto(etDormitorios);
-        String banos = texto(etBanos);
-        String estacionamiento = texto(etEstacionamiento);
-        String estado = texto(etEstado);
-        String inmobiliaria = texto(etInmobiliaria);
-
-        boolean petFriendly = switchPetFriendly != null && switchPetFriendly.isChecked();
-        boolean conAscensor = switchConAscensor != null && switchConAscensor.isChecked();
-
-        String certificado = texto(etCertificadoEnergetico);
-        boolean patio = switchPatio != null && switchPatio.isChecked();
-        boolean terraza = switchTerraza != null && switchTerraza.isChecked();
-        boolean balcon = switchBalcon != null && switchBalcon.isChecked();
-        boolean aireAcondicionado = switchAireAcondicionado != null && switchAireAcondicionado.isChecked();
-        boolean cocinaIntegrada = switchCocinaIntegrada != null && switchCocinaIntegrada.isChecked();
-        boolean amueblado = switchAmueblado != null && switchAmueblado.isChecked();
-        boolean persianas = switchPersianas != null && switchPersianas.isChecked();
-        int closets = parseInt(etClosets);
-        String tipoPiso = texto(etTipoPiso);
-        String ventilacion = texto(etVentilacion);
-        String tipoAcabados = texto(etTipoAcabados);
-
-        int hero = imagenHeroProyecto != 0 ? imagenHeroProyecto : R.drawable.onboarding1;
-        int[] galeria = imagenesProyecto != null && imagenesProyecto.length > 0
-                ? imagenesProyecto
-                : new int[]{hero};
-
-        String tipologiaId = "tip_" + System.currentTimeMillis();
-        Tipologia tipologia = new Tipologia(
-                tipologiaId,
-                area.isEmpty() ? "Tipologia" : area + " · " + dormitorios + "d",
-                descripcion.isEmpty() ? "Sin descripcion" : descripcion,
-                area.isEmpty() ? "-" : area,
-                dormitorios.isEmpty() ? "0" : dormitorios,
-                banos.isEmpty() ? "0" : banos,
-                estacionamiento.isEmpty() ? "-" : estacionamiento,
-                precio.isEmpty() ? "-" : precio,
-                estado.isEmpty() ? "Disponible" : estado,
-                hero,
-                galeria,
-                patio,
-                certificado.isEmpty() ? "B" : certificado,
-                terraza,
-                balcon,
-                aireAcondicionado,
-                cocinaIntegrada,
-                closets,
-                tipoPiso.isEmpty() ? "estandar" : tipoPiso,
-                amueblado,
-                ventilacion.isEmpty() ? "natural" : ventilacion,
-                persianas,
-                tipoAcabados.isEmpty() ? "basico" : tipoAcabados
-        );
-
-        List<Tipologia> tipologias = new ArrayList<>();
-        tipologias.add(tipologia);
-
-        String idProyecto = "proy_" + System.currentTimeMillis();
-        return new Proyecto(
-                idProyecto,
-                titulo,
-                ubicacion.isEmpty() ? "Sin ubicacion" : ubicacion,
-                descripcion.isEmpty() ? "Sin descripcion" : descripcion,
-                Collections.emptyList(),
-                estado.isEmpty() ? "En planos" : estado,
-                galeria,
-                hero,
-                tipologias,
-                inmobiliaria.isEmpty() ? "Inmobiliaria INMIA" : inmobiliaria,
-                conAscensor,
-                "Nuevo",
-                "",
-                "REF-" + idProyecto,
-                petFriendly,
-                Collections.emptyList(),
-                tipologia,
-                ""
-        );
-    }
-
-    private int parseInt(TextInputEditText editText) {
-        String value = texto(editText);
-        try {
-            return value.isEmpty() ? 0 : Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    private static class TipologiaData {
-        final String nombre;
-        final String descripcion;
-        final int imagenHero;
-        final String area;
-        final String dormitorios;
-        final String banos;
-        final String estacionamiento;
-        final String precio;
-        final String estado;
-        final int[] imagenes;
-
-        TipologiaData(String nombre,
-                      String descripcion,
-                      int imagenHero,
-                      String area,
-                      String dormitorios,
-                      String banos,
-                      String estacionamiento,
-                      String precio,
-                      String estado,
-                      int[] imagenes) {
-            this.nombre = nombre;
-            this.descripcion = descripcion;
-            this.imagenHero = imagenHero;
-            this.area = area;
-            this.dormitorios = dormitorios;
-            this.banos = banos;
-            this.estacionamiento = estacionamiento;
-            this.precio = precio;
-            this.estado = estado;
-            this.imagenes = imagenes;
-        }
-    }
+    public static final String EXTRA_PROYECTO_TITULO = "extra_proyecto_titulo";
+    public static final String EXTRA_UBICACION = "extra_ubicacion";
+    public static final String EXTRA_DESCRIPCION = "extra_descripcion";
+    public static final String EXTRA_PRECIO = "extra_precio";
+    public static final String EXTRA_AREA = "extra_area";
+    public static final String EXTRA_DORMITORIOS = "extra_dormitorios";
+    public static final String EXTRA_BANOS = "extra_banos";
+    public static final String EXTRA_ESTACIONAMIENTO = "extra_estacionamiento";
+    public static final String EXTRA_ESTADO = "extra_estado";
 }

@@ -69,21 +69,6 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tabHoy"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:text="Hoy"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:gravity="center"
-                            android:paddingHorizontal="16dp"
-                            android:layout_marginEnd="8dp"
-                            android:background="@drawable/sa_tab_periodo_selected"
-                            android:textColor="#FFFFFF"
-                            android:clickable="true"
-                            android:focusable="true"/>
-
-                        <TextView
                             android:id="@+id/tabSemana"
                             android:layout_width="wrap_content"
                             android:layout_height="32dp"
@@ -93,8 +78,8 @@
                             android:gravity="center"
                             android:paddingHorizontal="16dp"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/sa_tab_periodo_unselected"
-                            android:textColor="@color/inmia_teal_dark"
+                            android:background="@drawable/sa_tab_periodo_selected"
+                            android:textColor="#FFFFFF"
                             android:clickable="true"
                             android:focusable="true"/>
 
@@ -351,173 +336,12 @@
 
                         </LinearLayout>
 
-                        <!-- Posición 1 -->
                         <LinearLayout
+                            android:id="@+id/layoutRankingContainer"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginTop="12dp">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="1"
-                                android:textColor="#FFFFFF"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/sa_badge_ranking_1"/>
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Catalina Sky"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginStart="12dp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="23"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="15sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
-
-                        <!-- Posición 2 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="2"
-                                android:textColor="#FFFFFF"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/sa_badge_ranking_2"/>
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Inmobiliaria Telito"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginStart="12dp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="18"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="15sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
-
-                        <!-- Posición 3 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="3"
-                                android:textColor="#FFFFFF"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/sa_badge_ranking_3"/>
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="BV Inmobi"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginStart="12dp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="14"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="15sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
-
-                        <!-- Posición 4 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="4"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/sa_badge_ranking_normal"/>
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="CSKA"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="14sp"
-                                android:layout_marginStart="12dp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="10"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="15sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
-
-                        <!-- Posición 5 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="5"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/sa_badge_ranking_normal"/>
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Portales"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="14sp"
-                                android:layout_marginStart="12dp"/>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="7"
-                                android:textColor="@color/inmia_text"
-                                android:textSize="15sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="12dp"/>
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

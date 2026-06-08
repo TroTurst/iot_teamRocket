@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -15,6 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterFotoActivity extends AppCompatActivity {
 
@@ -22,10 +30,12 @@ public class RegisterFotoActivity extends AppCompatActivity {
     private TextInputLayout tilPassword, tilConfirmPassword;
     private TextInputEditText etPassword, etConfirmPassword;
     private MaterialButton btnCamara, btnGaleria, btnCrearCuenta;
-
     private Uri fotoUri = null;
 
-    // Launcher para galería
+    // vaariables de firebase
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
     private final ActivityResultLauncher<Intent> launcherGaleria =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -60,7 +70,8 @@ public class RegisterFotoActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_register_foto);
-
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         // Vincular vistas
         imgFoto           = findViewById(R.id.imgFoto);
         tilPassword       = findViewById(R.id.tilPassword);
@@ -131,19 +142,71 @@ public class RegisterFotoActivity extends AppCompatActivity {
     }
 
     private void crearCuenta() {
-        // TODO: guardar todos los datos en Firebase
-        // Los datos del paso 1 están en getIntent().getStringExtra("nombres") etc.
+        btnCrearCuenta.setEnabled(false);
 
-        Toast.makeText(this,
-                "¡Cuenta creada exitosamente!",
-                Toast.LENGTH_LONG).show();
+        Intent intent = getIntent();
+        String correo = intent.getStringExtra("correo");
+        String password = getText(etPassword);
 
-        // Ir al Login y limpiar el back stack
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        if (correo == null || correo.isEmpty()) {
+            Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+            btnCrearCuenta.setEnabled(true);
+            return;
+        }
+
+        // 1. Crear el usuario en Firebase Authentication
+        mAuth.createUserWithEmailAndPassword(correo, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Usuario creado exitosamente en Auth
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            guardarDatosEnFirestore(user.getUid(), intent);
+                        }
+                    } else {
+                        btnCrearCuenta.setEnabled(true);
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
+                        Toast.makeText(this, "Error de registro: " + errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void guardarDatosEnFirestore(String uid, Intent intent) {
+        Map<String, Object> nuevoCliente = new HashMap<>();
+        nuevoCliente.put("uid", uid);
+        nuevoCliente.put("nombres", intent.getStringExtra("nombres"));
+        nuevoCliente.put("apellidos", intent.getStringExtra("apellidos"));
+        nuevoCliente.put("tipoDocumento", intent.getStringExtra("tipoDoc"));
+        nuevoCliente.put("numeroDocumento", intent.getStringExtra("numDoc"));
+        nuevoCliente.put("fechaNacimiento", intent.getStringExtra("fechaNac"));
+        nuevoCliente.put("correo", intent.getStringExtra("correo"));
+        nuevoCliente.put("telefono", intent.getStringExtra("telefono"));
+        nuevoCliente.put("domicilio", intent.getStringExtra("domicilio"));
+
+        nuevoCliente.put("fotoUrl", "");
+
+        nuevoCliente.put("rol", "cliente");
+        nuevoCliente.put("activo", true);
+        nuevoCliente.put("tarjetaRegistrada", false);
+        nuevoCliente.put("fechaCreacion", FieldValue.serverTimestamp());
+
+        // 3. Guardar en la colección "usuarios" de Firestore
+        db.collection("usuarios").document(uid)
+                .set(nuevoCliente)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "¡Cuenta creada exitosamente!", Toast.LENGTH_LONG).show();
+
+                    // Ir al Login y limpiar el back stack
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(loginIntent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnCrearCuenta.setEnabled(true);
+                    Log.w("Firebase", "Error al escribir documento", e);
+                    Toast.makeText(this, "Error al guardar el perfil del usuario.", Toast.LENGTH_LONG).show();
+                });
     }
 
     private String getText(TextInputEditText et) {

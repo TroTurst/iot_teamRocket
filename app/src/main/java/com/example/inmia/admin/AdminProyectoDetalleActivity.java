@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -37,7 +39,10 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     public static final String EXTRA_PROYECTO_ID = "proyecto_id";
 
     private BottomNavigationView bottomNav;
-    private final int totalNotificaciones = 5;
+    private int totalNotificaciones;
+
+    private AdminFirestoreGateway gateway;
+    private String companyId;
 
     private ImageView imgHeroProyecto;
     private android.widget.TextView tvNombreProyecto;
@@ -93,13 +98,14 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_proyecto_detalle);
 
+        gateway = new AdminFirestoreGateway();
+
         Context ctx = getApplicationContext();
         SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
         Configuration.getInstance().load(ctx, prefs);
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
-        FrameLayout frameNotificaciones = findViewById(R.id.frameNotificaciones);
         View btnBack = findViewById(R.id.btnBackProyectoDetalle);
         View btnEditar = findViewById(R.id.btnEditarProyectoDetalle);
 
@@ -148,21 +154,61 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         configurarSeleccion();
         configurarRecyclerMiniaturas();
 
-        // Cargar proyecto seleccionado
         String proyectoId = getIntent() != null ? getIntent().getStringExtra(EXTRA_PROYECTO_ID) : null;
-        currentProyecto = AdminProyectoRepositoryMock.getProyectoById(proyectoId);
-        if (currentProyecto == null) {
+        if (proyectoId == null || proyectoId.trim().isEmpty()) {
             Toast.makeText(this, "No se encontró el proyecto seleccionado", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        bindProyecto(currentProyecto);
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+                totalNotificaciones = 0;
 
-        configurarRecyclerTipologias(currentProyecto);
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarSeleccion();
+                    }
 
-        frameNotificaciones.setOnClickListener(v ->
-                Toast.makeText(this, "Tienes " + totalNotificaciones + " notificaciones", Toast.LENGTH_SHORT).show());
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarSeleccion();
+                    }
+                });
+
+                gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                    @Override
+                    public void onSuccess(Proyecto proyecto) {
+                        Log.d("AdminDetalle", "Proyecto cargado inicialmente: " + proyecto.getNombre() + " (id: " + proyecto.getId() + ")");
+                        Log.d("AdminDetalle", "Tipologias count: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
+                        currentProyecto = proyecto;
+                        bindProyecto(currentProyecto);
+                        configurarRecyclerTipologias(currentProyecto);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminProyectoDetalleActivity.this,
+                                "No se encontró el proyecto seleccionado",
+                                Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminProyectoDetalleActivity.this,
+                        "No se pudo cargar el proyecto",
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
         btnBack.setOnClickListener(v -> finish());
         btnEditar.setOnClickListener(v -> abrirEdicionProyecto());
@@ -251,6 +297,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         // Textos principales
         tvNombreProyecto.setText(p.getNombre());
         tvUbicacionProyecto.setText(p.getUbicacion());
+        tvDescripcionProyecto.setText(p.getDescripcion());
         if (p.getImagenHeroPrincipal() != 0) {
             imgHeroProyecto.setImageResource(p.getImagenHeroPrincipal());
         }
@@ -284,7 +331,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         tvNombreProyecto.setText(currentProyecto.getNombre());
         tvUbicacionProyecto.setText(currentProyecto.getUbicacion());
-        tvDescripcionProyecto.setText(tipologia.getDescripcion());
         tvPrecioProyecto.setText(tipologia.getPrecio());
         if (tipologia.getImagenHero() != 0) {
             heroImageResActual = tipologia.getImagenHero();
@@ -400,28 +446,13 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     }
 
     private void abrirEdicionProyecto() {
-        Tipologia tipologia = currentTipologia;
-        if (currentProyecto == null || tipologia == null) {
-            Toast.makeText(this, "No hay tipología seleccionada", Toast.LENGTH_SHORT).show();
+        if (currentProyecto == null || currentProyecto.getId() == null) {
+            Toast.makeText(this, "No hay proyecto seleccionado", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int[] imagenesArray = tipologia.getImagenes() != null ? tipologia.getImagenes() : new int[0];
-
         Intent intent = new Intent(this, AdminProyectoEditarActivity.class);
         intent.putExtra(AdminProyectoEditarActivity.EXTRA_PROYECTO_ID, currentProyecto.getId());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_PROYECTO_TITULO, currentProyecto.getNombre());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_UBICACION, currentProyecto.getUbicacion());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_DESCRIPCION, tipologia.getDescripcion());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_PRECIO, tipologia.getPrecio());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_AREA, tipologia.getArea());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_DORMITORIOS, tipologia.getDormitorios());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_BANOS, tipologia.getBanos());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_ESTACIONAMIENTO, tipologia.getEstacionamiento());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_ESTADO, tipologia.getEstado());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_IMAGEN_HERO, tipologia.getImagenHero());
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_IMAGENES, imagenesArray);
-        intent.putExtra(AdminProyectoEditarActivity.EXTRA_TIPOLOGIA_ACTUAL, tipologia.getNombre());
         startActivity(intent);
     }
 
@@ -466,7 +497,29 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("AdminDetalle", "onResume called");
         if (mapaAdminProyecto != null) mapaAdminProyecto.onResume();
+        if (currentProyecto != null) {
+            Log.d("AdminDetalle", "Recargando proyecto con getProjectById: " + currentProyecto.getNombre() + " (id: " + currentProyecto.getId() + ")");
+            gateway.getProjectById(currentProyecto.getId(), new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                @Override
+                public void onSuccess(Proyecto proyecto) {
+                    Log.d("AdminDetalle", "Proyecto recargado OK, tipologias: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
+                    currentProyecto = proyecto;
+                    runOnUiThread(() -> {
+                        bindProyecto(currentProyecto);
+                        configurarRecyclerTipologias(currentProyecto);
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.e("AdminDetalle", "Error recargando proyecto: " + e.getMessage());
+                }
+            });
+        } else {
+            Log.d("AdminDetalle", "currentProyecto es null, no se recarga");
+        }
     }
 
     @Override

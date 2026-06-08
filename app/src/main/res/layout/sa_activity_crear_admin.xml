@@ -301,7 +301,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- ── SECCIÓN 3: SEGURIDAD ── -->
+                <!-- ── SECCIÓN 3: DATOS LABORALES ── -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -320,23 +320,20 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Seguridad"
+                            android:text="Datos laborales"
                             android:textColor="@color/inmia_text"
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="16dp"/>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilPassword"
+                            android:id="@+id/tilInmobiliaria"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="14dp"
-                            android:hint="@string/hint_password"
-                            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                            android:hint="Nombre de la inmobiliaria"
+                            app:startIconDrawable="@drawable/ic_inicio"
                             app:startIconTint="@color/inmia_teal_dark"
-                            app:passwordToggleEnabled="true"
-                            app:passwordToggleTint="@color/inmia_teal_dark"
                             app:boxStrokeColor="@color/inmia_teal_dark"
                             app:hintTextColor="@color/inmia_teal_dark"
                             app:boxCornerRadiusTopStart="12dp"
@@ -344,35 +341,11 @@
                             app:boxCornerRadiusBottomStart="12dp"
                             app:boxCornerRadiusBottomEnd="12dp">
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etPassword"
+                                android:id="@+id/etInmobiliaria"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textPassword"
+                                android:inputType="textCapWords"
                                 android:imeOptions="actionNext"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilConfirmPassword"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/hint_confirm_password"
-                            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                            app:startIconTint="@color/inmia_teal_dark"
-                            app:passwordToggleEnabled="true"
-                            app:passwordToggleTint="@color/inmia_teal_dark"
-                            app:boxStrokeColor="@color/inmia_teal_dark"
-                            app:hintTextColor="@color/inmia_teal_dark"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp">
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etConfirmPassword"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPassword"
-                                android:imeOptions="actionDone"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
@@ -398,5 +371,22 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Overlay de carga mientras se crea la cuenta en Firebase -->
+    <FrameLayout
+        android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

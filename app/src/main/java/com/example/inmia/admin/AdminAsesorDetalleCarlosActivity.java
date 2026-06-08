@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
@@ -14,8 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminAsesorRepositoryMock;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.example.inmia.models.CitaAsesor;
 import com.example.inmia.models.Proyecto;
@@ -25,8 +27,14 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
+
+    private AdminFirestoreGateway gateway;
+    private String companyId;
+    private String asesorId;
+    private Asesor currentAsesor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,8 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_asesor_detalle_carlos);
 
+        gateway = new AdminFirestoreGateway();
+
         View btnBack = findViewById(R.id.btnBackDetalleCarlos);
         View btnDetalleCita = findViewById(R.id.btnDetalleCitaCarlos);
         View btnGestionProyectos = findViewById(R.id.btnGestionProyectosCarlos);
@@ -47,22 +57,103 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         NestedScrollView scrollView = findViewById(R.id.scrollViewAsesorDetalleCarlos);
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavAdmin);
 
-        Asesor asesor = cargarAsesor();
-        poblarPerfil(asesor);
+        asesorId = getIntent().getStringExtra("asesor_id");
+        if (TextUtils.isEmpty(asesorId)) {
+            Toast.makeText(this, "No se encontró asesor", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         RecyclerView recyclerViewProyectos = findViewById(R.id.recyclerViewProyectosCarlos);
         recyclerViewProyectos.setLayoutManager(new LinearLayoutManager(this));
-        List<Proyecto> proyectos = filtrarProyectosPorAsesor(asesor.getNombre());
-        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, proyectos);
+        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, new ArrayList<>());
         recyclerViewProyectos.setAdapter(adapter);
 
         RecyclerView recyclerViewCitas = findViewById(R.id.recyclerViewCitasCarlos);
         recyclerViewCitas.setLayoutManager(new LinearLayoutManager(this));
-        List<CitaAsesor> citas = cargarCitasMock();
+        List<CitaAsesor> citas = new ArrayList<>();
         AdminCitasAdapter citasAdapter = new AdminCitasAdapter(citas);
         recyclerViewCitas.setAdapter(citasAdapter);
 
         bottomNav.setSelectedItemId(R.id.nav_asesores);
+
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        View badge = findViewById(R.id.tvBadgeNotif);
+                        if (badge instanceof TextView) {
+                            ((TextView) badge).setText(String.valueOf(count != null ? count : 0));
+                            badge.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        View badge = findViewById(R.id.tvBadgeNotif);
+                        if (badge instanceof TextView) {
+                            badge.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+                gateway.observeAdvisorById(asesorId, new AdminFirestoreGateway.FirestoreCallback<>() {
+                    @Override
+                    public void onSuccess(Asesor asesor) {
+                        currentAsesor = asesor;
+                        poblarPerfil(asesor);
+
+                        gateway.observeProjectsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<>() {
+                            @Override
+                            public void onSuccess(List<Proyecto> value) {
+                                List<Proyecto> filtrados = new ArrayList<>();
+                                if (value != null) {
+                                    for (Proyecto proyecto : value) {
+                                        if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(asesorId)) {
+                                            filtrados.add(proyecto);
+                                        }
+                                    }
+                                }
+                                adapter.setProyectos(filtrados);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                adapter.setProyectos(new ArrayList<>());
+                            }
+                        });
+
+                        gateway.observeCitasByAdvisor(asesorId, new AdminFirestoreGateway.FirestoreListCallback<>() {
+                            @Override
+                            public void onSuccess(List<CitaAsesor> value) {
+                                citasAdapter.setCitas(value);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                citasAdapter.setCitas(new ArrayList<>());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminAsesorDetalleCarlosActivity.this, "No se encontró asesor", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminAsesorDetalleCarlosActivity.this, "No se pudo cargar el asesor", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -80,7 +171,13 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
             }
         });
 
-        btnAsignarMetas.setOnClickListener(v -> mostrarDialogoMetas(asesor));
+        btnAsignarMetas.setOnClickListener(v -> {
+            if (currentAsesor != null) {
+                mostrarDialogoMetas(currentAsesor);
+            } else {
+                Toast.makeText(this, "Cargando asesor...", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -106,15 +203,6 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         });
     }
 
-    private Asesor cargarAsesor() {
-        String asesorId = getIntent().getStringExtra("asesor_id");
-        Asesor asesor = AdminAsesorRepositoryMock.getAsesorById(asesorId);
-        if (asesor == null) {
-            asesor = AdminAsesorRepositoryMock.getAsesores().get(0);
-        }
-        return asesor;
-    }
-
     private void poblarPerfil(Asesor asesor) {
         TextView tvNombreHeader = findViewById(R.id.tvNombreHeaderCarlos);
         TextView tvNombre = findViewById(R.id.tvNombreCarlos);
@@ -126,9 +214,9 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         TextView tvZonaTrabajo = findViewById(R.id.tvZonaTrabajoCarlos);
         TextView tvCitas = findViewById(R.id.tvCitasCarlos);
         TextView tvVentas = findViewById(R.id.tvVentasCarlos);
-        TextView tvMetaVentas = findViewById(R.id.tvMetaVentasCarlos);
-        TextView tvMetaCitas = findViewById(R.id.tvMetaCitasCarlos);
-        TextView tvMetaGanancias = findViewById(R.id.tvMetaGananciasCarlos);
+        TextInputEditText etMetaVentas = findViewById(R.id.etMetaVentasCarlos);
+        TextInputEditText etMetaCitas = findViewById(R.id.etMetaCitasCarlos);
+        TextInputEditText etMetaGanancias = findViewById(R.id.etMetaGananciasCarlos);
         ImageView imgFoto = findViewById(R.id.imgFotoCarlos);
 
         tvNombreHeader.setText(asesor.getNombre());
@@ -141,23 +229,13 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         tvZonaTrabajo.setText(asesor.getZonaTrabajo());
         tvCitas.setText(String.valueOf(asesor.getCitasMensualActual()));
         tvVentas.setText(String.valueOf(asesor.getVentasMensualActual()));
-        tvMetaVentas.setText(String.valueOf(asesor.getMetaVentasMensual()));
-        tvMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
-        tvMetaGanancias.setText(formatearSoles(asesor.getMetaGananciasMensual()));
+        etMetaVentas.setText(String.valueOf(asesor.getMetaVentasMensual()));
+        etMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
+        etMetaGanancias.setText(String.valueOf(asesor.getMetaGananciasMensual()));
 
         if (asesor.getFotoResId() != 0) {
             imgFoto.setImageResource(asesor.getFotoResId());
         }
-    }
-
-    private List<Proyecto> filtrarProyectosPorAsesor(String nombreAsesor) {
-        List<Proyecto> filtrados = new ArrayList<>();
-        for (Proyecto proyecto : AdminProyectoRepositoryMock.getProyectos()) {
-            if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(nombreAsesor)) {
-                filtrados.add(proyecto);
-            }
-        }
-        return filtrados;
     }
 
     private void navegarATab(Class<?> destino) {
@@ -185,11 +263,30 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                     int metaCitas = parseIntSafe(etMetaCitas.getText());
                     int metaGanancias = parseIntSafe(etMetaGanancias.getText());
 
-                    asesor.setMetaVentasMensual(metaVentas);
-                    asesor.setMetaCitasMensual(metaCitas);
-                    asesor.setMetaGananciasMensual(metaGanancias);
+                    gateway.updateAsesorMetas(asesor.getId(), metaVentas, metaCitas, metaGanancias,
+                            new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                        "Metas actualizadas",
+                                        Toast.LENGTH_SHORT).show();
+                                currentAsesor.setMetaVentasMensual(metaVentas);
+                                currentAsesor.setMetaCitasMensual(metaCitas);
+                                currentAsesor.setMetaGananciasMensual(metaGanancias);
+                                poblarPerfil(currentAsesor);
+                            });
+                        }
 
-                    poblarPerfil(asesor);
+                        @Override
+                        public void onError(Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                        "Error al guardar metas: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 })
                 .setNegativeButton(R.string.admin_metas_cancelar, null)
                 .show();
@@ -207,18 +304,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
     }
 
     private String formatearSoles(int valor) {
-        return "S/ " + String.format("%,d", valor);
+        return String.format(Locale.getDefault(), "S/ %,d", valor);
     }
 
-    private List<CitaAsesor> cargarCitasMock() {
-        List<CitaAsesor> citas = new ArrayList<>();
-
-        citas.add(new CitaAsesor("Mariana Torres", "12/05/2026", "10:00", "Palm Living", "Confirmada"));
-        citas.add(new CitaAsesor("Alberto Rios", "14/05/2026", "12:30", "Vista Verde", "En proceso"));
-        citas.add(new CitaAsesor("Paula Reyes", "16/05/2026", "09:15", "Mirador Sur", "Completada"));
-        citas.add(new CitaAsesor("Diego Salazar", "18/05/2026", "16:00", "Skyline Tower", "Cancelada"));
-        citas.add(new CitaAsesor("Lucia Paredes", "20/05/2026", "11:45", "Costa Azul", "Confirmada"));
-
-        return citas;
-    }
 }

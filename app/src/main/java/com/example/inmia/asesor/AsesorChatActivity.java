@@ -33,8 +33,6 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
     private EditText etSearchChat;
     private ChatThreadAdapter adapter;
 
-    private int totalNotificaciones = 2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +50,8 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
         recyclerChatThreads = findViewById(R.id.recyclerChatThreads);
         etSearchChat = findViewById(R.id.etSearchChat);
 
+        AsesorNotificacionStore.seedIfEmpty(this);
+        AsesorChatStore.seedIfEmpty(this);
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -86,7 +86,7 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
             return false;
         });
 
-        adapter = new ChatThreadAdapter(buildMockThreads(), this);
+        adapter = new ChatThreadAdapter(AsesorChatStore.getThreads(this), this);
         recyclerChatThreads.setLayoutManager(new LinearLayoutManager(this));
         recyclerChatThreads.setAdapter(adapter);
 
@@ -104,46 +104,6 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
                 adapter.filterByName(s == null ? "" : s.toString());
             }
         });
-    }
-
-    private List<ChatThread> buildMockThreads() {
-        List<ChatThread> threads = new ArrayList<>();
-        threads.add(new ChatThread(
-            "chat_1",
-            "Maria R.",
-            "Hola, quiero info del proyecto Catalina Sky",
-            "10:02",
-            R.drawable.ic_perfil
-        ));
-        threads.add(new ChatThread(
-            "chat_2",
-            "Carlos M.",
-            "Gracias, tambien quiero agendar visita",
-            "10:04",
-            R.drawable.ic_perfil
-        ));
-        threads.add(new ChatThread(
-            "chat_3",
-            "Luisa T.",
-            "Me puedes enviar el brochure del proyecto",
-            "09:45",
-            R.drawable.ic_perfil
-        ));
-        threads.add(new ChatThread(
-            "chat_4",
-            "Javier P.",
-            "Estoy interesado en separar un departamento",
-            "Ayer",
-            R.drawable.ic_perfil
-        ));
-        threads.add(new ChatThread(
-            "chat_5",
-            "Ana L.",
-            "Podemos ver opciones de financiamiento",
-            "Ayer",
-            R.drawable.ic_perfil
-        ));
-        return threads;
     }
 
     @Override
@@ -177,7 +137,17 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
 
         btnCancelar.setOnClickListener(v -> dialog.dismiss());
         btnEliminar.setOnClickListener(v -> {
+            AsesorChatStore.deleteThread(this, thread.getId());
             adapter.deleteThreadById(thread.getId());
+            AsesorNotificacionHelper.enviar(
+                this,
+                "Chat eliminado",
+                "Se elimino la conversacion con " + thread.getName(),
+                AsesorNotificacionStore.TIPO_CHAT_ELIMINADO,
+                AsesorNotificacionStore.TARGET_CHAT_DETAIL,
+                thread.getId()
+            );
+            configurarBadge();
             Toast.makeText(this, "Chat eliminado", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
@@ -186,6 +156,7 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
     }
 
     private void configurarBadge() {
+        int totalNotificaciones = AsesorNotificacionStore.getBadgeCount(this);
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
             tvBadgeNotif.setVisibility(View.VISIBLE);
@@ -195,7 +166,16 @@ public class AsesorChatActivity extends AppCompatActivity implements ChatThreadA
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            adapter.updateThreads(AsesorChatStore.getThreads(this));
+        }
+        configurarBadge();
     }
 }

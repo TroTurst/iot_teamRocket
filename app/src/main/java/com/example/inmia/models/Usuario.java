@@ -2,6 +2,7 @@ package com.example.inmia.models;
 
 public class Usuario {
 
+    private String uid;
     private String nombre;
     private String empresa;
     private String iniciales;
@@ -59,6 +60,7 @@ public class Usuario {
     }
 
     // Getters
+    public String getUid()             { return uid; }
     public String getNombre()          { return nombre; }
     public String getEmpresa()         { return empresa; }
     public String getIniciales()       { return iniciales; }
@@ -72,6 +74,7 @@ public class Usuario {
     public String getDomicilio()       { return domicilio; }
 
     // Setters
+    public void setUid(String uid)                     { this.uid = uid; }
     public void setActivo(boolean activo)              { this.activo = activo; }
     public void setTiempoRegistro(String tiempo)       { this.tiempoRegistro = tiempo; }
     public void setDocumento(String documento)         { this.documento = documento; }
