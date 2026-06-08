@@ -2,6 +2,8 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -38,6 +40,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private String companyId;
     private AdminProyectoAdapter adapter;
     private final List<Proyecto> proyectos = new ArrayList<>();
+    private final List<Proyecto> proyectosFiltrados = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +107,9 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
                         if (value != null) {
                             proyectos.addAll(value);
                         }
-                        adapter.setProyectos(proyectos);
+                        proyectosFiltrados.clear();
+                        proyectosFiltrados.addAll(proyectos);
+                        adapter.setProyectos(proyectosFiltrados);
                     }
 
                     @Override
@@ -157,12 +162,16 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
             limpiarBadge();
         });
 
-        etBuscarProyecto.setOnClickListener(v ->
-                Toast.makeText(this, "Busqueda habilitada", Toast.LENGTH_SHORT).show());
+        etBuscarProyecto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        etBuscarProyecto.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                Toast.makeText(this, "Escribe para buscar proyectos", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filtrarProyectos(s.toString().trim());
             }
         });
 
@@ -217,6 +226,21 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private void filtrarProyectos(String texto) {
+        proyectosFiltrados.clear();
+        if (texto.isEmpty()) {
+            proyectosFiltrados.addAll(proyectos);
+        } else {
+            String textoLower = texto.toLowerCase();
+            for (Proyecto p : proyectos) {
+                if (p.getNombre() != null && p.getNombre().toLowerCase().contains(textoLower)) {
+                    proyectosFiltrados.add(p);
+                }
+            }
+        }
+        adapter.setProyectos(proyectosFiltrados);
     }
 
     // Datos mock se obtienen desde AdminRepository (local) hasta conectar Firebase.
