@@ -20,4 +20,12 @@
         <item>Tarde</item>
         <item>Noche</item>
     </string-array>
+
+    <string-array name="separaciones_estado_options">
+        <item>Todas</item>
+        <item>Por aprobar</item>
+        <item>Aprobada</item>
+        <item>Terminada</item>
+        <item>Cancelada</item>
+    </string-array>
 </resources>
