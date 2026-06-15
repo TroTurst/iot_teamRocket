@@ -115,15 +115,15 @@
             <TextView
                 android:id="@+id/btnDetalles"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:minWidth="90dp"
+                android:layout_height="40dp"
+                android:minWidth="100dp"
                 android:text="Detalles"
-                android:textColor="@color/inmia_teal_dark"
-                android:textSize="12sp"
+                android:textColor="@color/inmia_white"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:background="@drawable/badge_outline"
-                android:layout_marginBottom="6dp" />
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/btn_rounded_success"
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/btnAction"
@@ -135,7 +135,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:paddingHorizontal="20dp"
-                android:background="@drawable/btn_rounded" />
+                android:background="@drawable/btn_rounded_info" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

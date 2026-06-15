@@ -57,6 +57,20 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
             }
         });
 
+        // Logica para mostrar botones segun estado
+        String statusText = item.getStatus() != null ? item.getStatus().toLowerCase() : "";
+        
+        // El botón de detalles siempre es verde (success) y tiene el mismo formato que en citas
+        holder.btnDetalles.setBackgroundResource(R.drawable.btn_rounded_success);
+        
+        if (statusText.contains("aprobado") || statusText.contains("cancelado") || statusText.contains("terminado")) {
+            holder.action.setVisibility(View.GONE);
+        } else {
+            holder.action.setVisibility(View.VISIBLE);
+            // El botón de confirmar (acción) es celeste (info) y del mismo tamaño
+            holder.action.setBackgroundResource(R.drawable.btn_rounded_info);
+        }
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onDetails(item);

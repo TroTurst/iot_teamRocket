@@ -118,9 +118,7 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
                 if (tvEstadoSeparacionDetalle != null)
                     AsesorEstadoBadgeStyle.apply(this, tvEstadoSeparacionDetalle, "Cancelada");
                 if (btnCancelarSeparacion != null) {
-                    btnCancelarSeparacion.setText("Cancelada");
-                    btnCancelarSeparacion.setEnabled(false);
-                    btnCancelarSeparacion.setAlpha(0.6f);
+                    btnCancelarSeparacion.setVisibility(android.view.View.GONE);
                 }
                 AsesorNotificacionHelper.enviar(
                     this, "Separacion cancelada",
@@ -175,9 +173,7 @@ public class AsesorSeparacionDetailActivity extends AppCompatActivity {
 
         separacionCancelada = "Cancelada".equalsIgnoreCase(estado);
         if (separacionCancelada && btnCancelarSeparacion != null) {
-            btnCancelarSeparacion.setText("Cancelada");
-            btnCancelarSeparacion.setEnabled(false);
-            btnCancelarSeparacion.setAlpha(0.6f);
+            btnCancelarSeparacion.setVisibility(android.view.View.GONE);
         }
     }
 
