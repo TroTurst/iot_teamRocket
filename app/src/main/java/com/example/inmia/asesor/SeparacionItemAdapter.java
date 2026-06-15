@@ -16,6 +16,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
 
     public interface Listener {
         void onAction(SeparacionItem item, int position);
+        void onDetails(SeparacionItem item);
     }
 
     private final List<SeparacionItem> items;
@@ -49,6 +50,18 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
                 listener.onAction(item, position);
             }
         });
+
+        holder.btnDetalles.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDetails(item);
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDetails(item);
+            }
+        });
     }
 
     @Override
@@ -68,6 +81,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
         final TextView location;
         final TextView company;
         final TextView action;
+        final TextView btnDetalles;
 
         SeparacionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +90,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
             location = itemView.findViewById(R.id.tvUbicacion);
             company = itemView.findViewById(R.id.tvEmpresa);
             action = itemView.findViewById(R.id.btnAction);
+            btnDetalles = itemView.findViewById(R.id.btnDetalles);
         }
     }
 }

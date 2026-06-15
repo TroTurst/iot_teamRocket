@@ -212,8 +212,8 @@ public final class AsesorFirestoreRepository {
         Timestamp ts             = doc.getTimestamp("fechaCreacion");
         Long monto               = doc.getLong("montoSeparacion");
 
-        String estadoDisplay = "en proceso".equalsIgnoreCase(estado) ? "Por aprobar" : capitalizarEstado(estado);
-        boolean confirmed    = !"Por aprobar".equals(estadoDisplay);
+        String estadoDisplay = capitalizarEstado(estado);
+        boolean confirmed    = !"Pendiente".equals(estadoDisplay);
         String actionLabel   = confirmed ? "Detalles" : "Confirmar";
         String fechaStr      = ts != null
             ? new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ts.toDate()) : "—";
@@ -361,7 +361,13 @@ public final class AsesorFirestoreRepository {
     private String capitalizarEstado(String s) {
         if (s == null || s.isEmpty()) return "—";
         String lower = s.toLowerCase(Locale.US);
-        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        switch (lower) {
+            case "pendiente": case "en proceso": return "Pendiente";
+            case "aprobada":  case "aprobado":   case "confirmada": return "Aprobado";
+            case "cancelada": case "cancelado":  return "Cancelado";
+            case "terminada": case "terminado":  return "Terminado";
+            default: return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        }
     }
 
     private String safe(String s) {
