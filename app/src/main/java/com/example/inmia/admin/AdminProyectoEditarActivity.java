@@ -18,6 +18,7 @@ import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -409,6 +410,10 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("AdminEditar", "Proyecto actualizado exitosamente en Firebase");
+                LogHelper.registrar(
+                        "Se editó el proyecto " + titulo,
+                        com.example.inmia.models.Log.TIPO_PROYECTO,
+                        LogHelper.ROL_ADMIN);
                 runOnUiThread(() -> {
                     Toast.makeText(AdminProyectoEditarActivity.this, "Proyecto actualizado", Toast.LENGTH_LONG).show();
                     setResult(RESULT_OK);
