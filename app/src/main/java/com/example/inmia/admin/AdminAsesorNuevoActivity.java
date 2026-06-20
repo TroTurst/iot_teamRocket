@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
@@ -185,6 +187,12 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
 
         db.collection("solicitudes").add(solicitud)
                 .addOnSuccessListener(ref -> {
+                    LogHelper.registrar(
+                            "Se solicitó habilitar a " + nombre + " " + apellido + " como asesor"
+                                    + (inmobiliariaNombre != null && !inmobiliariaNombre.isEmpty()
+                                        ? " de " + inmobiliariaNombre : ""),
+                            Log.TIPO_SOLICITUD,
+                            LogHelper.ROL_ADMIN);
                     Toast.makeText(this,
                             "Solicitud enviada. Esperando aprobación del superadmin.",
                             Toast.LENGTH_LONG).show();

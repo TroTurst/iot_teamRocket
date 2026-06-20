@@ -20,7 +20,9 @@ import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.example.inmia.models.CitaAsesor;
+import com.example.inmia.models.Log;
 import com.example.inmia.models.Proyecto;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -267,6 +269,12 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                             new AdminFirestoreGateway.FirestoreCallback<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            LogHelper.registrar(
+                                    "Se actualizaron las metas mensuales de " + asesor.getNombre(),
+                                    Log.TIPO_CUENTA,
+                                    LogHelper.ROL_ADMIN,
+                                    asesor.getNombre(),
+                                    asesor.getId() != null ? asesor.getId() : "");
                             runOnUiThread(() -> {
                                 Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
                                         "Metas actualizadas",

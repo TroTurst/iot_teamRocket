@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.example.inmia.util.LogHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
@@ -194,6 +195,17 @@ public class RegisterFotoActivity extends AppCompatActivity {
         db.collection("usuarios").document(uid)
                 .set(nuevoCliente)
                 .addOnSuccessListener(aVoid -> {
+                    String nombreCompleto = ((intent.getStringExtra("nombres") != null
+                            ? intent.getStringExtra("nombres") : "")
+                            + " " + (intent.getStringExtra("apellidos") != null
+                            ? intent.getStringExtra("apellidos") : "")).trim();
+                    LogHelper.registrar(
+                            (nombreCompleto.isEmpty() ? "Un nuevo cliente" : nombreCompleto)
+                                    + " se ha unido a la aplicación",
+                            com.example.inmia.models.Log.TIPO_CUENTA,
+                            LogHelper.ROL_CLIENTE,
+                            nombreCompleto, uid);
+
                     Toast.makeText(this, "¡Cuenta creada exitosamente!", Toast.LENGTH_LONG).show();
 
                     // Ir al Login y limpiar el back stack

@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -308,6 +310,11 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
 
         db.collection("citas").add(nuevaCita)
                 .addOnSuccessListener(documentReference -> {
+                    LogHelper.registrar(
+                            "Se agendó una cita en "
+                                    + (proyectoNombre != null ? proyectoNombre : "un proyecto"),
+                            Log.TIPO_CITA, LogHelper.ROL_CLIENTE, "", clienteId);
+
                     Toast.makeText(this, "¡Cita agendada con éxito!", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(this, ClienteDetallesCitaActivity2.class);

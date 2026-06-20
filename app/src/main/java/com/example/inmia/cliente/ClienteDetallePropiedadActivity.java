@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
 import com.example.inmia.models.Tipologia;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
@@ -256,6 +258,11 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
 
             db.collection("separaciones").add(nuevaSeparacion)
                     .addOnSuccessListener(documentReference -> {
+                        LogHelper.registrar(
+                                "Se solicitó la separación de una unidad en "
+                                        + (proyectoNombre != null ? proyectoNombre : "un proyecto"),
+                                Log.TIPO_SEPARACION, LogHelper.ROL_CLIENTE);
+
                         Toast.makeText(this, "¡Solicitud enviada a validación!", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(this, ClienteSeparacionesActivity.class);
                         startActivity(intent);

@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -168,6 +170,12 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
         db.collection("citas").document(citaId)
                 .update("estado", "cancelada")
                 .addOnSuccessListener(aVoid -> {
+                    String proy = tvNombreProyectoDetalle != null
+                            ? tvNombreProyectoDetalle.getText().toString().trim() : "";
+                    LogHelper.registrar(
+                            "Se canceló una cita" + (!proy.isEmpty() ? " en " + proy : ""),
+                            Log.TIPO_CITA, LogHelper.ROL_CLIENTE);
+
                     Toast.makeText(this, "Tu cita ha sido cancelada", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(this, ClienteCitasActivity.class);

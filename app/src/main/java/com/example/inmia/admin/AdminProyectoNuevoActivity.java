@@ -16,8 +16,10 @@ import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
+import com.example.inmia.models.Log;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -318,6 +320,11 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         gateway.saveProject(proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
             @Override
             public void onSuccess(String projectId) {
+                LogHelper.registrar(
+                        "Se creó el proyecto " + titulo
+                                + (companyName != null ? " en " + companyName : ""),
+                        Log.TIPO_PROYECTO,
+                        LogHelper.ROL_ADMIN);
                 runOnUiThread(() -> {
                     Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
                     finish();

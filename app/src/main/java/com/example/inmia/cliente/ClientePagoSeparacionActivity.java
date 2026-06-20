@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -161,6 +163,12 @@ public class ClientePagoSeparacionActivity extends AppCompatActivity {
 
                     TextView tvProyecto = findViewById(R.id.tvNombreProyectoPago);
                     TextView tvTipologia = findViewById(R.id.tvDetallesProyectoPago);
+
+                    String proy = tvProyecto != null ? tvProyecto.getText().toString().trim() : "";
+                    LogHelper.registrar(
+                            "Se completó el pago de una separación"
+                                    + (!proy.isEmpty() ? " en " + proy : ""),
+                            Log.TIPO_SEPARACION, LogHelper.ROL_CLIENTE);
 
                     intent.putExtra("PROYECTO_NOMBRE", tvProyecto.getText().toString());
                     intent.putExtra("TIPOLOGIA", tvTipologia.getText().toString());

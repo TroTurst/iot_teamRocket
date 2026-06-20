@@ -20,6 +20,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -361,10 +363,16 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
         String adminId = mAuth.getCurrentUser() != null
                 ? mAuth.getCurrentUser().getUid() : "";
+        String nombreEmpresa = getText(etNombreEmpresa);
 
         db.collection("usuarios").document(adminId)
                 .update("esPrimeraVez", false)
                 .addOnSuccessListener(unused -> {
+                    LogHelper.registrar(
+                            "Se completó el registro de la inmobiliaria " + nombreEmpresa,
+                            Log.TIPO_PROYECTO,
+                            LogHelper.ROL_ADMIN,
+                            nombreEmpresa, adminId);
                     Toast.makeText(this,
                             "¡Inmobiliaria registrada exitosamente!",
                             Toast.LENGTH_LONG).show();
