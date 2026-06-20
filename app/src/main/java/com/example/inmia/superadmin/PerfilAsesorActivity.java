@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -220,6 +222,13 @@ public class PerfilAsesorActivity extends AppCompatActivity {
                             nombre + " ha sido habilitado como asesor.",
                             NotificacionHelper.TIPO_ASESOR_HABILITADO);
 
+                    LogHelper.registrar(
+                            (nombre != null ? nombre : "Un asesor")
+                                    + " fue habilitado como asesor de ventas",
+                            Log.TIPO_SOLICITUD,
+                            LogHelper.ROL_SUPERADMIN,
+                            nombre != null ? nombre : "", uid);
+
                     Toast.makeText(this,
                             "Asesor habilitado. Se envió correo para establecer contraseña.",
                             Toast.LENGTH_LONG).show();
@@ -247,6 +256,11 @@ public class PerfilAsesorActivity extends AppCompatActivity {
         NotificacionHelper.enviar(this, "Solicitud rechazada",
                 "La solicitud de " + nombre + " ha sido rechazada.",
                 NotificacionHelper.TIPO_ASESOR_RECHAZADO);
+
+        LogHelper.registrar(
+                "Se rechazó la solicitud de asesor de " + (nombre != null ? nombre : ""),
+                Log.TIPO_SOLICITUD,
+                LogHelper.ROL_SUPERADMIN);
 
         Toast.makeText(this, "Solicitud rechazada.", Toast.LENGTH_SHORT).show();
         irASolicitudes();

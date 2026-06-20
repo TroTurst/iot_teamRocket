@@ -17,6 +17,8 @@ import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.example.inmia.models.Log;
+import com.example.inmia.util.LogHelper;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -297,6 +299,13 @@ public class CrearAdminActivity extends AppCompatActivity {
                                 nombres + " " + apellidos + " ha sido añadido al sistema.",
                                 NotificacionHelper.TIPO_ADMIN_CREADO
                         );
+
+                        LogHelper.registrar(
+                                "Se creó al administrador " + nombres + " " + apellidos
+                                        + " de la inmobiliaria " + nombreInmob,
+                                Log.TIPO_CUENTA,
+                                LogHelper.ROL_SUPERADMIN,
+                                nombres + " " + apellidos, uid);
 
                         Toast.makeText(this,
                                 "Admin creado. Se envió correo para establecer contraseña.",

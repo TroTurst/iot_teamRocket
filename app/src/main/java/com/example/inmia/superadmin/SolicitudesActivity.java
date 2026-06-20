@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
 import com.example.inmia.models.Solicitud;
+import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
@@ -258,6 +260,13 @@ public class SolicitudesActivity extends AppCompatActivity
                                     + " ha sido habilitado como asesor.",
                             NotificacionHelper.TIPO_ASESOR_HABILITADO);
 
+                    LogHelper.registrar(
+                            solicitud.getNombre() + " " + solicitud.getApellidos()
+                                    + " fue habilitado como asesor de ventas",
+                            Log.TIPO_SOLICITUD,
+                            LogHelper.ROL_SUPERADMIN,
+                            solicitud.getNombre() + " " + solicitud.getApellidos(), uid);
+
                     Toast.makeText(this,
                             solicitud.getNombre() + " habilitado. Se envió correo para establecer contraseña.",
                             Toast.LENGTH_LONG).show();
@@ -280,6 +289,12 @@ public class SolicitudesActivity extends AppCompatActivity
                 "Solicitud rechazada",
                 "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
                 NotificacionHelper.TIPO_ASESOR_RECHAZADO);
+
+        LogHelper.registrar(
+                "Se rechazó la solicitud de asesor de "
+                        + solicitud.getNombre() + " " + solicitud.getApellidos(),
+                Log.TIPO_SOLICITUD,
+                LogHelper.ROL_SUPERADMIN);
 
         Toast.makeText(this, "Solicitud rechazada.", Toast.LENGTH_SHORT).show();
 

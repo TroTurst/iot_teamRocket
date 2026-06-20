@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.models.Log;
 import com.example.inmia.models.Usuario;
 import com.example.inmia.superadmin.NotificacionHelper;
+import com.example.inmia.util.LogHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -123,6 +125,14 @@ public class UsuarioAdapter extends
                                     textoNotif,
                                     tipoNotif
                             );
+
+                            LogHelper.registrar(
+                                    (isChecked ? "Se activó la cuenta de " : "Se desactivó la cuenta de ")
+                                            + usuario.getNombre(),
+                                    Log.TIPO_ESTADO_CUENTA,
+                                    LogHelper.ROL_SUPERADMIN,
+                                    usuario.getNombre(),
+                                    usuario.getUid() != null ? usuario.getUid() : "");
                         },
                         () -> {
                             holder.switchEstado.setOnCheckedChangeListener(null);
