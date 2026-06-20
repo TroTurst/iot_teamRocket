@@ -3,9 +3,9 @@
     <string-array name="citas_estado_options">
         <item>Todas</item>
         <item>Pendiente</item>
-        <item>Confirmada</item>
-        <item>Terminada</item>
-        <item>Cancelada</item>
+        <item>Aprobado</item>
+        <item>Terminado</item>
+        <item>Cancelado</item>
     </string-array>
 
     <string-array name="citas_proyecto_options">
@@ -23,9 +23,9 @@
 
     <string-array name="separaciones_estado_options">
         <item>Todas</item>
-        <item>Por aprobar</item>
-        <item>Aprobada</item>
-        <item>Terminada</item>
-        <item>Cancelada</item>
+        <item>Pendiente</item>
+        <item>Aprobado</item>
+        <item>Terminado</item>
+        <item>Cancelado</item>
     </string-array>
 </resources>

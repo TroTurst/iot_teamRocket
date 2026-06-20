@@ -71,8 +71,11 @@
                 android:layout_height="wrap_content"
                 android:text="Estado"
                 android:textColor="@color/inmia_info"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:gravity="center"
                 android:layout_marginTop="4dp"/>
 
             <TextView

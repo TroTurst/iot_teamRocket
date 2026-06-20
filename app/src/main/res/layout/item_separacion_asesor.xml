@@ -40,7 +40,7 @@
             android:layout_marginStart="12dp"
             android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@id/frameImage"
-            app:layout_constraintEnd_toStartOf="@id/btnAction"
+            app:layout_constraintEnd_toStartOf="@id/layoutActions"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -50,8 +50,11 @@
                 android:layout_height="wrap_content"
                 android:text="Por confirmar"
                 android:textColor="@color/inmia_teal_dark"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tvProyecto"
@@ -99,20 +102,41 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/btnAction"
+        <LinearLayout
+            android:id="@+id/layoutActions"
             android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Confirmar"
-            android:textColor="@color/inmia_white"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
-            android:background="@drawable/btn_rounded"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginStart="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/btnDetalles"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:minWidth="100dp"
+                android:text="Detalles"
+                android:textColor="@color/inmia_white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/btn_rounded_success"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/btnAction"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:minWidth="100dp"
+                android:text="Confirmar"
+                android:textColor="@color/inmia_white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/btn_rounded_info" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

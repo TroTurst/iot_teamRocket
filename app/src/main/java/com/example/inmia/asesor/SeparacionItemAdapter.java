@@ -16,6 +16,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
 
     public interface Listener {
         void onAction(SeparacionItem item, int position);
+        void onDetails(SeparacionItem item);
     }
 
     private final List<SeparacionItem> items;
@@ -49,6 +50,32 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
                 listener.onAction(item, position);
             }
         });
+
+        holder.btnDetalles.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDetails(item);
+            }
+        });
+
+        // Logica para mostrar botones segun estado
+        String statusText = item.getStatus() != null ? item.getStatus().toLowerCase() : "";
+        
+        // El botón de detalles siempre es verde (success) y tiene el mismo formato que en citas
+        holder.btnDetalles.setBackgroundResource(R.drawable.btn_rounded_success);
+        
+        if (statusText.contains("aprobado") || statusText.contains("cancelado") || statusText.contains("terminado")) {
+            holder.action.setVisibility(View.GONE);
+        } else {
+            holder.action.setVisibility(View.VISIBLE);
+            // El botón de confirmar (acción) es celeste (info) y del mismo tamaño
+            holder.action.setBackgroundResource(R.drawable.btn_rounded_info);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDetails(item);
+            }
+        });
     }
 
     @Override
@@ -68,6 +95,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
         final TextView location;
         final TextView company;
         final TextView action;
+        final TextView btnDetalles;
 
         SeparacionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +104,7 @@ public class SeparacionItemAdapter extends RecyclerView.Adapter<SeparacionItemAd
             location = itemView.findViewById(R.id.tvUbicacion);
             company = itemView.findViewById(R.id.tvEmpresa);
             action = itemView.findViewById(R.id.btnAction);
+            btnDetalles = itemView.findViewById(R.id.btnDetalles);
         }
     }
 }

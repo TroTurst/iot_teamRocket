@@ -30,8 +30,11 @@
                 android:layout_height="wrap_content"
                 android:text="Confirmada"
                 android:textColor="@color/inmia_success"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:gravity="center" />
 
             <TextView
                 android:id="@+id/tvProyecto"
@@ -91,12 +94,13 @@
         <TextView
             android:id="@+id/btnDetalles"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
+            android:minWidth="100dp"
             android:text="Detalles"
             android:textColor="@color/inmia_white"
             android:textStyle="bold"
             android:gravity="center"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="20dp"
             android:background="@drawable/btn_rounded"
             android:layout_marginStart="12dp"
             app:layout_constraintEnd_toEndOf="parent"
