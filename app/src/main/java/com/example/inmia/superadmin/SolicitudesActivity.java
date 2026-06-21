@@ -35,6 +35,7 @@ public class SolicitudesActivity extends AppCompatActivity
     private SolicitudAdapter adapter;
     private List<Solicitud> listaSolicitudes;
     private TextView tvContador;
+    private TextView tvBadgeConteo;
     private BottomNavigationView bottomNav;
     private View layoutEmpty;
 
@@ -50,6 +51,7 @@ public class SolicitudesActivity extends AppCompatActivity
 
         recyclerSolicitudes = findViewById(R.id.recyclerSolicitudes);
         tvContador          = findViewById(R.id.tvContador);
+        tvBadgeConteo       = findViewById(R.id.tvBadgeConteo);
         bottomNav           = findViewById(R.id.bottomNavSuperAdmin);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
@@ -313,6 +315,10 @@ public class SolicitudesActivity extends AppCompatActivity
         tvContador.setText(total + (total == 1
                 ? " solicitud pendiente"
                 : " solicitudes pendientes"));
+        if (tvBadgeConteo != null) {
+            tvBadgeConteo.setText(String.valueOf(total));
+            tvBadgeConteo.setVisibility(total > 0 ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void irAGestionUsuarios() {
