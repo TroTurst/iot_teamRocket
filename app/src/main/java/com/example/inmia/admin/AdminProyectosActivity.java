@@ -20,9 +20,12 @@ import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
+import com.example.inmia.models.ProyectoFilter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class AdminProyectosActivity extends AppCompatActivity {
@@ -42,6 +45,10 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private final List<Proyecto> proyectos = new ArrayList<>();
     private final List<Proyecto> proyectosFiltrados = new ArrayList<>();
 
+    private ProyectoFilter filtroActual;
+    private FrameLayout btnFiltros;
+    private TextView tvBadgeFiltros;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +63,18 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         tvStatEnPlanos = findViewById(R.id.tvStatEnPlanos);
         tvStatEnConstruccion = findViewById(R.id.tvStatEnConstruccion);
         tvStatEntregados = findViewById(R.id.tvStatEntregados);
         EditText etBuscarProyecto = findViewById(R.id.etBuscarProyecto);
-        ImageView btnFiltroMock = findViewById(R.id.btnFiltroMock);
+        btnFiltros = findViewById(R.id.btnFiltros);
+        tvBadgeFiltros = findViewById(R.id.tvBadgeFiltros);
+
+        filtroActual = new ProyectoFilter();
+        filtroActual.getEstados().add("En planos");
+        filtroActual.getEstados().add("En preventa");
+        filtroActual.getEstados().add("En venta");
 
         // NUEVO: Inicializar RecyclerView
         RecyclerView recyclerViewProyectos = findViewById(R.id.recyclerViewProyectos);
@@ -107,9 +120,7 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
                         if (value != null) {
                             proyectos.addAll(value);
                         }
-                        proyectosFiltrados.clear();
-                        proyectosFiltrados.addAll(proyectos);
-                        adapter.setProyectos(proyectosFiltrados);
+                        aplicarFiltros();
                     }
 
                     @Override
@@ -171,12 +182,20 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
 
             @Override
             public void afterTextChanged(Editable s) {
-                filtrarProyectos(s.toString().trim());
+                filtroActual.setBuscarNombre(s.toString().trim());
+                aplicarFiltros();
             }
         });
 
-        btnFiltroMock.setOnClickListener(v ->
-                Toast.makeText(this, "Filtros proximamente", Toast.LENGTH_SHORT).show());
+        btnFiltros.setOnClickListener(v -> {
+            BottomSheetFiltrosProyectos bottomSheet = BottomSheetFiltrosProyectos.newInstance(filtroActual);
+            bottomSheet.setListener(filter -> {
+                filtroActual = filter;
+                aplicarFiltros();
+                actualizarBadgeFiltros();
+            });
+            bottomSheet.show(getSupportFragmentManager(), "filtros_proyectos");
+        });
 
         findViewById(R.id.btnNuevoProyecto).setOnClickListener(v -> {
             startActivity(new Intent(this, AdminProyectoNuevoActivity.class));
@@ -228,20 +247,27 @@ tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         finish();
     }
 
-    private void filtrarProyectos(String texto) {
+    private void aplicarFiltros() {
         proyectosFiltrados.clear();
-        if (texto.isEmpty()) {
-            proyectosFiltrados.addAll(proyectos);
-        } else {
-            String textoLower = texto.toLowerCase();
-            for (Proyecto p : proyectos) {
-                if (p.getNombre() != null && p.getNombre().toLowerCase().contains(textoLower)) {
-                    proyectosFiltrados.add(p);
-                }
+        for (Proyecto p : proyectos) {
+            if (filtroActual.matches(p)) {
+                proyectosFiltrados.add(p);
             }
         }
+
+        Comparator<Proyecto> comparator = filtroActual.getComparator();
+        if (comparator != null) {
+            Collections.sort(proyectosFiltrados, comparator);
+        }
+
         adapter.setProyectos(proyectosFiltrados);
     }
 
-    // Datos mock se obtienen desde AdminRepository (local) hasta conectar Firebase.
+    private void actualizarBadgeFiltros() {
+        if (filtroActual.hasActiveFilters()) {
+            tvBadgeFiltros.setVisibility(View.VISIBLE);
+        } else {
+            tvBadgeFiltros.setVisibility(View.GONE);
+        }
+    }
 }
