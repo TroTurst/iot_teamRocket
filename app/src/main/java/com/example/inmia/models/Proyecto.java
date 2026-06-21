@@ -11,6 +11,8 @@ import java.util.List;
  * - Estado del proyecto
  * - Una o más tipologías de departamentos
  */
+
+
 public class Proyecto {
 
     private String id;                    // ID único del proyecto
@@ -33,6 +35,7 @@ public class Proyecto {
     private String qrCode;                // Código QR del proyecto
 
     // Constructor
+    public Proyecto() {}
     public Proyecto(String id,
                    String nombre,
                    String ubicacion,
@@ -92,6 +95,7 @@ public class Proyecto {
     public String getQrCode() { return qrCode; }
 
     // Setters
+    public void setId(String id) { this.id = id; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }

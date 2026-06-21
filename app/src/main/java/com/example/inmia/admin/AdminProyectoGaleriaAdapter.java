@@ -13,9 +13,15 @@ import com.example.inmia.R;
 public class AdminProyectoGaleriaAdapter extends RecyclerView.Adapter<AdminProyectoGaleriaAdapter.GaleriaViewHolder> {
 
     private final int[] images;
+    private final OnImageClickListener onImageClickListener;
 
-    public AdminProyectoGaleriaAdapter(int[] images) {
+    public interface OnImageClickListener {
+        void onImageClick(int imageRes, int position);
+    }
+
+    public AdminProyectoGaleriaAdapter(int[] images, OnImageClickListener onImageClickListener) {
         this.images = images;
+        this.onImageClickListener = onImageClickListener;
     }
 
     @NonNull
@@ -28,7 +34,15 @@ public class AdminProyectoGaleriaAdapter extends RecyclerView.Adapter<AdminProye
 
     @Override
     public void onBindViewHolder(@NonNull GaleriaViewHolder holder, int position) {
-        holder.imageView.setImageResource(images[position]);
+        int imageRes = images[position];
+        holder.imageView.setImageResource(imageRes);
+        View.OnClickListener clickListener = v -> {
+            if (onImageClickListener != null) {
+                onImageClickListener.onImageClick(imageRes, position);
+            }
+        };
+        holder.itemView.setOnClickListener(clickListener);
+        holder.imageView.setOnClickListener(clickListener);
     }
 
     @Override
@@ -42,9 +56,8 @@ public class AdminProyectoGaleriaAdapter extends RecyclerView.Adapter<AdminProye
         GaleriaViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imgGaleriaProyecto);
+            imageView.setClickable(true);
+            imageView.setFocusable(true);
         }
     }
 }
-
-
-

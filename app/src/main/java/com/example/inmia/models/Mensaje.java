@@ -1,4 +1,4 @@
-package com.example.inmia.cliente;
+package com.example.inmia.models;
 
 public class Mensaje {
     private String texto;

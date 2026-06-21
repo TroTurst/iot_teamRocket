@@ -45,26 +45,37 @@ public class LogAdapter extends
         holder.tvFecha.setText(log.getFecha());
 
         // Ícono y color según tipo
-        switch (log.getTipo()) {
-            case Log.TIPO_USUARIO:
-                holder.frameIcono.setBackgroundResource(
-                        R.drawable.sa_bg_log_usuario);
-                holder.imgIcono.setImageResource(
-                        R.drawable.sa_ic_log_usuario);
+        String tipo = log.getTipo() != null ? log.getTipo() : "";
+        switch (tipo) {
+            case Log.TIPO_ESTADO_CUENTA:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_estado);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_estado);
                 break;
 
-            case Log.TIPO_ADMIN:
-                holder.frameIcono.setBackgroundResource(
-                        R.drawable.sa_bg_log_admin);
-                holder.imgIcono.setImageResource(
-                        R.drawable.sa_ic_log_admin);
+            case Log.TIPO_PROYECTO:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_proyecto);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_proyecto);
                 break;
 
-            case Log.TIPO_RESERVA:
-                holder.frameIcono.setBackgroundResource(
-                        R.drawable.sa_bg_log_reserva);
-                holder.imgIcono.setImageResource(
-                        R.drawable.sa_ic_log_reserva);
+            case Log.TIPO_SOLICITUD:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_solicitud);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_solicitud);
+                break;
+
+            case Log.TIPO_CITA:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cita);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_cita);
+                break;
+
+            case Log.TIPO_SEPARACION:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_separacion);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_separacion);
+                break;
+
+            case Log.TIPO_CUENTA:
+            default:
+                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cuenta);
+                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_cuenta);
                 break;
         }
     }

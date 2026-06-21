@@ -2,40 +2,70 @@ package com.example.inmia.models;
 
 public class Solicitud {
 
+    private String firestoreId;
     private String nombre;
-    private String inmobiliaria;
+    private String apellidos;
+    private String oficina;
+    private String inmobiliariaId;
+    private String inmobiliariaNombre;
     private String iniciales;
     private String correo;
     private String telefono;
     private String tiempoEspera;
     private String documento;
+    private String tipoDocumento;
+    private String numeroDocumento;
     private String fechaNac;
     private String domicilio;
+    private String fotoUrl;
+    private String adminId;
 
-    public Solicitud(String nombre, String inmobiliaria,
-                     String iniciales, String correo,
-                     String telefono, String tiempoEspera,
-                     String documento, String fechaNac,
-                     String domicilio) {
-        this.nombre       = nombre;
-        this.inmobiliaria = inmobiliaria;
-        this.iniciales    = iniciales;
-        this.correo       = correo;
-        this.telefono     = telefono;
-        this.tiempoEspera = tiempoEspera;
-        this.documento    = documento;
-        this.fechaNac     = fechaNac;
-        this.domicilio    = domicilio;
+    public Solicitud(String firestoreId, String nombre, String apellidos,
+                     String oficina, String inmobiliariaId, String inmobiliariaNombre,
+                     String correo, String telefono, String tiempoEspera,
+                     String tipoDocumento, String numeroDocumento,
+                     String fechaNac, String domicilio, String fotoUrl, String adminId) {
+        this.firestoreId       = firestoreId;
+        this.nombre            = nombre;
+        this.apellidos         = apellidos;
+        this.oficina           = oficina;
+        this.inmobiliariaId    = inmobiliariaId;
+        this.inmobiliariaNombre = inmobiliariaNombre != null ? inmobiliariaNombre : "";
+        this.iniciales         = obtenerIniciales(nombre, apellidos);
+        this.correo            = correo;
+        this.telefono          = telefono;
+        this.tiempoEspera      = tiempoEspera;
+        this.tipoDocumento     = tipoDocumento;
+        this.numeroDocumento   = numeroDocumento;
+        this.documento         = tipoDocumento + " · " + numeroDocumento;
+        this.fechaNac          = fechaNac;
+        this.domicilio         = domicilio;
+        this.fotoUrl           = fotoUrl != null ? fotoUrl : "";
+        this.adminId           = adminId != null ? adminId : "";
     }
 
-    // Getters
-    public String getNombre()       { return nombre; }
-    public String getInmobiliaria() { return inmobiliaria; }
-    public String getIniciales()    { return iniciales; }
-    public String getCorreo()       { return correo; }
-    public String getTelefono()     { return telefono; }
-    public String getTiempoEspera() { return tiempoEspera; }
-    public String getDocumento()    { return documento; }
-    public String getFechaNac()     { return fechaNac; }
-    public String getDomicilio()    { return domicilio; }
+    private static String obtenerIniciales(String nombre, String apellidos) {
+        String n = (nombre != null && !nombre.isEmpty()) ? String.valueOf(nombre.charAt(0)) : "";
+        String a = (apellidos != null && !apellidos.isEmpty()) ? String.valueOf(apellidos.charAt(0)) : "";
+        return (n + a).toUpperCase();
+    }
+
+    public String getFirestoreId()     { return firestoreId; }
+    public String getNombre()          { return nombre; }
+    public String getApellidos()       { return apellidos; }
+    public String getOficina()         { return oficina; }
+    public String getInmobiliariaId()    { return inmobiliariaId; }
+    public String getInmobiliariaNombre() { return inmobiliariaNombre; }
+    public String getInmobiliaria()      { return inmobiliariaNombre; }
+    public String getIniciales()       { return iniciales; }
+    public String getCorreo()          { return correo; }
+    public String getTelefono()        { return telefono; }
+    public String getTiempoEspera()    { return tiempoEspera; }
+    public String getDocumento()       { return documento; }
+    public String getTipoDocumento()   { return tipoDocumento; }
+    public String getNumeroDocumento() { return numeroDocumento; }
+    public String getFechaNac()        { return fechaNac; }
+    public String getDomicilio()       { return domicilio; }
+    public String getFotoUrl()         { return fotoUrl; }
+    public String getAdminId()         { return adminId; }
 }

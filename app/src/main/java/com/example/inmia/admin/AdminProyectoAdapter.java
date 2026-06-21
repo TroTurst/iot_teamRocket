@@ -2,6 +2,7 @@ package com.example.inmia.admin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
@@ -54,6 +56,10 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
         holder.tvUbicacion.setText(proyecto.getUbicacion());
         holder.tvInmobiliaria.setText(proyecto.getInmobiliaria());
         holder.tvEstado.setText(proyecto.getEstadoProyecto());
+
+        int estadoColor = resolveEstadoColor(holder.itemView, proyecto.getEstadoProyecto());
+        holder.tvEstado.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
+        holder.tvEstado.setBackgroundTintList(ColorStateList.valueOf(estadoColor));
 
         // Imagen hero del proyecto
         if (proyecto.getImagenHeroPrincipal() != 0) {
@@ -121,9 +127,28 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
         holder.tvAscensor.setVisibility(View.GONE);
     }
 
+    private int resolveEstadoColor(View itemView, String estado) {
+        String normalized = estado != null ? estado.toLowerCase() : "";
+        if (normalized.contains("venta")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_success);
+        }
+        if (normalized.contains("preventa")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_warning);
+        }
+        if (normalized.contains("planos")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_info);
+        }
+        return ContextCompat.getColor(itemView.getContext(), R.color.inmia_teal_dark);
+    }
+
     @Override
     public int getItemCount() {
         return proyectos != null ? proyectos.size() : 0;
+    }
+
+    public void setProyectos(List<Proyecto> proyectos) {
+        this.proyectos = proyectos;
+        notifyDataSetChanged();
     }
 
     /**
@@ -182,4 +207,3 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
         }
     }
 }
-

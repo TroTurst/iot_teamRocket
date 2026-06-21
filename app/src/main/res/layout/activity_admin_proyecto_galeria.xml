@@ -56,15 +56,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerGaleria"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewGaleria"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="24dp"
+        android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTituloGaleria" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-

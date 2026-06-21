@@ -19,8 +19,10 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:background="@drawable/gradient_background">
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_background2"
+                android:paddingTop="48dp"
+                android:paddingBottom="40dp">
 
                 <FrameLayout
                     android:id="@+id/frameNotificaciones"
@@ -40,6 +42,7 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
+                        android:tint="@color/inmia_white"
                         android:contentDescription="Notificaciones"/>
 
                     <TextView
@@ -87,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Notificaciones"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="@color/inmia_white"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -101,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Alertas del dia"
-                    android:textColor="#5A8A8A"
+                    android:textColor="@color/inmia_white"
                     android:textSize="14sp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
@@ -109,6 +112,14 @@
                     app:layout_constraintStart_toStartOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:orientation="vertical"
+                android:paddingTop="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -122,257 +133,13 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"/>
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerNotificacionesHoy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp">
-
-                <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp">
-
-                    <View
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@color/inmia_teal_light"
-                        android:alpha="0.8"/>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/inmia_info">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_citas"
-                            android:tint="@color/inmia_white"
-                            android:contentDescription="Cita"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </FrameLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="George Cordova confirmo una cita para Palm Living"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Cita confirmada"
-                            android:textColor="@color/inmia_info"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hoy 3:59 pm"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp"/>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp">
-
-                <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp">
-
-                    <View
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@color/inmia_teal_light"
-                        android:alpha="0.8"/>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/inmia_teal_dark">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_separaciones"
-                            android:tint="@color/inmia_white"
-                            android:contentDescription="Separacion"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </FrameLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Adrian solicita separacion para Palm Living Dpto 402"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Separacion solicitada"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hoy 2:39 am"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp"/>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp">
-
-                <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp">
-
-                    <View
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@color/inmia_teal_light"
-                        android:alpha="0.8"/>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/inmia_success">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_separaciones"
-                            android:tint="@color/inmia_white"
-                            android:contentDescription="Separacion"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </FrameLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="La separacion de Maria Quispe fue aprobada"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Separacion aprobada"
-                            android:textColor="@color/inmia_success"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hoy 9:14 am"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp"/>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
+                android:nestedScrollingEnabled="false"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -386,169 +153,13 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"/>
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerNotificacionesAyer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp">
-
-                <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp">
-
-                    <View
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@color/inmia_line"/>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/inmia_danger">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_citas"
-                            android:tint="@color/inmia_white"
-                            android:contentDescription="Cita"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </FrameLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Juan Perez cancelo su cita del 06/04/2026"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Cita cancelada"
-                            android:textColor="@color/inmia_danger"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ayer 11:39 pm"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp"/>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp">
-
-                <FrameLayout
-                    android:layout_width="28dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp">
-
-                    <View
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:background="@color/inmia_line"/>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/inmia_warning">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_reportes"
-                            android:tint="@color/inmia_white"
-                            android:contentDescription="Pago"/>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </FrameLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="#FFFFFF">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Carlos Mendoza realizo el pago de S/ 2,000"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="14sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pago recibido"
-                            android:textColor="@color/inmia_warning"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ayer 4:20 pm"
-                            android:textColor="#7A9E9E"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp"/>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                android:nestedScrollingEnabled="false"/>
 
             </LinearLayout>
 
@@ -562,8 +173,8 @@
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         app:menu="@menu/menu_asesor"
-        app:itemIconTint="@color/inmia_teal_dark"
-        app:itemTextColor="@color/inmia_teal_dark"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:elevation="12dp"/>
 

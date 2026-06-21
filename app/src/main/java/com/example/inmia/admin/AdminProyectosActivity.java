@@ -2,6 +2,8 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -14,13 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
-import com.example.inmia.admin.data.AdminProyectoRepositoryMock;
+import com.example.inmia.admin.data.AdminFirestoreGateway;
+import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
+import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
-import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AdminProyectosActivity extends AppCompatActivity {
@@ -28,9 +30,17 @@ public class AdminProyectosActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
+    private TextView tvStatEnPlanos;
+    private TextView tvStatEnConstruccion;
+    private TextView tvStatEntregados;
 
-    // Hardcodeado - luego vendra de Firebase
-    private int totalNotificaciones = 5;
+    private int totalNotificaciones;
+
+    private AdminFirestoreGateway gateway;
+    private String companyId;
+    private AdminProyectoAdapter adapter;
+    private final List<Proyecto> proyectos = new ArrayList<>();
+    private final List<Proyecto> proyectosFiltrados = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +52,14 @@ public class AdminProyectosActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_proyectos);
 
+        gateway = new AdminFirestoreGateway();
+
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
+        tvStatEnPlanos = findViewById(R.id.tvStatEnPlanos);
+        tvStatEnConstruccion = findViewById(R.id.tvStatEnConstruccion);
+        tvStatEntregados = findViewById(R.id.tvStatEntregados);
         EditText etBuscarProyecto = findViewById(R.id.etBuscarProyecto);
         ImageView btnFiltroMock = findViewById(R.id.btnFiltroMock);
 
@@ -55,11 +70,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerViewProyectos.setLayoutManager(layoutManager);
 
-        // Crear lista de proyectos con datos mock (fuente única compartida con el detalle)
-        List<Proyecto> proyectos = AdminProyectoRepositoryMock.getProyectos();
-
-        // Crear y asignar adapter
-        AdminProyectoAdapter adapter = new AdminProyectoAdapter(this, proyectos);
+        adapter = new AdminProyectoAdapter(this, proyectos);
         recyclerViewProyectos.setAdapter(adapter);
 
         // Botón nueva proyecto
@@ -70,6 +81,80 @@ public class AdminProyectosActivity extends AppCompatActivity {
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_proyectos);
 
+        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+            @Override
+            public void onSuccess(AdminContext context) {
+                companyId = context.getCompanyId();
+
+                gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                    @Override
+                    public void onSuccess(Integer count) {
+                        totalNotificaciones = count != null ? count : 0;
+                        configurarBadge();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        totalNotificaciones = 0;
+                        configurarBadge();
+                    }
+                });
+
+                gateway.observeProjectsByCompany(companyId, context.getCompanyName(), new AdminFirestoreGateway.FirestoreListCallback<Proyecto>() {
+                    @Override
+                    public void onSuccess(List<Proyecto> value) {
+                        proyectos.clear();
+                        if (value != null) {
+                            proyectos.addAll(value);
+                        }
+                        proyectosFiltrados.clear();
+                        proyectosFiltrados.addAll(proyectos);
+                        adapter.setProyectos(proyectosFiltrados);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminProyectosActivity.this,
+                                "Error al cargar proyectos",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                gateway.observeProjectStatsByCompany(companyId, new AdminFirestoreGateway.FirestoreCallback<AdminFirestoreGateway.ProjectStats>() {
+                    @Override
+                    public void onSuccess(AdminFirestoreGateway.ProjectStats stats) {
+                        runOnUiThread(() -> {
+                            if (tvStatEnPlanos != null) {
+                                tvStatEnPlanos.setText(String.valueOf(stats.getEnPlanos()));
+                            }
+                            if (tvStatEnConstruccion != null) {
+                                tvStatEnConstruccion.setText(String.valueOf(stats.getEnConstruccion()));
+                            }
+                            if (tvStatEntregados != null) {
+                                tvStatEntregados.setText(String.valueOf(stats.getEntregados()));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> {
+                            if (tvStatEnPlanos != null) tvStatEnPlanos.setText("0");
+                            if (tvStatEnConstruccion != null) tvStatEnConstruccion.setText("0");
+                            if (tvStatEntregados != null) tvStatEntregados.setText("0");
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(AdminProyectosActivity.this,
+                        "No se pudo resolver la inmobiliaria",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         frameNotificaciones.setOnClickListener(v -> {
             Toast.makeText(this,
                     "Tienes " + totalNotificaciones + " notificaciones",
@@ -77,12 +162,16 @@ public class AdminProyectosActivity extends AppCompatActivity {
             limpiarBadge();
         });
 
-        etBuscarProyecto.setOnClickListener(v ->
-                Toast.makeText(this, "Busqueda habilitada", Toast.LENGTH_SHORT).show());
+        etBuscarProyecto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        etBuscarProyecto.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                Toast.makeText(this, "Escribe para buscar proyectos", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filtrarProyectos(s.toString().trim());
             }
         });
 
@@ -117,6 +206,7 @@ public class AdminProyectosActivity extends AppCompatActivity {
         });
     }
 
+
     private void configurarBadge() {
         if (totalNotificaciones > 0) {
             tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
@@ -138,7 +228,20 @@ public class AdminProyectosActivity extends AppCompatActivity {
         finish();
     }
 
-    // Datos mock se obtienen desde AdminProyectoRepositoryMock
+    private void filtrarProyectos(String texto) {
+        proyectosFiltrados.clear();
+        if (texto.isEmpty()) {
+            proyectosFiltrados.addAll(proyectos);
+        } else {
+            String textoLower = texto.toLowerCase();
+            for (Proyecto p : proyectos) {
+                if (p.getNombre() != null && p.getNombre().toLowerCase().contains(textoLower)) {
+                    proyectosFiltrados.add(p);
+                }
+            }
+        }
+        adapter.setProyectos(proyectosFiltrados);
+    }
+
+    // Datos mock se obtienen desde AdminRepository (local) hasta conectar Firebase.
 }
-
-

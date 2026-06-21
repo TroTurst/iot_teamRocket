@@ -21,7 +21,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:background="@drawable/gradient_background">
+                android:background="@drawable/gradient_background2">
 
                 <!-- Logo inmia + nombre -->
                 <ImageView
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
@@ -68,7 +68,8 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
-                        android:contentDescription="Notificaciones"/>
+                        android:contentDescription="@string/admin_notificaciones_cd"
+                        app:tint="#000000"/>
 
                     <TextView
                         android:id="@+id/tvBadgeNotif"
@@ -77,9 +78,9 @@
                         android:layout_gravity="top|end"
                         android:layout_marginTop="2dp"
                         android:layout_marginEnd="2dp"
-                        android:text="5"
+                        android:text="@string/admin_notificaciones_badge_demo"
                         android:textColor="#FFFFFF"
-                        android:textSize="10sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:background="@drawable/badge_background"
@@ -92,8 +93,8 @@
                     android:id="@+id/tvBienvenida"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Seccion: Reportes"
-                    android:textColor="@color/inmia_text"
+                    android:text="@string/admin_reportes_section"
+                    android:textColor="#000000"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -109,8 +110,8 @@
                     android:id="@+id/tvNombreEmpresa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ADMINISTRADOR - REPORTES"
-                    android:textColor="@color/inmia_teal_dark"
+                    android:text="@string/admin_reportes_header"
+                    android:textColor="#000000"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.15"
@@ -125,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="2dp"
-                    android:text="Corte: Abril 2026"
+                    android:text="Cargando..."
                     android:textColor="#5F8F8F"
                     android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -151,8 +152,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Graficos del mes"
-                        android:textColor="@color/inmia_text"
+                        android:text="@string/admin_reportes_graficos_titulo"
+                        android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -160,7 +161,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Rendimiento general de abril"
+                        android:text="@string/admin_reportes_graficos_desc"
                         android:textColor="#7A9E9E"
                         android:textSize="12sp" />
 
@@ -168,7 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="Cumplimiento de meta de ventas"
+                        android:text="@string/admin_reportes_meta_ventas_label"
                         android:textColor="#5F8F8F"
                         android:textSize="12sp" />
 
@@ -185,7 +186,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="76"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -193,9 +194,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="76%"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="12sp"
+                            android:text="0%"
+                            android:textColor="#000000"
+                            android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -203,7 +204,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Tasa de cierre de citas"
+                        android:text="@string/admin_reportes_tasa_cierre_label"
                         android:textColor="#5F8F8F"
                         android:textSize="12sp" />
 
@@ -220,7 +221,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="64"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -228,9 +229,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="64%"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="12sp"
+                            android:text="0%"
+                            android:textColor="#000000"
+                            android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -238,7 +239,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Avance de captacion de leads"
+                        android:text="@string/admin_reportes_leads_label"
                         android:textColor="#5F8F8F"
                         android:textSize="12sp" />
 
@@ -255,7 +256,7 @@
                             android:layout_height="8dp"
                             android:layout_weight="1"
                             android:max="100"
-                            android:progress="83"
+                            android:progress="0"
                             android:progressTint="@color/inmia_teal_dark" />
 
                         <TextView
@@ -263,24 +264,22 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="83%"
-                            android:textColor="@color/inmia_text"
-                            android:textSize="12sp"
+                            android:text="0%"
+                            android:textColor="#000000"
+                            android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- ── SECCIÓN: MEJOR ASESOR DEL MES ── -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -291,23 +290,50 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mejor asesor del mes"
-                        android:textColor="@color/inmia_teal_dark"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:background="@drawable/badge_outline"
-                        android:layout_marginBottom="10dp"/>
+                        android:text="@string/admin_reportes_asesor_del_mes"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvMejorAsesorNombre"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Carlos Mendoza"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/imgAsesorDelMes"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:src="@drawable/ic_perfil"
+                            android:contentDescription="@string/admin_asesor_foto_cd" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvNombreAsesorDelMes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sin datos"
+                                android:textColor="#000000"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvZonaAsesorDelMes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="#7A9E9E"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -319,206 +345,83 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvMejorAsesorVentas"
+                                android:id="@+id/tvVentasAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="7"
-                                android:textColor="@color/inmia_teal_dark"
-                                android:textSize="24sp"
-                                android:textStyle="bold"/>
+                                android:text="0"
+                                android:textColor="#000000"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ventas"
+                                android:text="@string/admin_reportes_asesor_ventas"
                                 android:textColor="#7A9E9E"
-                                android:textSize="11sp"/>
+                                android:textSize="11sp" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="#E0EEEE"/>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvMejorAsesorCitas"
+                                android:id="@+id/tvCitasAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="28"
-                                android:textColor="@color/inmia_teal_dark"
-                                android:textSize="24sp"
-                                android:textStyle="bold"/>
+                                android:text="0"
+                                android:textColor="#000000"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Citas"
+                                android:text="@string/admin_reportes_asesor_citas"
                                 android:textColor="#7A9E9E"
-                                android:textSize="11sp"/>
+                                android:textSize="11sp" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="match_parent"
-                            android:background="#E0EEEE"/>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvMejorAsesorConversion"
+                                android:id="@+id/tvMontoAsesorDelMes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="25%"
-                                android:textColor="@color/inmia_teal_dark"
-                                android:textSize="24sp"
-                                android:textStyle="bold"/>
+                                android:text="S/ 0"
+                                android:textColor="#000000"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Conversion"
+                                android:text="@string/admin_reportes_asesor_monto"
                                 android:textColor="#7A9E9E"
-                                android:textSize="11sp"/>
+                                android:textSize="11sp" />
                         </LinearLayout>
-
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Ingresos generados"
-                        android:textColor="#7A9E9E"
-                        android:textSize="12sp"/>
-
-                    <TextView
-                        android:id="@+id/tvMejorAsesorIngresos"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="S/ 654,000"
-                        android:textColor="@color/inmia_text"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- ── SECCIÓN: RESUMEN RÁPIDO ── -->
-            <com.google.android.material.card.MaterialCardView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewReportes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="20dp">
-
-                    <!-- Casas vendidas -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/tvCasasVendidas"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="13"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="28sp"
-                            android:textStyle="bold"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Casas vendidas"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#E0EEEE"/>
-
-                    <!-- Asesores activos -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/tvAsesoresActivos"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="9"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="28sp"
-                            android:textStyle="bold"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Asesores activos"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#E0EEEE"/>
-
-                    <!-- Pendientes de cierre -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/tvPendientesCierre"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="4"
-                            android:textColor="@color/inmia_teal_dark"
-                            android:textSize="28sp"
-                            android:textStyle="bold"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pendientes cierre"
-                            android:textColor="#7A9E9E"
-                            android:textSize="12sp"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

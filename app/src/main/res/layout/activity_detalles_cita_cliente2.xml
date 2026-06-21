@@ -113,6 +113,7 @@
                             android:gravity="center_vertical">
 
                             <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/imgMiniaturaProyecto"
                                 android:layout_width="60dp"
                                 android:layout_height="60dp"
                                 android:scaleType="centerCrop"
@@ -128,17 +129,19 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/tvNombreProyectoDetalle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Palm Living"
+                                    android:text="Cargando..."
                                     android:textColor="@color/inmia_text"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/tvInmobiliariaProyectoDetalle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Galeon Inmobiliaria"
+                                    android:text="..."
                                     android:textColor="@color/inmia_teal_dark"
                                     android:textSize="12sp"
                                     android:textStyle="bold"
@@ -155,10 +158,11 @@
                             android:gravity="center_vertical">
 
                             <TextView
+                                android:id="@+id/tvUbicacionProyectoDetalle"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="San Isidro, Lima"
+                                android:text="..."
                                 android:textColor="#888888"
                                 android:textSize="12sp" />
 
@@ -173,6 +177,7 @@
                         </LinearLayout>
 
                         <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/imgHeroDetalleCita"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:layout_marginTop="8dp"
@@ -215,9 +220,10 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/tvEstadoReserva"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="CONFIRMADA"
+                                android:text="..."
                                 android:textColor="#2ECC71"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
@@ -246,9 +252,10 @@
                                 android:textSize="13sp" />
 
                             <TextView
+                                android:id="@+id/tvFechaHoraCita"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="07/11/2026 - 10:30 AM"
+                                android:text="..."
                                 android:textColor="@color/inmia_text"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -277,9 +284,10 @@
                                 android:textSize="13sp" />
 
                             <TextView
+                                android:id="@+id/tvNombreAsesorCita"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Carlos Mendoza"
+                                android:text="..."
                                 android:textColor="@color/inmia_text"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -308,9 +316,10 @@
                                 android:textSize="13sp" />
 
                             <TextView
+                                android:id="@+id/tvDetallesTipologiaCita"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="45 m2 - 1d"
+                                android:text="..."
                                 android:textColor="@color/inmia_text"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -339,9 +348,10 @@
                                 android:textSize="13sp" />
 
                             <TextView
+                                android:id="@+id/tvTelefonoAsesorCita"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0214345646"
+                                android:text="..."
                                 android:textColor="@color/inmia_text"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />

@@ -56,6 +56,66 @@
     <string name="admin_project_main_image">Imagen principal del proyecto</string>
     <string name="admin_location">Ubicación</string>
 
+    <string name="admin_asesor_nombre_demo">Carlos Mendoza</string>
+    <string name="admin_asesor_rol_demo">Asesor inmobiliario</string>
+    <string name="admin_asesor_email_demo">carlosmendoza@casa.com</string>
+    <string name="admin_asesor_telefono_demo">+51 987 654 321</string>
+    <string name="admin_asesor_foto_cd">Foto del asesor</string>
+    <string name="admin_asesor_dni_label">DNI</string>
+    <string name="admin_asesor_dni_demo">12345678</string>
+    <string name="admin_asesor_estado_label">Estado</string>
+    <string name="admin_asesor_estado_activo">Activo</string>
+    <string name="admin_asesor_zona_label">Zona de trabajo</string>
+    <string name="admin_asesor_zona_demo">San Juan de Lurigancho</string>
+    <string name="admin_asesor_mapa_cd">Mapa de zonas</string>
+    <string name="admin_asesor_citas_label">Citas</string>
+    <string name="admin_asesor_citas_demo">23</string>
+    <string name="admin_asesor_ventas_label">Ventas</string>
+    <string name="admin_asesor_ventas_demo">2</string>
+    <string name="admin_asesor_meta_ventas_label">Meta de ventas mensual</string>
+    <string name="admin_asesor_meta_ventas_demo">6</string>
+    <string name="admin_asesor_meta_citas_label">Meta de citas mensual</string>
+    <string name="admin_asesor_meta_citas_demo">26</string>
+    <string name="admin_asesor_meta_ganancias_label">Meta de ganancias mensual</string>
+    <string name="admin_asesor_meta_ganancias_demo">S/ 650,000</string>
+    <string name="admin_asesor_btn_metas">Asignar metas</string>
+    <string name="admin_metas_titulo">Asignar metas mensuales</string>
+    <string name="admin_metas_ventas_hint">Meta de ventas</string>
+    <string name="admin_metas_citas_hint">Meta de citas</string>
+    <string name="admin_metas_ganancias_hint">Meta de ganancias (S/)</string>
+    <string name="admin_metas_guardar">Guardar</string>
+    <string name="admin_metas_cancelar">Cancelar</string>
+    <string name="admin_asesor_btn_citas">Citas</string>
+    <string name="admin_asesor_btn_proyectos">Proyectos</string>
+    <string name="admin_asesor_historial_citas">Historial de citas</string>
+    <string name="admin_asesor_historial_citas_desc">Citas recientes del asesor</string>
+    <string name="admin_asesor_proyectos_activos">Proyectos activos</string>
+    <string name="admin_asesor_proyectos_activos_desc">Estos son los proyectos donde Carlos Mendoza esta participando actualmente</string>
+
+    <string name="admin_cita_estado_demo">Confirmada</string>
+    <string name="admin_cita_proyecto_demo">Proyecto</string>
+    <string name="admin_cita_cliente_demo">Cliente</string>
+    <string name="admin_cita_fecha_demo">12/05/2026</string>
+    <string name="admin_cita_hora_demo">10:00</string>
+
+    <string name="admin_proyecto_foto_cd">Foto del proyecto</string>
+    <string name="admin_proyecto_inmobiliaria_cd">Inmobiliaria</string>
+    <string name="admin_proyecto_ubicacion_cd">Ubicacion</string>
+    <string name="admin_proyecto_estado_demo">En planos</string>
+    <string name="admin_proyecto_nombre_demo">Proyecto Las Nuevas Casas 22a</string>
+    <string name="admin_proyecto_inmobiliaria_demo">Nombre Inmobiliaria</string>
+    <string name="admin_proyecto_ubicacion_demo">Santa Catalina, Lima</string>
+    <string name="admin_proyecto_features_demo">Pet friendly • Ascensor • A • Terraza</string>
+    <string name="admin_proyecto_area_demo">45 m2</string>
+    <string name="admin_proyecto_area_label">Area</string>
+    <string name="admin_proyecto_dormitorios_demo">1d</string>
+    <string name="admin_proyecto_dormitorios_label">Dormitorios</string>
+    <string name="admin_proyecto_banos_demo">1b</string>
+    <string name="admin_proyecto_banos_label">Banos</string>
+    <string name="admin_proyecto_precio_label">Precio</string>
+    <string name="admin_proyecto_precio_demo">S/ 420,000</string>
+    <string name="admin_proyecto_tipologias_demo">+3 tipologias</string>
+
     <!-- Detalle proyecto (Admin) -->
     <string name="admin_tipologia_title">Tipología</string>
     <string name="admin_project_sheet_title">Ficha del proyecto</string>
@@ -171,5 +231,35 @@
     <string name="error_passwords_no_coinciden">Las contraseñas no coinciden</string>
     <string name="error_password_corta">Mínimo 6 caracteres</string>
     <string name="registro_exitoso">¡Administrador creado exitosamente!</string>
+
+    <string name="admin_reporte_media_titulo">Media de asesores de venta</string>
+    <string name="admin_reporte_mejor_titulo">Mejor asesor del mes</string>
+    <string name="admin_reporte_estado_titulo">Estado mensual inmobiliaria</string>
+    <string name="admin_reporte_label_ventas">Ventas</string>
+    <string name="admin_reporte_label_citas">Citas</string>
+    <string name="admin_reporte_label_ganancias">Ganancias</string>
+    <string name="admin_reporte_label_casas_vendidas">Casas vendidas</string>
+    <string name="admin_reporte_label_asesores_activos">Asesores activos</string>
+    <string name="admin_reporte_label_pendientes">Pendientes de cierre</string>
+    <string name="admin_reporte_label_ingresos">Ingresos generados</string>
+    <string name="admin_notificaciones_cd">Notificaciones</string>
+    <string name="admin_notificaciones_badge_demo">5</string>
+    <string name="admin_notificaciones_toast">Tienes %1$d notificaciones</string>
+    <string name="admin_reportes_section">Seccion: Reportes</string>
+    <string name="admin_reportes_header">ADMINISTRADOR - REPORTES</string>
+    <string name="admin_reportes_periodo_demo">Corte: Abril 2026</string>
+    <string name="admin_reportes_graficos_titulo">Graficos del mes</string>
+    <string name="admin_reportes_graficos_desc">Rendimiento general de abril</string>
+    <string name="admin_reportes_meta_ventas_label">Cumplimiento de meta de ventas</string>
+    <string name="admin_reportes_tasa_cierre_label">Tasa de cierre de citas</string>
+    <string name="admin_reportes_leads_label">Avance de captacion de leads</string>
+    <string name="admin_reportes_meta_ventas_pct_demo">76%</string>
+    <string name="admin_reportes_tasa_cierre_pct_demo">64%</string>
+    <string name="admin_reportes_leads_pct_demo">83%</string>
+    <string name="admin_reportes_pct_format">%1$d%%</string>
+    <string name="admin_reportes_asesor_del_mes">Asesor del mes</string>
+    <string name="admin_reportes_asesor_ventas">Ventas</string>
+    <string name="admin_reportes_asesor_citas">Citas</string>
+    <string name="admin_reportes_asesor_monto">Monto</string>
 
 </resources>

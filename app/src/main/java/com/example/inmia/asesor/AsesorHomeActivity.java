@@ -5,78 +5,107 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AsesorHomeActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAdapter.Listener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
     private FrameLayout framePerfil;
-
-    // Hardcodeado — luego vendrá de Firebase
-    private int totalNotificaciones = 2;
+    private RecyclerView recyclerHomeCitas;
+    private TextView tvCitasHoyCount;
+    private TextView tvSeparacionesCount;
+    private TextView tvProyectosCount;
+    private HomeCitaAdapter homeCitaAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.activity_asesor_home);
 
         bottomNav           = findViewById(R.id.bottomNavAsesor);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif        = findViewById(R.id.tvBadgeNotif);
         framePerfil         = findViewById(R.id.framePerfil);
+        recyclerHomeCitas   = findViewById(R.id.recyclerHomeCitas);
+        tvCitasHoyCount     = findViewById(R.id.tvCitasHoyCount);
+        tvSeparacionesCount = findViewById(R.id.tvSeparacionesCount);
+        tvProyectosCount    = findViewById(R.id.tvProyectosCount);
 
-        // Configurar badge inicial
+        AsesorNotificacionStore.seedIfEmpty(this);
         configurarBadge();
 
-        // Click en campanita
         frameNotificaciones.setOnClickListener(v -> {
             startActivity(new Intent(this, AsesorNotificacionesActivity.class));
             limpiarBadge();
         });
+        framePerfil.setOnClickListener(v -> startActivity(new Intent(this, AsesorPerfilActivity.class)));
 
-        framePerfil.setOnClickListener(v -> {
-            startActivity(new Intent(this, AsesorPerfilActivity.class));
-        });
+        homeCitaAdapter = new HomeCitaAdapter(new ArrayList<>(), this);
+        recyclerHomeCitas.setLayoutManager(new LinearLayoutManager(this));
+        recyclerHomeCitas.setAdapter(homeCitaAdapter);
 
-        // Bottom navigation
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_inicio) {
                 return true;
             } else if (id == R.id.nav_chat) {
-                startActivity(new Intent(this, AsesorChatActivity.class));
-                finish();
-                return true;
+                startActivity(new Intent(this, AsesorChatActivity.class)); finish(); return true;
             } else if (id == R.id.nav_citas) {
-                startActivity(new Intent(this, AsesorCitasActivity.class));
-                finish();
-                return true;
+                startActivity(new Intent(this, AsesorCitasActivity.class)); finish(); return true;
             } else if (id == R.id.nav_separaciones) {
-                startActivity(new Intent(this, AsesorSeparacionesActivity.class));
-                finish();
-                return true;
+                startActivity(new Intent(this, AsesorSeparacionesActivity.class)); finish(); return true;
             }
-
             return false;
+        });
+
+        cargarDashboardFirestore();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarDashboardFirestore();
+        configurarBadge();
+    }
+
+    private void cargarDashboardFirestore() {
+        AsesorFirestoreRepository repo = AsesorFirestoreRepository.get();
+
+        // Citas de hoy → recycler + contador
+        repo.getCitasHoy(items -> {
+            if (homeCitaAdapter != null) homeCitaAdapter.updateItems(items);
+            if (tvCitasHoyCount != null) tvCitasHoyCount.setText(String.valueOf(items.size()));
+        });
+
+        // Separaciones: aprobadas y total
+        repo.getSeparaciones(items -> {
+            int aprobadas = 0;
+            int total     = items.size();
+            for (SeparacionItem item : items) {
+                if ("Aprobada".equalsIgnoreCase(item.getStatus())) aprobadas++;
+            }
+            if (tvSeparacionesCount != null) tvSeparacionesCount.setText(String.valueOf(aprobadas));
+            if (tvProyectosCount    != null) tvProyectosCount.setText(String.valueOf(total));
         });
     }
 
     private void configurarBadge() {
-        if (totalNotificaciones > 0) {
-            tvBadgeNotif.setText(String.valueOf(totalNotificaciones));
+        int total = AsesorNotificacionStore.getBadgeCount(this);
+        if (total > 0) {
+            tvBadgeNotif.setText(String.valueOf(total));
             tvBadgeNotif.setVisibility(View.VISIBLE);
         } else {
             tvBadgeNotif.setVisibility(View.GONE);
@@ -84,7 +113,19 @@ public class AsesorHomeActivity extends AppCompatActivity {
     }
 
     private void limpiarBadge() {
-        totalNotificaciones = 0;
+        AsesorNotificacionStore.clearBadge(this);
         tvBadgeNotif.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onCitaSelected(HomeCita item) {
+        Intent intent = new Intent(this, AsesorCitaDetailActivity.class);
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_KEY,        item.getDocId());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CLIENTE,    item.getClient());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_PROYECTO,   item.getProject());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_ESTADO,     item.getStatus());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_CONFIRMADA, item.isConfirmed());
+        intent.putExtra(AsesorCitaDetailActivity.EXTRA_CITA_FECHA,      item.getDate() + " " + item.getTime() + " " + item.getMeridian());
+        startActivity(intent);
     }
 }

@@ -1,0 +1,278 @@
+{
+  "proyecto": "INMIA - Sistema de gestion de reservas y citas de proyectos inmobiliarios",
+  "baseDatos": "Firebase Firestore (NoSQL)",
+  "arquitectura": "Multiempresa mediante campo inmobiliariaId (colecciones planas, no anidadas bajo companies/)",
+  "version": "unificado-1.0",
+  "colecciones": {
+    "usuarios": {
+      "documentId": "uid",
+      "descripcion": "Un documento por usuario, sin importar el rol.",
+      "campos": {
+        "uid": { "tipo": "string", "descripcion": "Firebase Auth UID" },
+        "nombres": { "tipo": "string" },
+        "apellidos": { "tipo": "string" },
+        "tipoDocumento": { "tipo": "string", "enum": ["DNI", "Pasaporte", "Carnet de extranjeria"] },
+        "numeroDocumento": { "tipo": "string" },
+        "fechaNacimiento": { "tipo": "string", "formato": "dd/MM/yyyy" },
+        "correo": { "tipo": "string" },
+        "telefono": { "tipo": "string" },
+        "domicilio": { "tipo": "string" },
+        "fotoUrl": { "tipo": "string", "descripcion": "URL de Firebase Storage" },
+        "rol": { "tipo": "string", "enum": ["superadmin", "admin", "asesor", "cliente"] },
+        "activo": { "tipo": "boolean", "descripcion": "Controlado por el superadmin" },
+        "fechaCreacion": { "tipo": "timestamp" }
+      },
+      "camposSegunRol": {
+        "admin": {
+          "inmobiliariaId": { "tipo": "string", "descripcion": "ID del documento en inmobiliarias" }
+        },
+        "asesor": {
+          "inmobiliariaId": { "tipo": "string" },
+          "proyectosAsignados": { "tipo": "array<string>", "descripcion": "IDs de proyectos asignados" }
+        },
+        "cliente": {
+          "tarjetaRegistrada": { "tipo": "boolean", "descripcion": "Necesario para habilitar separaciones" },
+          "tarjeta": {
+            "tipo": "map",
+            "campos": {
+              "ultimos4": { "tipo": "string" },
+              "tipo": { "tipo": "string", "enum": ["credito", "debito"] },
+              "tokenPago": { "tipo": "string" }
+            }
+          }
+        }
+      }
+    },
+    "solicitudesAsesor": {
+      "documentId": "solicitudId",
+      "descripcion": "Solicitudes de registro de asesores pendientes de aprobacion por el superadmin. Migra desde Room SolicitudEntity en Lab 6.",
+      "campos": {
+        "nombre": { "tipo": "string" },
+        "apellidos": { "tipo": "string" },
+        "inmobiliaria": { "tipo": "string", "descripcion": "Nombre de la inmobiliaria a la que pertenece" },
+        "correo": { "tipo": "string" },
+        "telefono": { "tipo": "string" },
+        "documento": { "tipo": "string", "ejemplo": "DNI · 45678901" },
+        "fechaNac": { "tipo": "string" },
+        "domicilio": { "tipo": "string" },
+        "estado": { "tipo": "string", "enum": ["pendiente", "aprobado", "rechazado"] },
+        "timestamp": { "tipo": "timestamp", "descripcion": "Fecha de envio de la solicitud" }
+      }
+    },
+    "notificaciones": {
+      "documentId": "notificacionId",
+      "descripcion": "Notificaciones in-app por destinatario. Migra desde Room NotificacionSAEntity en Lab 6.",
+      "campos": {
+        "destinatarioId": { "tipo": "string", "descripcion": "UID del usuario que recibe la notificacion" },
+        "titulo": { "tipo": "string" },
+        "descripcion": { "tipo": "string" },
+        "tipo": {
+          "tipo": "string",
+          "enum": [
+            "admin_creado",
+            "nueva_solicitud_asesor",
+            "asesor_habilitado",
+            "asesor_rechazado",
+            "usuario_activado",
+            "usuario_desactivado",
+            "separacion_registrada",
+            "separacion_aprobada",
+            "pago_checkout"
+          ]
+        },
+        "leida": { "tipo": "boolean" },
+        "timestamp": { "tipo": "timestamp" }
+      }
+    },
+    "logs": {
+      "documentId": "logId",
+      "descripcion": "Registro de eventos del sistema, visible solo para el superadmin. Solo lectura desde la app.",
+      "campos": {
+        "tipo": { "tipo": "string", "enum": ["login", "registro", "habilitacion", "separacion", "desactivacion"] },
+        "descripcion": { "tipo": "string", "descripcion": "Descripcion legible del evento" },
+        "usuarioId": { "tipo": "string", "descripcion": "UID del usuario que genero el evento" },
+        "timestamp": { "tipo": "timestamp" }
+      }
+    },
+    "inmobiliarias": {
+      "documentId": "inmobiliariaId",
+      "descripcion": "Creada por el administrador. El cliente la consulta en modo lectura.",
+      "campos": {
+        "nombre": { "tipo": "string" },
+        "descripcion": { "tipo": "string" },
+        "correo": { "tipo": "string" },
+        "telefono": { "tipo": "string" },
+        "ubicacion": {
+          "tipo": "map",
+          "descripcion": "Para mostrar en mapa",
+          "campos": {
+            "direccion": { "tipo": "string" },
+            "lat": { "tipo": "number" },
+            "lng": { "tipo": "number" }
+          }
+        },
+        "fotosUrls": { "tipo": "array<string>", "descripcion": "URLs de Firebase Storage (minimo 2)" },
+        "adminId": { "tipo": "string", "descripcion": "UID del administrador responsable" },
+        "activo": { "tipo": "boolean" },
+        "fechaCreacion": { "tipo": "timestamp" }
+      }
+    },
+    "proyectos": {
+      "documentId": "proyectoId",
+      "descripcion": "El cliente puede ver todos los proyectos, sus valoraciones y ubicacion en el mapa.",
+      "campos": {
+        "inmobiliariaId": { "tipo": "string" },
+        "nombre": { "tipo": "string" },
+        "descripcion": { "tipo": "string" },
+        "estado": { "tipo": "string", "enum": ["en_planos", "en_preventa", "en_venta"] },
+        "ubicacion": {
+          "tipo": "map",
+          "campos": {
+            "direccion": { "tipo": "string" },
+            "lat": { "tipo": "number" },
+            "lng": { "tipo": "number" }
+          }
+        },
+        "tipologias": {
+          "tipo": "array<map>",
+          "itemCampos": {
+            "metraje": { "tipo": "number" },
+            "numeroCuartos": { "tipo": "number" },
+            "precio": { "tipo": "number" },
+            "costoSeparacion": { "tipo": "number" }
+          }
+        },
+        "areasComunes": { "tipo": "array<string>", "ejemplo": ["piscina", "coworking", "parrillas"] },
+        "imagenesUrls": { "tipo": "array<string>", "descripcion": "URLs de Firebase Storage (minimo 2)" },
+        "fechaEntregaEstimada": { "tipo": "timestamp" },
+        "qrUrl": { "tipo": "string", "descripcion": "URL/contenido del QR del proyecto" },
+        "asesoresIds": { "tipo": "array<string>", "descripcion": "UIDs de asesores asignados" },
+        "valoracionPromedio": { "tipo": "number", "descripcion": "Agregado de las valoraciones" },
+        "totalValoraciones": { "tipo": "number" },
+        "fechaCreacion": { "tipo": "timestamp" }
+      },
+      "subcolecciones": {
+        "valoraciones": {
+          "documentId": "valoracionId",
+          "descripcion": "El cliente registra una valoracion al momento de hacer la separacion. Al crearla, recalcular valoracionPromedio y totalValoraciones del proyecto padre (idealmente en transaccion).",
+          "campos": {
+            "clienteId": { "tipo": "string" },
+            "asesorId": { "tipo": "string" },
+            "separacionId": { "tipo": "string" },
+            "puntuacion": { "tipo": "number", "rango": "1-5" },
+            "observaciones": { "tipo": "string" },
+            "creadoEn": { "tipo": "timestamp" }
+          }
+        }
+      }
+    },
+    "citas": {
+      "documentId": "citaId",
+      "descripcion": "El cliente agenda una cita para visitar el piloto. Solo una cita activa a la vez, sin superposiciones de horario.",
+      "campos": {
+        "clienteId": { "tipo": "string" },
+        "asesorId": { "tipo": "string" },
+        "proyectoId": { "tipo": "string" },
+        "inmobiliariaId": { "tipo": "string" },
+        "fechaHoraInicio": { "tipo": "timestamp" },
+        "fechaHoraFin": { "tipo": "timestamp" },
+        "estado": { "tipo": "string", "enum": ["pendiente", "confirmada", "completada", "cancelada"] },
+        "fechaCreacion": { "tipo": "timestamp" }
+      },
+      "reglaValidacion": "Al crear una cita, verificar que no exista otra del mismo clienteId con estado pendiente o confirmada cuyo rango [fechaHoraInicio, fechaHoraFin] se superponga con la nueva."
+    },
+    "separaciones": {
+      "documentId": "separacionId",
+      "descripcion": "Creada por el asesor; el cliente la lee, paga y registra su valoracion.",
+      "campos": {
+        "clienteId": { "tipo": "string" },
+        "asesorId": { "tipo": "string" },
+        "proyectoId": { "tipo": "string" },
+        "inmobiliariaId": { "tipo": "string" },
+        "tipologiaSeleccionada": {
+          "tipo": "map",
+          "campos": {
+            "metraje": { "tipo": "number" },
+            "numeroCuartos": { "tipo": "number" },
+            "precio": { "tipo": "number" }
+          }
+        },
+        "montoPropuesto": { "tipo": "number", "descripcion": "Valor propuesto por el asesor" },
+        "estado": { "tipo": "string", "enum": ["pendiente_aprobacion", "aprobada", "pagada", "rechazada", "expirada"] },
+        "aprobadaPorAdminEn": { "tipo": "timestamp" },
+        "expiraPagoEn": { "tipo": "timestamp", "descripcion": "10 min despues de la aprobacion" },
+        "pagadaEn": { "tipo": "timestamp" },
+        "valoracion": {
+          "tipo": "map",
+          "campos": {
+            "puntuacion": { "tipo": "number", "rango": "1-5" },
+            "observaciones": { "tipo": "string" },
+            "registradaEn": { "tipo": "timestamp" }
+          }
+        },
+        "fechaCreacion": { "tipo": "timestamp" }
+      },
+      "reglaNegocio": "Cuando el estado pasa a aprobada, se genera expiraPagoEn = aprobadaPorAdminEn + 10 minutos. Si el cliente no paga en ese tiempo, el estado cambia a expirada."
+    },
+    "chats": {
+      "documentId": "inmobiliariaId",
+      "descripcion": "Chat unico por inmobiliaria entre cliente y la empresa (admin/asesores vinculados). Todos comparten el mismo hilo.",
+      "subcolecciones": {
+        "mensajes": {
+          "documentId": "mensajeId",
+          "campos": {
+            "remitenteId": { "tipo": "string", "descripcion": "UID del usuario que envia el mensaje" },
+            "remitenteRol": { "tipo": "string", "enum": ["admin", "asesor", "cliente"] },
+            "contenido": { "tipo": "string" },
+            "leido": { "tipo": "boolean" },
+            "enviadoEn": { "tipo": "timestamp" }
+          }
+        }
+      }
+    },
+    "reportes": {
+      "documentId": "reporteId",
+      "documentIdFormato": "{inmobiliariaId}_{granularidad}_{periodo}  (ej. inmob123_mensual_2026-05)",
+      "descripcion": "Agregados precalculados para reportes diario/mensual/anual por inmobiliaria, proyecto y asesor. Se actualizan ante cada separacion pagada/venta.",
+      "campos": {
+        "inmobiliariaId": { "tipo": "string", "descripcion": "Vacio o GLOBAL para el reporte global del superadmin" },
+        "granularidad": { "tipo": "string", "enum": ["diario", "mensual", "anual"] },
+        "periodo": { "tipo": "string", "ejemplo": ["2026-05-30", "2026-05", "2026"] },
+        "totales": {
+          "tipo": "map",
+          "campos": {
+            "separaciones": { "tipo": "number" },
+            "ventas": { "tipo": "number" },
+            "montoTotal": { "tipo": "number" },
+            "citas": { "tipo": "number" }
+          }
+        },
+        "porProyecto": { "tipo": "map", "descripcion": "{ [proyectoId]: {separaciones, ventas, monto} }" },
+        "porAsesor": { "tipo": "map", "descripcion": "{ [asesorId]: {separaciones, ventas, monto} }" },
+        "actualizadoEn": { "tipo": "timestamp" }
+      }
+    }
+  },
+  "indicesCompuestosSugeridos": [
+    { "coleccion": "notificaciones", "campos": ["destinatarioId", "leida", "timestamp"] },
+    { "coleccion": "citas", "campos": ["clienteId", "estado", "fechaHoraInicio"] },
+    { "coleccion": "citas", "campos": ["asesorId", "fechaHoraInicio"] },
+    { "coleccion": "separaciones", "campos": ["inmobiliariaId", "estado", "fechaCreacion"] },
+    { "coleccion": "separaciones", "campos": ["asesorId", "estado"] },
+    { "coleccion": "separaciones", "campos": ["clienteId", "fechaCreacion"] },
+    { "coleccion": "proyectos", "campos": ["inmobiliariaId", "estado"] },
+    { "coleccion": "solicitudesAsesor", "campos": ["estado", "timestamp"] }
+  ],
+  "accesoPorRol": {
+    "superadmin": "Gestion de usuarios (activar/desactivar), solicitudesAsesor, logs, reportes GLOBAL.",
+    "admin": "Su inmobiliaria, proyectos de su inmobiliaria, aprobacion de separaciones, reportes de su inmobiliaria.",
+    "asesor": "Lectura de proyectos asignados, sus citas, creacion de separaciones.",
+    "cliente": "Lectura de inmobiliarias/proyectos/valoraciones, sus citas, sus separaciones (pago + valoracion)."
+  },
+  "migracionRoomFirestore": {
+    "AdminEntity": "usuarios con rol admin",
+    "SolicitudEntity": "solicitudesAsesor",
+    "NotificacionSAEntity": "notificaciones con destinatarioId",
+    "SessionManager (SharedPreferences)": "se mantiene para datos de sesion local"
+  }
+}

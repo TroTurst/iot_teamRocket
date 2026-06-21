@@ -19,8 +19,10 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:background="@drawable/gradient_background">
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_background2"
+                android:paddingTop="48dp"
+                android:paddingBottom="40dp">
 
                 <FrameLayout
                     android:id="@+id/frameNotificaciones"
@@ -40,6 +42,7 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
+                        android:tint="@color/inmia_white"
                         android:contentDescription="Notificaciones"/>
 
                     <TextView
@@ -87,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Detalle de separacion"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="@color/inmia_white"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -101,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Palm Living"
-                    android:textColor="#5A8A8A"
+                    android:textColor="@color/inmia_white"
                     android:textSize="14sp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
@@ -109,6 +112,14 @@
                     app:layout_constraintStart_toStartOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-24dp"
+                android:background="@drawable/bg_content_rounded"
+                android:orientation="vertical"
+                android:paddingTop="16dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -130,11 +141,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aprobada"
-                        android:textColor="@color/inmia_success"
+                        android:textColor="@color/inmia_info"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvProyectoSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Palm Living"
@@ -144,6 +156,7 @@
                         android:layout_marginTop="4dp" />
 
                     <TextView
+                        android:id="@+id/tvClienteSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cliente: Maria Garcia"
@@ -166,6 +179,7 @@
                             android:contentDescription="Ubicacion" />
 
                         <TextView
+                            android:id="@+id/tvUbicacionSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -176,6 +190,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tvEmpresaSeparacionDetalle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Galeon Inmobiliaria"
@@ -232,6 +247,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvFechaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="19/04/2026"
@@ -264,6 +280,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvClienteReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Maria Garcia"
@@ -296,6 +313,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvDepartamentoReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A-402"
@@ -328,6 +346,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvTelefonoReservaSeparacionDetalle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0214345646"
@@ -372,6 +391,8 @@
 
             </LinearLayout>
 
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -382,8 +403,8 @@
         android:layout_gravity="bottom"
         android:background="#FFFFFF"
         app:menu="@menu/menu_asesor"
-        app:itemIconTint="@color/inmia_teal_dark"
-        app:itemTextColor="@color/inmia_teal_dark"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:labelVisibilityMode="labeled"
         app:elevation="12dp"/>
 
