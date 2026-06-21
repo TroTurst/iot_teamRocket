@@ -113,19 +113,6 @@ public class UsuarioAdapter extends
                                         notifyItemChanged(holder.getAdapterPosition());
                                     });
                             }
-                            String tipoNotif = isChecked
-                                    ? NotificacionHelper.TIPO_USUARIO_ACTIVADO
-                                    : NotificacionHelper.TIPO_USUARIO_DESACTIVADO;
-                            String textoNotif = isChecked
-                                    ? usuario.getNombre() + " ha sido activado."
-                                    : usuario.getNombre() + " ha sido desactivado.";
-                            NotificacionHelper.enviar(
-                                    context,
-                                    isChecked ? "Usuario activado" : "Usuario desactivado",
-                                    textoNotif,
-                                    tipoNotif
-                            );
-
                             LogHelper.registrar(
                                     (isChecked ? "Se activó la cuenta de " : "Se desactivó la cuenta de ")
                                             + usuario.getNombre(),

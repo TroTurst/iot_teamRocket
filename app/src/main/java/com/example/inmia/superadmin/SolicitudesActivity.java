@@ -256,12 +256,6 @@ public class SolicitudesActivity extends AppCompatActivity
                     adapter.eliminarItem(position);
                     actualizarContador();
 
-                    NotificacionHelper.enviar(this,
-                            "Asesor habilitado",
-                            solicitud.getNombre() + " " + solicitud.getApellidos()
-                                    + " ha sido habilitado como asesor.",
-                            NotificacionHelper.TIPO_ASESOR_HABILITADO);
-
                     LogHelper.registrar(
                             solicitud.getNombre() + " " + solicitud.getApellidos()
                                     + " fue habilitado como asesor de ventas",
@@ -286,11 +280,6 @@ public class SolicitudesActivity extends AppCompatActivity
         actualizarEstadoSolicitud(solicitud.getFirestoreId(), "rechazado");
         adapter.eliminarItem(position);
         actualizarContador();
-
-        NotificacionHelper.enviar(this,
-                "Solicitud rechazada",
-                "La solicitud de " + solicitud.getNombre() + " ha sido rechazada.",
-                NotificacionHelper.TIPO_ASESOR_RECHAZADO);
 
         LogHelper.registrar(
                 "Se rechazó la solicitud de asesor de "

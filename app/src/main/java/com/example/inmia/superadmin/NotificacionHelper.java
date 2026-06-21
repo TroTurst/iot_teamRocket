@@ -41,6 +41,37 @@ public class NotificacionHelper {
         manager.createNotificationChannel(canal);
     }
 
+    /**
+     * Muestra SOLO una notificación del sistema en el dispositivo (sin guardar en
+     * Room ni tocar el badge). Se usa para avisar al superadmin de eventos externos,
+     * p. ej. una nueva solicitud de asesor. Al tocarla abre la pantalla de solicitudes.
+     */
+    public static void notificarSistema(Context context, String titulo, String descripcion) {
+        if (ActivityCompat.checkSelfPermission(context,
+                android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        Intent intent = new Intent(context, SolicitudesActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifications)
+                .setContentTitle(titulo)
+                .setContentText(descripcion)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build();
+
+        NotificationManagerCompat.from(context).notify(notifId++, notification);
+    }
+
     public static void enviar(Context context, String titulo, String descripcion, String tipo) {
         // 1. Guardar en Room (historial in-app)
         NotificacionSAEntity entity = new NotificacionSAEntity();

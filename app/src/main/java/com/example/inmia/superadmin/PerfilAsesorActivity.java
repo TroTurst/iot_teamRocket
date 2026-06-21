@@ -218,10 +218,6 @@ public class PerfilAsesorActivity extends AppCompatActivity {
                     }
 
                     String nombre = i.getStringExtra(EXTRA_NOMBRE);
-                    NotificacionHelper.enviar(this, "Asesor habilitado",
-                            nombre + " ha sido habilitado como asesor.",
-                            NotificacionHelper.TIPO_ASESOR_HABILITADO);
-
                     LogHelper.registrar(
                             (nombre != null ? nombre : "Un asesor")
                                     + " fue habilitado como asesor de ventas",
@@ -252,10 +248,6 @@ public class PerfilAsesorActivity extends AppCompatActivity {
             db.collection("solicitudes").document(firestoreId)
                     .update("estado", "rechazado");
         }
-
-        NotificacionHelper.enviar(this, "Solicitud rechazada",
-                "La solicitud de " + nombre + " ha sido rechazada.",
-                NotificacionHelper.TIPO_ASESOR_RECHAZADO);
 
         LogHelper.registrar(
                 "Se rechazó la solicitud de asesor de " + (nombre != null ? nombre : ""),

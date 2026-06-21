@@ -14,22 +14,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.inmia.R;
-import com.example.inmia.superadmin.db.AppDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Calendar;
 
 public class SuperAdminHomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private FrameLayout frameNotificaciones;
-    private TextView tvBadgeNotif;
     private MaterialCardView cardSolicitudes;
     private MaterialButton btnVerSolicitudes;
     private TextView tvGreeting;
@@ -55,6 +54,8 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     private int totalSolicitudes = 0;
 
     private FirebaseFirestore db;
+    private ListenerRegistration solicitudesListener;
+    private boolean primerConteoSolicitudes = true;
 
     private final ActivityResultLauncher<String> permisosLauncher =
             registerForActivityResult(
@@ -72,8 +73,6 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
 
         // Vincular vistas
         bottomNav               = findViewById(R.id.bottomNavSuperAdmin);
-        frameNotificaciones     = findViewById(R.id.frameNotificaciones);
-        tvBadgeNotif            = findViewById(R.id.tvBadgeNotif);
         cardSolicitudes         = findViewById(R.id.cardSolicitudes);
         btnVerSolicitudes       = findViewById(R.id.btnVerSolicitudes);
         tvGreeting              = findViewById(R.id.tvGreeting);
@@ -89,15 +88,12 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         tvSubtituloNuevos       = findViewById(R.id.tvSubtituloNuevos);
 
         solicitarPermisoNotificaciones();
-        configurarBadge();
         configurarSubtituloMes();
 
         cargarNombreSuperAdmin();
         cargarDashboard();
-        cargarTotalSolicitudes();
+        escucharSolicitudes();
 
-        frameNotificaciones.setOnClickListener(v ->
-                startActivity(new Intent(this, NotificacionesSuperAdminActivity.class)));
         cardSolicitudes.setOnClickListener(v -> irAGestionUsuarios());
         btnVerSolicitudes.setOnClickListener(v -> irSolicitudes());
 
@@ -177,15 +173,29 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> tvContadorCitas.setText("—"));
     }
 
-    private void cargarTotalSolicitudes() {
-        db.collection("solicitudes")
+    private void escucharSolicitudes() {
+        solicitudesListener = db.collection("solicitudes")
                 .whereEqualTo("estado", "pendiente")
-                .get()
-                .addOnSuccessListener(query -> {
-                    totalSolicitudes = query.size();
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null || snapshot == null) return;
+
+                    totalSolicitudes = snapshot.size();
                     configurarSolicitudes();
-                })
-                .addOnFailureListener(e -> configurarSolicitudes());
+
+                    // Notificar al dispositivo solo cuando entra una solicitud NUEVA
+                    // (se omite el primer snapshot, que trae las ya existentes).
+                    if (!primerConteoSolicitudes) {
+                        for (DocumentChange dc : snapshot.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                NotificacionHelper.notificarSistema(
+                                        this,
+                                        "Nueva solicitud de asesor",
+                                        "Tienes una solicitud pendiente por revisar.");
+                            }
+                        }
+                    }
+                    primerConteoSolicitudes = false;
+                });
     }
 
     private void cargarNombreSuperAdmin() {
@@ -222,16 +232,6 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         cardSolicitudes.setVisibility(totalSolicitudes == 0 ? View.GONE : View.VISIBLE);
     }
 
-    private void configurarBadge() {
-        int count = AppDatabase.getInstance(this).notificacionDao().contarNoLeidas();
-        if (count > 0) {
-            tvBadgeNotif.setText(String.valueOf(count));
-            tvBadgeNotif.setVisibility(View.VISIBLE);
-        } else {
-            tvBadgeNotif.setVisibility(View.GONE);
-        }
-    }
-
     private void irAGestionUsuarios() {
         startActivity(new Intent(this, GestionUsuariosActivity.class));
     }
@@ -250,8 +250,8 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        configurarBadge();
+    protected void onDestroy() {
+        super.onDestroy();
+        if (solicitudesListener != null) solicitudesListener.remove();
     }
 }

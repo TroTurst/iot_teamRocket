@@ -51,42 +51,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"/>
 
-                <!-- Campanita -->
-                <FrameLayout
-                    android:id="@+id/frameNotificaciones"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintTop_toTopOf="@id/imgHeaderLogo"
-                    app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <ImageView
-                        android:id="@+id/imgCampana"
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notifications"
-                        android:contentDescription="Notificaciones"
-                        app:tint="#FFFFFF"/>
-
-                    <TextView
-                        android:id="@+id/tvBadgeNotif"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_gravity="top|end"
-                        android:text="3"
-                        android:textColor="#FFFFFF"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:background="@drawable/badge_background"
-                        android:visibility="gone"/>
-
-                </FrameLayout>
-
                 <!-- Saludo -->
                 <TextView
                     android:id="@+id/tvGreeting"

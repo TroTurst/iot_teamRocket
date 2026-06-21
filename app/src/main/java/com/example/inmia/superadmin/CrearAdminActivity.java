@@ -293,13 +293,6 @@ public class CrearAdminActivity extends AppCompatActivity {
                     .addOnSuccessListener(unused -> {
                         layoutLoading.setVisibility(View.GONE);
 
-                        NotificacionHelper.enviar(
-                                this,
-                                "Nuevo administrador registrado",
-                                nombres + " " + apellidos + " ha sido añadido al sistema.",
-                                NotificacionHelper.TIPO_ADMIN_CREADO
-                        );
-
                         LogHelper.registrar(
                                 "Se creó al administrador " + nombres + " " + apellidos
                                         + " de la inmobiliaria " + nombreInmob,
