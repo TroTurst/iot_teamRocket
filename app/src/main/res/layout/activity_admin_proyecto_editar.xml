@@ -45,6 +45,27 @@
                         android:src="@android:drawable/ic_media_previous" />
                 </FrameLayout>
 
+                <FrameLayout
+                    android:id="@+id/btnEditarDatosProyecto"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="44dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/badge_outline"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="Editar datos"
+                        android:padding="9dp"
+                        android:src="@android:drawable/ic_menu_edit" />
+                </FrameLayout>
+
                 <TextView
                     android:id="@+id/tvTituloFormularioProyecto"
                     android:layout_width="0dp"
@@ -57,8 +78,8 @@
                     android:textColor="@color/inmia_text"
                     android:textSize="23sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btnEditarDatosProyecto"
+                    app:layout_constraintStart_toEndOf="@id/btnBackEditarProyecto"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -127,6 +148,7 @@
                             android:id="@+id/etTituloProyecto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:inputType="textCapWords" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -148,6 +170,7 @@
                             android:id="@+id/etUbicacionProyecto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:inputType="textCapWords" />
                     </com.google.android.material.textfield.TextInputLayout>
 

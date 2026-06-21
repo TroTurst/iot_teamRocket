@@ -324,6 +324,15 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
             addChip(chipGroupProyectoExtras, "—");
         }
 
+        // Ocultar botón editar si el proyecto está entregado
+        View btnEditar = findViewById(R.id.btnEditarProyectoDetalle);
+        if (btnEditar != null) {
+            if ("Entregado".equalsIgnoreCase(p.getEstadoProyecto())) {
+                btnEditar.setVisibility(View.GONE);
+            } else {
+                btnEditar.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void mostrarTipologia(Tipologia tipologia) {

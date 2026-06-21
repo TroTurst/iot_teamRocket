@@ -3,11 +3,13 @@ package com.example.inmia.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +38,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     private String companyId;
     private String companyName;
     private String proyectoId;
+    private View btnEditarDatosProyecto;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -89,12 +92,15 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackEditarProyecto);
+        btnEditarDatosProyecto = findViewById(R.id.btnEditarDatosProyecto);
         btnAgregarTipologia = findViewById(R.id.btnAgregarTipologia);
         btnActualizarProyecto = findViewById(R.id.btnActualizarProyecto);
         rvTipologiasAgregadas = findViewById(R.id.rvTipologiasAgregadas);
 
         etTitulo = findViewById(R.id.etTituloProyecto);
         etUbicacion = findViewById(R.id.etUbicacionProyecto);
+        etTitulo.setEnabled(false);
+        etUbicacion.setEnabled(false);
         etDescripcion = findViewById(R.id.etDescripcionProyecto);
         etPrecio = findViewById(R.id.etPrecioProyecto);
         etArea = findViewById(R.id.etAreaProyecto);
@@ -138,6 +144,8 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         cargarProyectoExistente();
 
         btnBack.setOnClickListener(v -> finish());
+
+        btnEditarDatosProyecto.setOnClickListener(v -> mostrarDialogoEditarDatos());
 
         btnAgregarTipologia.setOnClickListener(v -> agregarTipologiaDesdeFormulario());
 
@@ -193,6 +201,16 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Proyecto proyecto) {
                 proyectoOriginal = proyecto;
+                
+                if ("Entregado".equalsIgnoreCase(proyecto.getEstadoProyecto())) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(AdminProyectoEditarActivity.this, 
+                            "Proyecto entregado, no se puede editar", Toast.LENGTH_LONG).show();
+                        finish();
+                    });
+                    return;
+                }
+                
                 runOnUiThread(() -> {
                     etTitulo.setText(proyecto.getNombre());
                     etUbicacion.setText(proyecto.getUbicacion());
@@ -449,5 +467,46 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private void mostrarDialogoEditarDatos() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_editar_datos_proyecto, null);
+        builder.setView(dialogView);
+
+        TextInputEditText etDialogTitulo = dialogView.findViewById(R.id.etDialogTitulo);
+        TextInputEditText etDialogUbicacion = dialogView.findViewById(R.id.etDialogUbicacion);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnDialogCancelar);
+        MaterialButton btnGuardar = dialogView.findViewById(R.id.btnDialogGuardar);
+
+        etDialogTitulo.setText(etTitulo.getText());
+        etDialogUbicacion.setText(etUbicacion.getText());
+
+        AlertDialog dialog = builder.create();
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+
+        btnGuardar.setOnClickListener(v -> {
+            String nuevoTitulo = etDialogTitulo.getText() != null ? etDialogTitulo.getText().toString().trim() : "";
+            String nuevaUbicacion = etDialogUbicacion.getText() != null ? etDialogUbicacion.getText().toString().trim() : "";
+
+            if (nuevoTitulo.isEmpty()) {
+                Toast.makeText(AdminProyectoEditarActivity.this, "El nombre del proyecto no puede estar vacío", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            etTitulo.setText(nuevoTitulo);
+            etUbicacion.setText(nuevaUbicacion.isEmpty() ? "Sin ubicación" : nuevaUbicacion);
+
+            if (proyectoOriginal != null) {
+                proyectoOriginal.setNombre(nuevoTitulo);
+                proyectoOriginal.setUbicacion(nuevaUbicacion.isEmpty() ? "Sin ubicación" : nuevaUbicacion);
+            }
+
+            dialog.dismiss();
+            Toast.makeText(AdminProyectoEditarActivity.this, "Datos actualizados", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.show();
     }
 }

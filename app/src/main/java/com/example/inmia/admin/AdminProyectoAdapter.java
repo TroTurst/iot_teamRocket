@@ -129,6 +129,9 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
 
     private int resolveEstadoColor(View itemView, String estado) {
         String normalized = estado != null ? estado.toLowerCase() : "";
+        if (normalized.contains("entreg")) {
+            return ContextCompat.getColor(itemView.getContext(), R.color.inmia_text);
+        }
         if (normalized.contains("venta")) {
             return ContextCompat.getColor(itemView.getContext(), R.color.inmia_success);
         }

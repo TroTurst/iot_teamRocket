@@ -855,7 +855,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
     private String mapEstadoProyecto(String rawEstado) {
         if (rawEstado == null) {
-            return "Venta";
+            return "En venta";
         }
         String normalized = rawEstado.trim().toLowerCase(Locale.getDefault());
         if (normalized.contains("plan")) {
@@ -863,6 +863,9 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         }
         if (normalized.contains("pre")) {
             return "En preventa";
+        }
+        if (normalized.contains("entreg")) {
+            return "Entregado";
         }
         return "En venta";
     }
