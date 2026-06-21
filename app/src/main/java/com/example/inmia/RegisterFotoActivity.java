@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -162,7 +164,7 @@ public class RegisterFotoActivity extends AppCompatActivity {
                         // Usuario creado exitosamente en Auth
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            guardarDatosEnFirestore(user.getUid(), intent);
+                            subirFotoYGuardar(user.getUid(), intent);
                         }
                     } else {
                         btnCrearCuenta.setEnabled(true);
@@ -172,7 +174,34 @@ public class RegisterFotoActivity extends AppCompatActivity {
                 });
     }
 
-    private void guardarDatosEnFirestore(String uid, Intent intent) {
+    /**
+     * Sube la foto de perfil al Storage (si el usuario eligió una) y luego guarda
+     * los datos. La foto es OPCIONAL: si no se eligió, o si la subida falla, la
+     * cuenta se crea igual con fotoUrl vacío (no bloquea el registro).
+     */
+    private void subirFotoYGuardar(String uid, Intent intent) {
+        if (fotoUri == null) {
+            guardarDatosEnFirestore(uid, intent, "");
+            return;
+        }
+
+        StorageReference ref = FirebaseStorage.getInstance()
+                .getReference()
+                .child("fotos_perfil/" + uid + ".jpg");
+
+        ref.putFile(fotoUri)
+                .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl()
+                        .addOnSuccessListener(url -> guardarDatosEnFirestore(uid, intent, url.toString()))
+                        .addOnFailureListener(e -> guardarDatosEnFirestore(uid, intent, "")))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this,
+                            "No se pudo subir la foto; la cuenta se creó sin foto de perfil.",
+                            Toast.LENGTH_LONG).show();
+                    guardarDatosEnFirestore(uid, intent, "");
+                });
+    }
+
+    private void guardarDatosEnFirestore(String uid, Intent intent, String fotoUrl) {
         Map<String, Object> nuevoCliente = new HashMap<>();
         nuevoCliente.put("uid", uid);
         nuevoCliente.put("nombres", intent.getStringExtra("nombres"));
@@ -184,7 +213,7 @@ public class RegisterFotoActivity extends AppCompatActivity {
         nuevoCliente.put("telefono", intent.getStringExtra("telefono"));
         nuevoCliente.put("domicilio", intent.getStringExtra("domicilio"));
 
-        nuevoCliente.put("fotoUrl", "");
+        nuevoCliente.put("fotoUrl", fotoUrl != null ? fotoUrl : "");
 
         nuevoCliente.put("rol", "cliente");
         nuevoCliente.put("activo", true);

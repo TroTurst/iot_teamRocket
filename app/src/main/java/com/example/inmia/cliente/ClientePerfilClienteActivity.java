@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -27,6 +28,7 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
     private LinearLayout layoutCambiarPassword;
 
     private TextView tvNombreUsuario, tvNombre, tvCorreo, tvTelefono, tvUbicacion, tvAvatar;
+    private ImageView imgAvatar;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -63,6 +65,7 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
         tvTelefono = findViewById(R.id.tvTelefono);
         tvUbicacion = findViewById(R.id.tvUbicacion);
         tvAvatar = findViewById(R.id.tvAvatar);
+        imgAvatar = findViewById(R.id.imgAvatar);
     }
 
     private void cargarDatosDeFirebase() {
@@ -111,6 +114,17 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
                             iniciales = nombreCompleto;
                         }
                         tvAvatar.setText(iniciales.toUpperCase());
+
+                        // Foto de perfil si existe, sino iniciales
+                        String fotoUrl = document.getString("fotoUrl");
+                        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+                            imgAvatar.setVisibility(android.view.View.VISIBLE);
+                            tvAvatar.setVisibility(android.view.View.GONE);
+                            Glide.with(this).load(fotoUrl).circleCrop().into(imgAvatar);
+                        } else {
+                            imgAvatar.setVisibility(android.view.View.GONE);
+                            tvAvatar.setVisibility(android.view.View.VISIBLE);
+                        }
                     }
                 })
                 .addOnFailureListener(e -> {

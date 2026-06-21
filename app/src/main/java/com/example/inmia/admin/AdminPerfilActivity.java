@@ -2,6 +2,8 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -9,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
@@ -22,6 +25,7 @@ public class AdminPerfilActivity extends AppCompatActivity {
     private TextView tvNombre;
     private TextView tvCorreo;
     private TextView tvAvatar;
+    private ImageView imgAvatar;
 
     private AdminFirestoreGateway gateway;
 
@@ -47,6 +51,7 @@ public class AdminPerfilActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tvNombre);
         tvCorreo = findViewById(R.id.tvCorreo);
         tvAvatar = findViewById(R.id.tvAvatar);
+        imgAvatar = findViewById(R.id.imgAvatar);
 
         cargarPerfilDesdeFirebase();
 
@@ -107,6 +112,16 @@ public class AdminPerfilActivity extends AppCompatActivity {
                 }
                 if (tvAvatar != null) {
                     tvAvatar.setText(obtenerIniciales(context.getDisplayName()));
+                }
+                // Foto de perfil si existe, sino iniciales
+                String fotoUrl = context.getFotoUrl();
+                if (imgAvatar != null && fotoUrl != null && !fotoUrl.isEmpty()) {
+                    imgAvatar.setVisibility(View.VISIBLE);
+                    if (tvAvatar != null) tvAvatar.setVisibility(View.GONE);
+                    Glide.with(AdminPerfilActivity.this).load(fotoUrl).circleCrop().into(imgAvatar);
+                } else if (imgAvatar != null) {
+                    imgAvatar.setVisibility(View.GONE);
+                    if (tvAvatar != null) tvAvatar.setVisibility(View.VISIBLE);
                 }
             }
 

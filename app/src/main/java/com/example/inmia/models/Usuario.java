@@ -16,6 +16,7 @@ public class Usuario {
     private String correo;
     private String telefono;
     private String domicilio;
+    private String fotoUrl = "";
 
     // Constructor básico — gestión de usuarios sin perfil completo
     public Usuario(String nombre, String empresa,
@@ -72,6 +73,7 @@ public class Usuario {
     public String getCorreo()          { return correo; }
     public String getTelefono()        { return telefono; }
     public String getDomicilio()       { return domicilio; }
+    public String getFotoUrl()         { return fotoUrl != null ? fotoUrl : ""; }
 
     // Setters
     public void setUid(String uid)                     { this.uid = uid; }
@@ -82,4 +84,5 @@ public class Usuario {
     public void setCorreo(String correo)               { this.correo = correo; }
     public void setTelefono(String telefono)           { this.telefono = telefono; }
     public void setDomicilio(String domicilio)         { this.domicilio = domicilio; }
+    public void setFotoUrl(String fotoUrl)             { this.fotoUrl = fotoUrl; }
 }

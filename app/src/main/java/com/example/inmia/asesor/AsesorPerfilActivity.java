@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
@@ -32,6 +33,7 @@ public class AsesorPerfilActivity extends AppCompatActivity {
     private TextView tvNombreUsuario;
     private TextView tvRol;
     private TextView tvAvatar;
+    private ImageView imgAvatar;
     private TextView tvCorreo;
     private TextView tvTelefono;
     private TextView tvOficina;
@@ -50,6 +52,7 @@ public class AsesorPerfilActivity extends AppCompatActivity {
         tvNombreUsuario       = findViewById(R.id.tvNombreUsuario);
         tvRol                 = findViewById(R.id.tvRol);
         tvAvatar              = findViewById(R.id.tvAvatar);
+        imgAvatar             = findViewById(R.id.imgAvatar);
         tvCorreo              = findViewById(R.id.tvCorreo);
         tvTelefono            = findViewById(R.id.tvTelefono);
         tvOficina             = findViewById(R.id.tvOficina);
@@ -90,6 +93,17 @@ public class AsesorPerfilActivity extends AppCompatActivity {
             setText(tvCorreo,        correo);
             setText(tvTelefono,      telefono.equals("—") ? diasStr : telefono);
             setText(tvAvatar,        iniciales(nombres));
+
+            // Foto de perfil si existe, sino iniciales
+            String fotoUrl = getStr(data, "fotoUrl", "");
+            if (!fotoUrl.isEmpty()) {
+                imgAvatar.setVisibility(View.VISIBLE);
+                tvAvatar.setVisibility(View.GONE);
+                Glide.with(this).load(fotoUrl).circleCrop().into(imgAvatar);
+            } else {
+                imgAvatar.setVisibility(View.GONE);
+                tvAvatar.setVisibility(View.VISIBLE);
+            }
 
             // Obtener el nombre de la inmobiliaria desde Firestore
             if (!inmobiliariaId.isEmpty()) {

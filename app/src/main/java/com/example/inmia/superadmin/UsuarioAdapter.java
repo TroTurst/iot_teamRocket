@@ -4,9 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,6 +63,17 @@ public class UsuarioAdapter extends
         holder.tvAvatar.setText(usuario.getIniciales());
         holder.tvNombre.setText(usuario.getNombre());
         holder.tvEmpresa.setText(usuario.getEmpresa());
+
+        // Avatar: foto de perfil si existe, sino las iniciales
+        String fotoUrl = usuario.getFotoUrl();
+        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+            holder.imgAvatar.setVisibility(View.VISIBLE);
+            holder.tvAvatar.setVisibility(View.GONE);
+            Glide.with(context).load(fotoUrl).circleCrop().into(holder.imgAvatar);
+        } else {
+            holder.imgAvatar.setVisibility(View.GONE);
+            holder.tvAvatar.setVisibility(View.VISIBLE);
+        }
 
         // Badge estado
         if (usuario.isActivo()) {
@@ -152,12 +166,14 @@ public class UsuarioAdapter extends
     public static class UsuarioViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvAvatar, tvNombre, tvEmpresa, tvEstado;
+        ImageView imgAvatar;
         Switch switchEstado;
         LinearLayout layoutVerPerfil;
 
         public UsuarioViewHolder(@NonNull View itemView) {
             super(itemView);
             tvAvatar       = itemView.findViewById(R.id.tvAvatar);
+            imgAvatar      = itemView.findViewById(R.id.imgAvatar);
             tvNombre       = itemView.findViewById(R.id.tvNombreUsuario);
             tvEmpresa      = itemView.findViewById(R.id.tvEmpresaUsuario);
             tvEstado       = itemView.findViewById(R.id.tvEstadoUsuario);

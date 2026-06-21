@@ -14,6 +14,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
@@ -235,7 +236,11 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         etMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
         etMetaGanancias.setText(String.valueOf(asesor.getMetaGananciasMensual()));
 
-        if (asesor.getFotoResId() != 0) {
+        // Foto de perfil real si existe, sino el avatar por defecto
+        String fotoUrl = asesor.getFotoUrl();
+        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+            Glide.with(this).load(fotoUrl).circleCrop().into(imgFoto);
+        } else if (asesor.getFotoResId() != 0) {
             imgFoto.setImageResource(asesor.getFotoResId());
         }
     }

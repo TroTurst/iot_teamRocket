@@ -17,6 +17,7 @@ public class Asesor {
     private final int citasMensualActual;
     private final int gananciasMensualActual;
     private final int fotoResId;
+    private String fotoUrl = "";
 
     public Asesor(String id,
                   String nombre,
@@ -126,5 +127,13 @@ public class Asesor {
 
     public int getFotoResId() {
         return fotoResId;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl != null ? fotoUrl : "";
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
     }
 }

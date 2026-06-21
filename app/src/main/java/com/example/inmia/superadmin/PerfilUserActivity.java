@@ -2,10 +2,12 @@ package com.example.inmia.superadmin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 
 public class PerfilUserActivity extends AppCompatActivity {
@@ -20,6 +22,7 @@ public class PerfilUserActivity extends AppCompatActivity {
     public static final String EXTRA_DOMICILIO = "domicilio";
     public static final String EXTRA_ACTIVO    = "activo";
     public static final String EXTRA_ROL       = "rol";
+    public static final String EXTRA_FOTO_URL  = "foto_url";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +64,19 @@ public class PerfilUserActivity extends AppCompatActivity {
         if (domicilio == null) domicilio = "—";
         if (rol       == null) rol       = "—";
 
-        // ── Avatar ──
-        ((TextView) findViewById(R.id.tvAvatar)).setText(iniciales);
+        // ── Avatar: foto de perfil si existe, sino iniciales ──
+        String fotoUrl = intent.getStringExtra(EXTRA_FOTO_URL);
+        TextView tvAvatar = findViewById(R.id.tvAvatar);
+        ImageView imgAvatar = findViewById(R.id.imgAvatar);
+        tvAvatar.setText(iniciales);
+        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+            imgAvatar.setVisibility(android.view.View.VISIBLE);
+            tvAvatar.setVisibility(android.view.View.GONE);
+            Glide.with(this).load(fotoUrl).circleCrop().into(imgAvatar);
+        } else {
+            imgAvatar.setVisibility(android.view.View.GONE);
+            tvAvatar.setVisibility(android.view.View.VISIBLE);
+        }
 
         // ── Header ──
         ((TextView) findViewById(R.id.tvNombreAdmin)).setText(nombre);

@@ -49,6 +49,7 @@ public class AdminFirestoreGateway {
         private final String companyPhone;
         private final String role;
         private final boolean active;
+        private final String fotoUrl;
 
         public AdminContext(String userId,
                             String email,
@@ -59,7 +60,8 @@ public class AdminFirestoreGateway {
                             String companyName,
                             String companyPhone,
                             String role,
-                            boolean active) {
+                            boolean active,
+                            String fotoUrl) {
             this.userId = userId;
             this.email = email;
             this.displayName = displayName;
@@ -70,6 +72,7 @@ public class AdminFirestoreGateway {
             this.companyPhone = companyPhone;
             this.role = role;
             this.active = active;
+            this.fotoUrl = fotoUrl;
         }
 
         public String getUserId() {
@@ -110,6 +113,10 @@ public class AdminFirestoreGateway {
 
         public boolean isActive() {
             return active;
+        }
+
+        public String getFotoUrl() {
+            return fotoUrl;
         }
     }
 
@@ -208,6 +215,7 @@ public class AdminFirestoreGateway {
                     String address = safeString(userDoc.getString("domicilio"), "—");
                     String role = safeString(userDoc.getString("rol"), "admin");
                     boolean active = getBoolean(userDoc.get("activo"), true);
+                    String fotoUrl = safeString(userDoc.getString("fotoUrl"), "");
                     String companyId = safeString(userDoc.getString("inmobiliariaId"), AdminSessionDefaults.DEFAULT_COMPANY_ID);
 
                     db.collection("inmobiliarias").document(companyId).get()
@@ -226,7 +234,8 @@ public class AdminFirestoreGateway {
                                         companyName,
                                         companyPhone,
                                         role,
-                                        active
+                                        active,
+                                        fotoUrl
                                 ));
                             })
                             .addOnFailureListener(callback::onError);
@@ -787,7 +796,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         int citasActual = getInt(doc.get("citasMensualActual"), 0);
         int gananciasActual = getInt(doc.get("gananciasMensualActual"), 0);
 
-        return new Asesor(
+        Asesor asesor = new Asesor(
                 doc.getId(),
                 nombre,
                 distrito,
@@ -805,6 +814,8 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 gananciasActual,
                 R.drawable.avatar_asesor_1
         );
+        asesor.setFotoUrl(safeString(doc.getString("fotoUrl"), ""));
+        return asesor;
     }
 
     private CitaAsesor mapCitaAsesor(DocumentSnapshot doc) {

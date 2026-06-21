@@ -23,17 +23,31 @@
             android:padding="16dp"
             android:gravity="center_vertical">
 
-            <!-- Avatar con iniciales -->
-            <TextView
-                android:id="@+id/tvAvatar"
+            <!-- Avatar: iniciales o foto de perfil -->
+            <FrameLayout
                 android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="AB"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:background="@drawable/btn_rounded"/>
+                android:layout_height="48dp">
+
+                <TextView
+                    android:id="@+id/tvAvatar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="AB"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="@drawable/btn_rounded"/>
+
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="Foto de perfil"/>
+
+            </FrameLayout>
 
             <!-- Nombre + empresa + badge estado -->
             <LinearLayout

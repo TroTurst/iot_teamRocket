@@ -253,9 +253,12 @@ public class GestionUsuariosActivity extends AppCompatActivity
         String telefono  = doc.getString("telefono");        if (telefono == null)  telefono  = "";
         String domicilio = doc.getString("domicilio");       if (domicilio == null) domicilio = "";
 
+        String fotoUrl = doc.getString("fotoUrl"); if (fotoUrl == null) fotoUrl = "";
+
         Usuario u = new Usuario(nombre, empresa, iniciales, activo, rol,
                 documento, fechaNac, correo, telefono, domicilio);
         u.setUid(doc.getId());
+        u.setFotoUrl(fotoUrl);
         return u;
     }
 
@@ -274,6 +277,7 @@ public class GestionUsuariosActivity extends AppCompatActivity
         intent.putExtra(PerfilUserActivity.EXTRA_DOMICILIO, usuario.getDomicilio());
         intent.putExtra(PerfilUserActivity.EXTRA_ACTIVO,    usuario.isActivo());
         intent.putExtra(PerfilUserActivity.EXTRA_ROL,       usuario.getRol());
+        intent.putExtra(PerfilUserActivity.EXTRA_FOTO_URL,  usuario.getFotoUrl());
         startActivity(intent);
     }
 
