@@ -22,6 +22,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -168,6 +170,42 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
             String domicilio, String oficina, String inmobiliariaId,
             String inmobiliariaNombre, String adminId) {
 
+        // Foto OPCIONAL: si se eligió una, se sube a Storage y se guarda su URL;
+        // si no, o si falla la subida, se guarda con fotoUrl vacío (no bloquea).
+        if (fotoUri == null) {
+            guardarSolicitudDoc(nombre, apellido, tipoDoc, numDoc, fechaNac, email,
+                    telefono, domicilio, oficina, inmobiliariaId, inmobiliariaNombre,
+                    adminId, "");
+            return;
+        }
+
+        StorageReference ref = FirebaseStorage.getInstance()
+                .getReference()
+                .child("fotos_perfil/solicitud_" + System.currentTimeMillis() + ".jpg");
+
+        ref.putFile(fotoUri)
+                .addOnSuccessListener(ts -> ref.getDownloadUrl()
+                        .addOnSuccessListener(url -> guardarSolicitudDoc(nombre, apellido, tipoDoc,
+                                numDoc, fechaNac, email, telefono, domicilio, oficina,
+                                inmobiliariaId, inmobiliariaNombre, adminId, url.toString()))
+                        .addOnFailureListener(e -> guardarSolicitudDoc(nombre, apellido, tipoDoc,
+                                numDoc, fechaNac, email, telefono, domicilio, oficina,
+                                inmobiliariaId, inmobiliariaNombre, adminId, "")))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this,
+                            "No se pudo subir la foto; la solicitud se enviará sin foto.",
+                            Toast.LENGTH_LONG).show();
+                    guardarSolicitudDoc(nombre, apellido, tipoDoc, numDoc, fechaNac, email,
+                            telefono, domicilio, oficina, inmobiliariaId, inmobiliariaNombre,
+                            adminId, "");
+                });
+    }
+
+    private void guardarSolicitudDoc(String nombre, String apellido, String tipoDoc,
+            String numDoc, String fechaNac, String email, String telefono,
+            String domicilio, String oficina, String inmobiliariaId,
+            String inmobiliariaNombre, String adminId, String fotoUrl) {
+
         Map<String, Object> solicitud = new HashMap<>();
         solicitud.put("nombres",             nombre);
         solicitud.put("apellidos",           apellido);
@@ -178,7 +216,7 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         solicitud.put("telefono",            telefono);
         solicitud.put("domicilio",           domicilio);
         solicitud.put("oficina",             oficina);
-        solicitud.put("fotoUrl",             "");
+        solicitud.put("fotoUrl",             fotoUrl != null ? fotoUrl : "");
         solicitud.put("inmobiliariaId",      inmobiliariaId);
         solicitud.put("inmobiliariaNombre",  inmobiliariaNombre);
         solicitud.put("adminId",             adminId);
