@@ -14,9 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.models.Proyecto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,8 +63,12 @@ public class AdminProyectoAdapter extends RecyclerView.Adapter<AdminProyectoAdap
         holder.tvEstado.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.inmia_white));
         holder.tvEstado.setBackgroundTintList(ColorStateList.valueOf(estadoColor));
 
-        // Imagen hero del proyecto
-        if (proyecto.getImagenHeroPrincipal() != 0) {
+        // Imagen hero del proyecto (prioridad a URL, fallback a recurso local)
+        List<String> urls = proyecto.getImagenesUrls();
+        if (urls != null && !urls.isEmpty() && urls.get(0) != null && !urls.get(0).isEmpty()) {
+            Glide.with(holder.itemView.getContext()).load(urls.get(0))
+                    .centerCrop().placeholder(R.drawable.onboarding1).into(holder.imgProyecto);
+        } else if (proyecto.getImagenHeroPrincipal() != 0) {
             holder.imgProyecto.setImageResource(proyecto.getImagenHeroPrincipal());
         }
 

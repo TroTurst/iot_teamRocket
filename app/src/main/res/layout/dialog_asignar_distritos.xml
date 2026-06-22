@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="400dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecciona los distritos de trabajo"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
+
+        <CheckBox
+            android:id="@+id/cbAncon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ancón" />
+
+        <CheckBox
+            android:id="@+id/cbAte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ate" />
+
+        <CheckBox
+            android:id="@+id/cbBarranco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Barranco" />
+
+        <CheckBox
+            android:id="@+id/cbBrena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Breña" />
+
+        <CheckBox
+            android:id="@+id/cbCarabayllo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Carabayllo" />
+
+        <CheckBox
+            android:id="@+id/cbCercadoLima"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cercado de Lima" />
+
+        <CheckBox
+            android:id="@+id/cbChorrillos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chorrillos" />
+
+        <CheckBox
+            android:id="@+id/cbComas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Comas" />
+
+        <CheckBox
+            android:id="@+id/cbElAgustino"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="El Agustino" />
+
+        <CheckBox
+            android:id="@+id/cbIndependencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Independencia" />
+
+        <CheckBox
+            android:id="@+id/cbJesusMaria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jesús María" />
+
+        <CheckBox
+            android:id="@+id/cbLaMolina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="La Molina" />
+
+        <CheckBox
+            android:id="@+id/cbLaVictoria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="La Victoria" />
+
+        <CheckBox
+            android:id="@+id/cbLince"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lince" />
+
+        <CheckBox
+            android:id="@+id/cbLosOlivos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Los Olivos" />
+
+        <CheckBox
+            android:id="@+id/cbMagdalena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Magdalena del Mar" />
+
+        <CheckBox
+            android:id="@+id/cbMiraflores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Miraflores" />
+
+        <CheckBox
+            android:id="@+id/cbPuebloLibre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pueblo Libre" />
+
+        <CheckBox
+            android:id="@+id/cbPuentePiedra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Puente Piedra" />
+
+        <CheckBox
+            android:id="@+id/cbRimac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rímac" />
+
+        <CheckBox
+            android:id="@+id/cbSanBorja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Borja" />
+
+        <CheckBox
+            android:id="@+id/cbSanIsidro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Isidro" />
+
+        <CheckBox
+            android:id="@+id/cbSanJuanLurigancho"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Juan de Lurigancho" />
+
+        <CheckBox
+            android:id="@+id/cbSanJuanMiraflores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Juan de Miraflores" />
+
+        <CheckBox
+            android:id="@+id/cbSanLuis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Luis" />
+
+        <CheckBox
+            android:id="@+id/cbSanMartin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Martín de Porres" />
+
+        <CheckBox
+            android:id="@+id/cbSanMiguel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="San Miguel" />
+
+        <CheckBox
+            android:id="@+id/cbSantaAnita"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Santa Anita" />
+
+        <CheckBox
+            android:id="@+id/cbSantiagoSurco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Santiago de Surco" />
+
+        <CheckBox
+            android:id="@+id/cbSurquillo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Surquillo" />
+
+        <CheckBox
+            android:id="@+id/cbVillaElSalvador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Villa El Salvador" />
+
+        <CheckBox
+            android:id="@+id/cbVillaMariaTriunfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Villa María del Triunfo" />
+
+    </LinearLayout>
+</ScrollView>

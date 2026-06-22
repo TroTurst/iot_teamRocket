@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 
 import java.util.ArrayList;
@@ -19,17 +20,17 @@ public class AdminProyectoMiniaturasAdapter extends RecyclerView.Adapter<AdminPr
         void onMiniaturaClick(int position);
     }
 
-    private final List<Integer> imagenes = new ArrayList<>();
+    private final List<String> imageUrls = new ArrayList<>();
     private final OnMiniaturaClickListener onMiniaturaClickListener;
 
     public AdminProyectoMiniaturasAdapter(OnMiniaturaClickListener onMiniaturaClickListener) {
         this.onMiniaturaClickListener = onMiniaturaClickListener;
     }
 
-    public void submitList(List<Integer> nuevasImagenes) {
-        imagenes.clear();
-        if (nuevasImagenes != null) {
-            imagenes.addAll(nuevasImagenes);
+    public void submitUrls(List<String> nuevasUrls) {
+        imageUrls.clear();
+        if (nuevasUrls != null) {
+            imageUrls.addAll(nuevasUrls);
         }
         notifyDataSetChanged();
     }
@@ -44,7 +45,13 @@ public class AdminProyectoMiniaturasAdapter extends RecyclerView.Adapter<AdminPr
 
     @Override
     public void onBindViewHolder(@NonNull MiniaturaViewHolder holder, int position) {
-        holder.imageView.setImageResource(imagenes.get(position));
+        String url = imageUrls.get(position);
+        if (url != null && !url.isEmpty()) {
+            Glide.with(holder.imageView.getContext()).load(url)
+                    .centerCrop().placeholder(R.drawable.ic_add).into(holder.imageView);
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_add);
+        }
         View.OnClickListener clickListener = v -> {
             if (onMiniaturaClickListener != null) {
                 onMiniaturaClickListener.onMiniaturaClick(position);
@@ -56,7 +63,7 @@ public class AdminProyectoMiniaturasAdapter extends RecyclerView.Adapter<AdminPr
 
     @Override
     public int getItemCount() {
-        return imagenes.size();
+        return imageUrls.size();
     }
 
     static class MiniaturaViewHolder extends RecyclerView.ViewHolder {

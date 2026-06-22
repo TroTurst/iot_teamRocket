@@ -2,6 +2,8 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -18,9 +20,11 @@ import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
+import com.example.inmia.models.AsesorFilter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AdminAsesoresActivity extends AppCompatActivity {
@@ -33,6 +37,12 @@ public class AdminAsesoresActivity extends AppCompatActivity {
     private AdminFirestoreGateway gateway;
     private String companyId;
     private final List<Asesor> asesores = new ArrayList<>();
+    private final List<Asesor> asesoresFiltrados = new ArrayList<>();
+    private AsesorFilter filtroActual;
+    private AdminAsesorAdapter adapter;
+    private View btnFiltroAsesores;
+    private EditText etBuscarAsesor;
+    private TextView tvBadgeFiltros = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,18 +55,20 @@ public class AdminAsesoresActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_asesores);
 
         gateway = new AdminFirestoreGateway();
+        filtroActual = new AsesorFilter();
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
         ImageView btnBackAsesores = findViewById(R.id.btnBackAsesores);
         View btnNuevoAsesor = findViewById(R.id.btnNuevoAsesor);
-        EditText etBuscarAsesor = findViewById(R.id.etBuscarAsesor);
-        ImageView btnFiltroAsesores = findViewById(R.id.btnFiltroAsesores);
+        etBuscarAsesor = findViewById(R.id.etBuscarAsesor);
+        btnFiltroAsesores = findViewById(R.id.btnFiltroAsesores);
+        tvBadgeFiltros = findViewById(R.id.tvBadgeFiltrosAsesores);
 
         RecyclerView recyclerViewAsesores = findViewById(R.id.recyclerViewAsesores);
         recyclerViewAsesores.setLayoutManager(new LinearLayoutManager(this));
-        AdminAsesorAdapter adapter = new AdminAsesorAdapter(this, asesores, asesor -> {
+        adapter = new AdminAsesorAdapter(this, asesoresFiltrados, asesor -> {
             Intent intent = new Intent(this, AdminAsesorDetalleCarlosActivity.class);
             intent.putExtra("asesor_id", asesor.getId());
             startActivity(intent);
@@ -92,7 +104,7 @@ public class AdminAsesoresActivity extends AppCompatActivity {
                         if (value != null) {
                             asesores.addAll(value);
                         }
-                        adapter.notifyDataSetChanged();
+                        aplicarFiltros();
                     }
 
                     @Override
@@ -124,17 +136,26 @@ public class AdminAsesoresActivity extends AppCompatActivity {
         btnNuevoAsesor.setOnClickListener(v ->
                 startActivity(new Intent(this, AdminAsesorNuevoActivity.class)));
 
-        etBuscarAsesor.setOnClickListener(v ->
-                Toast.makeText(this, "Busqueda de asesores habilitada", Toast.LENGTH_SHORT).show());
+        etBuscarAsesor.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-        etBuscarAsesor.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                Toast.makeText(this, "Escribe para buscar asesores", Toast.LENGTH_SHORT).show();
+            @Override
+            public void afterTextChanged(Editable s) {
+                filtroActual.setBuscarNombre(s.toString().trim());
+                aplicarFiltros();
             }
         });
 
-        btnFiltroAsesores.setOnClickListener(v ->
-                Toast.makeText(this, "Filtros de asesores proximamente", Toast.LENGTH_SHORT).show());
+        btnFiltroAsesores.setOnClickListener(v -> {
+            BottomSheetFiltrosAsesores bottomSheet = BottomSheetFiltrosAsesores.newInstance(filtroActual);
+            bottomSheet.setListener(filter -> {
+                filtroActual = filter;
+                aplicarFiltros();
+                actualizarBadgeFiltros();
+            });
+            bottomSheet.show(getSupportFragmentManager(), "filtros_asesores");
+        });
 
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -171,6 +192,29 @@ public class AdminAsesoresActivity extends AppCompatActivity {
     private void limpiarBadge() {
         totalNotificaciones = 0;
         tvBadgeNotif.setVisibility(View.GONE);
+    }
+
+    private void aplicarFiltros() {
+        asesoresFiltrados.clear();
+        for (Asesor a : asesores) {
+            if (filtroActual.matches(a)) {
+                asesoresFiltrados.add(a);
+            }
+        }
+        java.util.Comparator<Asesor> comparator = filtroActual.getComparator();
+        if (comparator != null) {
+            java.util.Collections.sort(asesoresFiltrados, comparator);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private void actualizarBadgeFiltros() {
+        if (tvBadgeFiltros == null) return;
+        if (filtroActual.hasActiveFilters()) {
+            tvBadgeFiltros.setVisibility(View.VISIBLE);
+        } else {
+            tvBadgeFiltros.setVisibility(View.GONE);
+        }
     }
 
     private void navegarATab(Class<?> destino) {

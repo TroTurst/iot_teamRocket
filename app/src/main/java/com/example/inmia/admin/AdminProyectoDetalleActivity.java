@@ -3,6 +3,8 @@ package com.example.inmia.admin;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
@@ -32,6 +35,7 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
@@ -84,8 +88,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     private Proyecto currentProyecto;
     private Tipologia currentTipologia;
 
-    private List<Integer> imagenesTipologiaActual = new ArrayList<>();
-    private int heroImageResActual = 0;
+    private List<String> currentImageUrls = new ArrayList<>();
 
     private MapView mapaAdminProyecto;
     private View cardMapaProyecto;
@@ -186,6 +189,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                         currentProyecto = proyecto;
                         bindProyecto(currentProyecto);
                         configurarRecyclerTipologias(currentProyecto);
+                        resolveProjectDistritoFromLatLng(currentProyecto);
                     }
 
                     @Override
@@ -281,22 +285,72 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         recyclerViewMiniaturasProyecto.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         miniaturasAdapter = new AdminProyectoMiniaturasAdapter(position ->
-                abrirImagenCompleta(imagenesTipologiaActual, position)
+                abrirImagenCompleta(currentImageUrls, position)
         );
         recyclerViewMiniaturasProyecto.setAdapter(miniaturasAdapter);
 
-        imgHeroProyecto.setOnClickListener(v ->
-                abrirImagenCompleta(imagenesTipologiaActual, getHeroIndex(imagenesTipologiaActual, heroImageResActual))
-        );
+        imgHeroProyecto.setOnClickListener(v -> {
+            if (!currentImageUrls.isEmpty()) {
+                abrirImagenCompleta(currentImageUrls, 0);
+            }
+        });
+    }
+
+    private void resolveProjectDistritoFromLatLng(Proyecto proyecto) {
+        if (proyecto == null) return;
+        if (proyecto.getDistrito() != null && !proyecto.getDistrito().isEmpty()) return;
+        if (proyecto.getLatitud() == 0 && proyecto.getLongitud() == 0) return;
+
+        new Thread(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(proyecto.getLatitud(), proyecto.getLongitud(), 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    String distrito = null;
+                    if (address.getSubLocality() != null && !address.getSubLocality().isEmpty()) {
+                        distrito = address.getSubLocality();
+                    } else if (address.getLocality() != null && !address.getLocality().isEmpty()) {
+                        distrito = address.getLocality();
+                    }
+                    if (distrito != null && !distrito.isEmpty()) {
+                        final String distritoFinal = distrito;
+                        runOnUiThread(() -> {
+                            proyecto.setDistrito(distritoFinal);
+                            gateway.updateProjectDistrito(proyecto.getId(), distritoFinal,
+                                    new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("AdminDetalle", "Distrito actualizado: " + distritoFinal);
+                                        }
+
+                                        @Override
+                                        public void onError(Exception e) {
+                                            Log.e("AdminDetalle", "Error al guardar distrito", e);
+                                        }
+                                    });
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("AdminDetalle", "Geocoder error", e);
+            }
+        }).start();
     }
 
     private void bindProyecto(Proyecto p) {
-        // Textos principales
         tvNombreProyecto.setText(p.getNombre());
         tvUbicacionProyecto.setText(p.getUbicacion());
         tvDescripcionProyecto.setText(p.getDescripcion());
-        if (p.getImagenHeroPrincipal() != 0) {
+
+        List<String> urls = p.getImagenesUrls();
+        if (urls != null && !urls.isEmpty()) {
+            currentImageUrls = new ArrayList<>(urls);
+            Glide.with(this).load(urls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            renderizarMiniaturasUrls(urls);
+        } else if (p.getImagenHeroPrincipal() != 0) {
             imgHeroProyecto.setImageResource(p.getImagenHeroPrincipal());
+            currentImageUrls = new ArrayList<>();
         }
 
         configurarMapa(p);
@@ -343,6 +397,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         }
 
         cardMapaProyecto.setVisibility(View.VISIBLE);
+        mapaAdminProyecto.onResume();
         mapaAdminProyecto.setMultiTouchControls(true);
 
         GeoPoint puntoProyecto = new GeoPoint(p.getLatitud(), p.getLongitud());
@@ -368,14 +423,23 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         tvNombreProyecto.setText(currentProyecto.getNombre());
         tvUbicacionProyecto.setText(currentProyecto.getUbicacion());
         tvPrecioProyecto.setText(tipologia.getPrecio());
-        if (tipologia.getImagenHero() != 0) {
-            heroImageResActual = tipologia.getImagenHero();
-            imgHeroProyecto.setImageResource(tipologia.getImagenHero());
-        } else if (currentProyecto.getImagenHeroPrincipal() != 0) {
-            heroImageResActual = currentProyecto.getImagenHeroPrincipal();
-            imgHeroProyecto.setImageResource(currentProyecto.getImagenHeroPrincipal());
+
+        List<String> tipUrls = tipologia.getImagenesUrls();
+        if (tipUrls != null && !tipUrls.isEmpty()) {
+            currentImageUrls = new ArrayList<>(tipUrls);
+            Glide.with(this).load(tipUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            renderizarMiniaturasUrls(tipUrls);
         } else {
-            heroImageResActual = 0;
+            List<String> projUrls = currentProyecto.getImagenesUrls();
+            if (projUrls != null && !projUrls.isEmpty()) {
+                currentImageUrls = new ArrayList<>(projUrls);
+                Glide.with(this).load(projUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+                renderizarMiniaturasUrls(projUrls);
+            } else {
+                currentImageUrls = new ArrayList<>();
+                imgHeroProyecto.setImageResource(R.drawable.ic_add);
+                renderizarMiniaturasUrls(new ArrayList<>());
+            }
         }
 
         tvAreaProyecto.setText(tipologia.getArea());
@@ -385,7 +449,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         tvPrecioEstimadoProyecto.setText(tipologia.getPrecio());
         tvEstadoProyecto.setText(tipologia.getEstado());
 
-        // Ficha tipologia (todos los campos)
         setTextOrDash(tvTipologiaNombre, tipologia.getNombre());
         setTextOrDash(tvTipologiaCertificado, tipologia.getCertificadoEnergetico());
         setTextOrDash(tvTipologiaTipoPiso, tipologia.getTipoPiso());
@@ -401,7 +464,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         addChip(chipGroupTipologiaFeatures, tipologia.isAmueblado() ? "Amueblado" : "Sin muebles");
         addChip(chipGroupTipologiaFeatures, tipologia.isPersianasAutomaticas() ? "Persianas autom." : "Persianas manuales");
 
-        // Color de estado
         String estado = tipologia.getEstado() != null ? tipologia.getEstado().toLowerCase() : "";
         if (estado.contains("dispon")) {
             tvEstadoProyecto.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
@@ -410,9 +472,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         } else {
             tvEstadoProyecto.setTextColor(ContextCompat.getColor(this, R.color.inmia_teal_dark));
         }
-
-        imagenesTipologiaActual = convertToList(tipologia.getImagenes());
-        renderizarMiniaturas(imagenesTipologiaActual);
     }
 
     private void setTextOrDash(android.widget.TextView tv, String value) {
@@ -437,48 +496,25 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         group.addView(chip);
     }
 
-    private List<Integer> convertToList(int[] imagenes) {
-        List<Integer> list = new ArrayList<>();
-        if (imagenes == null) return list;
-        for (int img : imagenes) list.add(img);
-        return list;
-    }
+    private void renderizarMiniaturasUrls(List<String> urls) {
+        if (urls == null) urls = new ArrayList<>();
 
-    private void renderizarMiniaturas(List<Integer> imagenes) {
-        if (imagenes == null) {
-            imagenes = new ArrayList<>();
-        }
-
-        imagenesTipologiaActual = new ArrayList<>(imagenes);
-
-        int previewCount = Math.min(4, imagenes.size());
-        List<Integer> preview = imagenes.subList(0, previewCount);
+        int previewCount = Math.min(4, urls.size());
+        List<String> preview = urls.subList(0, previewCount);
         if (miniaturasAdapter != null) {
-            miniaturasAdapter.submitList(preview);
+            miniaturasAdapter.submitUrls(preview);
         }
 
-        int restantes = imagenes.size() - previewCount;
+        int restantes = urls.size() - previewCount;
         if (restantes > 0) {
             tvVerMasImagenes.setText(getString(R.string.admin_project_gallery_more, restantes));
             tvVerMasImagenes.setVisibility(View.VISIBLE);
-            List<Integer> imagenesFinal = imagenes;
-            tvVerMasImagenes.setOnClickListener(v -> abrirGaleriaCompleta(imagenesFinal));
+            List<String> urlsFinal = urls;
+            tvVerMasImagenes.setOnClickListener(v -> abrirImagenCompleta(urlsFinal, 0));
         } else {
             tvVerMasImagenes.setVisibility(View.GONE);
             tvVerMasImagenes.setOnClickListener(null);
         }
-    }
-
-    private void abrirGaleriaCompleta(List<Integer> imagenes) {
-        int[] imagenesArray = new int[imagenes.size()];
-        for (int i = 0; i < imagenes.size(); i++) {
-            imagenesArray[i] = imagenes.get(i);
-        }
-
-        Intent intent = new Intent(this, AdminProyectoGaleriaActivity.class);
-        intent.putExtra(EXTRA_TITLE, currentProyecto != null ? currentProyecto.getNombre() : "Proyecto");
-        intent.putExtra(EXTRA_IMAGES, imagenesArray);
-        startActivity(intent);
     }
 
     private void abrirEdicionProyecto() {
@@ -500,34 +536,16 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         finish();
     }
 
-    private void abrirImagenCompleta(List<Integer> imagenes, int selectedIndex) {
-        if (imagenes == null || imagenes.isEmpty()) return;
-        int[] imagenesArray = new int[imagenes.size()];
-        for (int i = 0; i < imagenes.size(); i++) {
-            imagenesArray[i] = imagenes.get(i);
-        }
-        int index = selectedIndex;
-        if (index < 0 || index >= imagenesArray.length) {
-            index = 0;
-        }
+    private void abrirImagenCompleta(List<String> urls, int selectedIndex) {
+        if (urls == null || urls.isEmpty()) return;
+        int index = Math.max(0, Math.min(selectedIndex, urls.size() - 1));
 
         Intent intent = new Intent(this, AdminProyectoImagenActivity.class);
-        intent.putExtra(AdminProyectoImagenActivity.EXTRA_IMAGES, imagenesArray);
+        intent.putStringArrayListExtra(AdminProyectoImagenActivity.EXTRA_IMAGE_URLS, new ArrayList<>(urls));
         intent.putExtra(AdminProyectoImagenActivity.EXTRA_SELECTED_INDEX, index);
         intent.putExtra(AdminProyectoImagenActivity.EXTRA_TITLE,
                 currentProyecto != null ? currentProyecto.getNombre() : "Proyecto");
         startActivity(intent);
-    }
-
-    private int getHeroIndex(List<Integer> imagenes, int heroRes) {
-        if (imagenes == null || imagenes.isEmpty()) return 0;
-        if (heroRes == 0) return 0;
-        for (int i = 0; i < imagenes.size(); i++) {
-            if (imagenes.get(i) != null && imagenes.get(i) == heroRes) {
-                return i;
-            }
-        }
-        return 0;
     }
 
     @Override
@@ -545,6 +563,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         bindProyecto(currentProyecto);
                         configurarRecyclerTipologias(currentProyecto);
+                        resolveProjectDistritoFromLatLng(currentProyecto);
                     });
                 }
 

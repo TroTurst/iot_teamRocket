@@ -7,15 +7,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.util.List;
+
 public class AdminProyectoImagenPagerAdapter extends RecyclerView.Adapter<AdminProyectoImagenPagerAdapter.ImagenViewHolder> {
 
-    private final int[] images;
+    private final List<String> imageUrls;
 
-    public AdminProyectoImagenPagerAdapter(int[] images) {
-        this.images = images;
+    public AdminProyectoImagenPagerAdapter(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     @NonNull
@@ -28,12 +31,18 @@ public class AdminProyectoImagenPagerAdapter extends RecyclerView.Adapter<AdminP
 
     @Override
     public void onBindViewHolder(@NonNull ImagenViewHolder holder, int position) {
-        holder.imageView.setImageResource(images[position]);
+        String url = imageUrls.get(position);
+        if (url != null && !url.isEmpty()) {
+            Glide.with(holder.imageView.getContext()).load(url)
+                    .placeholder(R.drawable.ic_add).into(holder.imageView);
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_add);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return images.length;
+        return imageUrls.size();
     }
 
     static class ImagenViewHolder extends RecyclerView.ViewHolder {
@@ -45,4 +54,3 @@ public class AdminProyectoImagenPagerAdapter extends RecyclerView.Adapter<AdminP
         }
     }
 }
-
