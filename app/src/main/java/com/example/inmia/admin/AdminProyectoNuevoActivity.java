@@ -2,6 +2,11 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -13,19 +18,28 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.adapters.SugerenciasAdapter;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
-import com.example.inmia.models.Log;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.example.inmia.util.LogHelper;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AdminProyectoNuevoActivity extends AppCompatActivity {
@@ -67,6 +81,24 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
     private List<Tipologia> tipologiasAgregadas = new ArrayList<>();
     private TipologiasAgregadasAdapter tipologiasAdapter;
+
+    private static final LatLng LIMA_SW = new LatLng(-12.25, -77.20);
+    private static final LatLng LIMA_NE = new LatLng(-11.85, -76.85);
+
+    private RecyclerView rvSugerencias;
+    private TextView tvDireccionSeleccionada;
+
+    private PlacesClient placesClient;
+    private AutocompleteSessionToken sessionToken;
+    private SugerenciasAdapter sugerenciasAdapter;
+
+    private final Handler debounceHandler = new Handler(Looper.getMainLooper());
+    private Runnable debounceRunnable;
+
+    private double selLat = 0;
+    private double selLng = 0;
+    private String selPlaceId = null;
+    private String selDireccionFormateada = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +156,38 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
         configurarSpinners();
+
+        rvSugerencias = findViewById(R.id.rvSugerencias);
+        tvDireccionSeleccionada = findViewById(R.id.tvDireccionSeleccionada);
+
+        placesClient = com.google.android.libraries.places.api.Places.createClient(this);
+        sessionToken = AutocompleteSessionToken.newInstance();
+
+        sugerenciasAdapter = new SugerenciasAdapter(this::onSugerenciaSeleccionada);
+        rvSugerencias.setLayoutManager(new LinearLayoutManager(this));
+        rvSugerencias.setAdapter(sugerenciasAdapter);
+
+        etUbicacion.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                selPlaceId = null;
+                tvDireccionSeleccionada.setVisibility(View.GONE);
+
+                if (debounceRunnable != null) {
+                    debounceHandler.removeCallbacks(debounceRunnable);
+                }
+                String query = s.toString().trim();
+                if (query.length() < 3) {
+                    rvSugerencias.setVisibility(View.GONE);
+                    return;
+                }
+                debounceRunnable = () -> buscarSugerencias(query);
+                debounceHandler.postDelayed(debounceRunnable, 300);
+            }
+        });
 
         cargarDatosDesdeIntent();
         resolverContextoAdmin();
@@ -298,6 +362,15 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         }
 
         String ubicacion = texto(etUbicacion);
+        if (ubicacion.isEmpty()) {
+            Toast.makeText(this, "Ingresa la dirección del proyecto", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (selPlaceId == null) {
+            Toast.makeText(this, "Selecciona una dirección de la lista de sugerencias", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String descripcion = texto(etDescripcion);
         String estado = spinnerEstadoProyecto != null ? spinnerEstadoProyecto.getSelectedItem().toString() : "En planos";
 
@@ -307,6 +380,8 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre(titulo);
         proyecto.setUbicacion(ubicacion.isEmpty() ? "Sin ubicación" : ubicacion);
+        proyecto.setLatitud(selLat);
+        proyecto.setLongitud(selLng);
         proyecto.setDescripcion(descripcion.isEmpty() ? "Sin descripción" : descripcion);
         proyecto.setEstadoProyecto(estado.isEmpty() ? "En planos" : estado);
         proyecto.setInmobiliaria(companyName != null ? companyName : "Inmobiliaria");
@@ -323,7 +398,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                 LogHelper.registrar(
                         "Se creó el proyecto " + titulo
                                 + (companyName != null ? " en " + companyName : ""),
-                        Log.TIPO_PROYECTO,
+                        com.example.inmia.models.Log.TIPO_PROYECTO,
                         LogHelper.ROL_ADMIN);
                 runOnUiThread(() -> {
                     Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
@@ -338,6 +413,67 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void buscarSugerencias(String query) {
+        RectangularBounds bounds = RectangularBounds.newInstance(LIMA_SW, LIMA_NE);
+
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(sessionToken)
+                .setLocationBias(bounds)
+                .setCountries("PE")
+                .setQuery(query)
+                .build();
+
+        placesClient.findAutocompletePredictions(request)
+                .addOnSuccessListener(response -> {
+                    sugerenciasAdapter.setData(response.getAutocompletePredictions());
+                    rvSugerencias.setVisibility(
+                            response.getAutocompletePredictions().isEmpty() ? View.GONE : View.VISIBLE);
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("AdminNuevo", "Autocomplete falló", e);
+                    rvSugerencias.setVisibility(View.GONE);
+                });
+    }
+
+    private void onSugerenciaSeleccionada(com.google.android.libraries.places.api.model.AutocompletePrediction p) {
+        rvSugerencias.setVisibility(View.GONE);
+        String fullText = p.getFullText(null).toString();
+        etUbicacion.setText(fullText);
+        etUbicacion.setSelection(fullText.length());
+
+        List<Place.Field> fields = Arrays.asList(
+                Place.Field.ID,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS
+        );
+
+        FetchPlaceRequest fetchRequest = FetchPlaceRequest.builder(p.getPlaceId(), fields)
+                .setSessionToken(sessionToken)
+                .build();
+
+        placesClient.fetchPlace(fetchRequest)
+                .addOnSuccessListener(response -> {
+                    Place place = response.getPlace();
+                    LatLng latLng = place.getLatLng();
+                    if (latLng != null) {
+                        selLat = latLng.latitude;
+                        selLng = latLng.longitude;
+                    }
+                    selPlaceId = place.getId();
+                    selDireccionFormateada = place.getAddress();
+
+                    tvDireccionSeleccionada.setText(selDireccionFormateada
+                            + "\n(" + selLat + ", " + selLng + ")");
+                    tvDireccionSeleccionada.setVisibility(View.VISIBLE);
+
+                    sessionToken = AutocompleteSessionToken.newInstance();
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("AdminNuevo", "fetchPlace falló", e);
+                    Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private String texto(TextInputEditText editText) {

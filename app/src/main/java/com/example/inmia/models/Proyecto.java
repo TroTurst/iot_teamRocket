@@ -18,6 +18,8 @@ public class Proyecto {
     private String id;                    // ID único del proyecto
     private String nombre;                // Nombre/título del proyecto
     private String ubicacion;             // Dirección/ubicación del proyecto
+    private double latitud;               // Coordenada latitud del proyecto
+    private double longitud;              // Coordenada longitud del proyecto
     private String descripcion;           // Descripción larga del proyecto
     private List<String> vendedores;      // Asesores/vendedores asignados
     private String estadoProyecto;        // En planos, En preventa, En venta
@@ -78,6 +80,8 @@ public class Proyecto {
     public String getId() { return id; }
     public String getNombre() { return nombre; }
     public String getUbicacion() { return ubicacion; }
+    public double getLatitud() { return latitud; }
+    public double getLongitud() { return longitud; }
     public String getDescripcion() { return descripcion; }
     public List<String> getVendedores() { return vendedores; }
     public String getEstadoProyecto() { return estadoProyecto; }
@@ -98,6 +102,8 @@ public class Proyecto {
     public void setId(String id) { this.id = id; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
+    public void setLatitud(double latitud) { this.latitud = latitud; }
+    public void setLongitud(double longitud) { this.longitud = longitud; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public void setVendedores(List<String> vendedores) { this.vendedores = vendedores; }
     public void setEstadoProyecto(String estadoProyecto) { this.estadoProyecto = estadoProyecto; }

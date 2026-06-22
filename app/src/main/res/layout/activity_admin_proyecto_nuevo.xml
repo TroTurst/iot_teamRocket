@@ -205,8 +205,8 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:hint="Ubicación"
+                        android:layout_marginBottom="0dp"
+                        android:hint="Dirección (empieza a escribir...)"
                         app:boxStrokeColor="@color/inmia_teal_dark"
                         app:hintTextColor="@color/inmia_teal_dark"
                         app:boxCornerRadiusTopStart="12dp"
@@ -218,8 +218,29 @@
                             android:id="@+id/etUbicacionProyecto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textCapWords" />
+                            android:imeOptions="actionDone"
+                            android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSugerencias"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="240dp"
+                        android:background="@android:color/white"
+                        android:elevation="4dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvDireccionSeleccionada"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="12dp"
+                        android:padding="8dp"
+                        android:textSize="12sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilPrecioProyecto"
