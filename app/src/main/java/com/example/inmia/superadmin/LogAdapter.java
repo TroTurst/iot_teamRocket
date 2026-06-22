@@ -14,91 +14,114 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.example.inmia.models.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class LogAdapter extends
-        RecyclerView.Adapter<LogAdapter.LogViewHolder> {
+/**
+ * Adapter de logs con dos tipos de fila:
+ *   - Encabezado de fecha (un String, ej. "24 de mayo")
+ *   - Evento de log (un objeto Log)
+ * La lista mezcla ambos: cada día con logs lleva su encabezado seguido de sus eventos.
+ */
+public class LogAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int TIPO_HEADER = 0;
+    private static final int TIPO_LOG    = 1;
 
     private final Context context;
-    private List<Log> listaLogs;
+    private List<Object> items;
 
-    public LogAdapter(Context context, List<Log> listaLogs) {
-        this.context   = context;
-        this.listaLogs = listaLogs;
+    public LogAdapter(Context context, List<Object> items) {
+        this.context = context;
+        this.items   = items != null ? items : new ArrayList<>();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return items.get(position) instanceof Log ? TIPO_LOG : TIPO_HEADER;
     }
 
     @NonNull
     @Override
-    public LogViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
-                                            int viewType) {
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_log_evento, parent, false);
-        return new LogViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        if (viewType == TIPO_HEADER) {
+            View v = inflater.inflate(R.layout.item_log_fecha, parent, false);
+            return new HeaderViewHolder(v);
+        }
+        View v = inflater.inflate(R.layout.item_log_evento, parent, false);
+        return new LogViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LogViewHolder holder,
-                                 int position) {
-        Log log = listaLogs.get(position);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Object item = items.get(position);
 
-        holder.tvDescripcion.setText(log.getDescripcion());
-        holder.tvFecha.setText(log.getFecha());
+        if (holder instanceof HeaderViewHolder) {
+            ((HeaderViewHolder) holder).tvFechaHeader.setText((String) item);
+            return;
+        }
+
+        Log log = (Log) item;
+        LogViewHolder h = (LogViewHolder) holder;
+        h.tvDescripcion.setText(log.getDescripcion());
+        h.tvFecha.setText(log.getFecha());
 
         // Ícono y color según tipo
         String tipo = log.getTipo() != null ? log.getTipo() : "";
         switch (tipo) {
             case Log.TIPO_ESTADO_CUENTA:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_estado);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_estado);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_estado);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_estado);
                 break;
-
             case Log.TIPO_PROYECTO:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_proyecto);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_proyecto);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_proyecto);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_proyecto);
                 break;
-
             case Log.TIPO_SOLICITUD:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_solicitud);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_solicitud);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_solicitud);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_solicitud);
                 break;
-
             case Log.TIPO_CITA:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cita);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_cita);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cita);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_cita);
                 break;
-
             case Log.TIPO_SEPARACION:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_separacion);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_separacion);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_separacion);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_separacion);
                 break;
-
             case Log.TIPO_CUENTA:
             default:
-                holder.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cuenta);
-                holder.imgIcono.setImageResource(R.drawable.sa_ic_log_cuenta);
+                h.frameIcono.setBackgroundResource(R.drawable.sa_bg_log_cuenta);
+                h.imgIcono.setImageResource(R.drawable.sa_ic_log_cuenta);
                 break;
         }
     }
 
     @Override
     public int getItemCount() {
-        return listaLogs.size();
+        return items.size();
     }
 
-    // Actualizar lista al aplicar filtro de fecha
-    public void actualizarLista(List<Log> nuevaLista) {
-        this.listaLogs = nuevaLista;
+    public void actualizarLista(List<Object> nuevaLista) {
+        this.items = nuevaLista != null ? nuevaLista : new ArrayList<>();
         notifyDataSetChanged();
     }
 
-    // ViewHolder
-    public static class LogViewHolder extends RecyclerView.ViewHolder {
+    // ── ViewHolders ──
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView tvFechaHeader;
+        HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvFechaHeader = itemView.findViewById(R.id.tvFechaHeader);
+        }
+    }
 
+    static class LogViewHolder extends RecyclerView.ViewHolder {
         FrameLayout frameIcono;
         ImageView imgIcono;
         TextView tvDescripcion, tvFecha;
-
-        public LogViewHolder(@NonNull View itemView) {
+        LogViewHolder(@NonNull View itemView) {
             super(itemView);
             frameIcono    = itemView.findViewById(R.id.frameIcono);
             imgIcono      = itemView.findViewById(R.id.imgIcono);

@@ -32,7 +32,7 @@ public class LogsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerLogs;
     private LogAdapter adapter;
-    private List<Log> listaLogs;
+    private List<Object> items;
 
     private MaterialCardView cardFechaInicio, cardFechaFin;
     private TextView tvFechaInicio, tvFechaFin;
@@ -45,8 +45,8 @@ public class LogsActivity extends AppCompatActivity {
     private int diaInicio = -1, mesInicio = -1, anioInicio = -1;
     private int diaFin    = -1, mesFin    = -1, anioFin    = -1;
 
-    private final SimpleDateFormat horaFmt  = new SimpleDateFormat("h:mm a", Locale.ENGLISH);
-    private final SimpleDateFormat fechaFmt = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private final SimpleDateFormat horaFmt   = new SimpleDateFormat("h:mm a", Locale.ENGLISH);
+    private final SimpleDateFormat headerFmt = new SimpleDateFormat("d 'de' MMMM", new Locale("es"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +70,9 @@ public class LogsActivity extends AppCompatActivity {
         bottomNav        = findViewById(R.id.bottomNavSuperAdmin);
 
         // Configurar RecyclerView
-        listaLogs = new ArrayList<>();
+        items = new ArrayList<>();
         recyclerLogs.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LogAdapter(this, listaLogs);
+        adapter = new LogAdapter(this, items);
         recyclerLogs.setAdapter(adapter);
 
         // DatePickers
@@ -130,50 +130,55 @@ public class LogsActivity extends AppCompatActivity {
 
         query.get()
                 .addOnSuccessListener(snapshot -> {
-                    listaLogs.clear();
+                    // Construir lista mixta: un encabezado por día + sus logs.
+                    // Los docs vienen ordenados por fecha descendente, así que
+                    // basta con detectar el cambio de día al recorrerlos.
+                    List<Object> nuevos = new ArrayList<>();
+                    String ultimoDia = null;
+
                     for (QueryDocumentSnapshot doc : snapshot) {
                         String descripcion = doc.getString("descripcion");
                         String tipo        = doc.getString("tipo");
                         String rol         = doc.getString("rol");
-                        Timestamp ts       = doc.getTimestamp("fechaCreacion");
+                        Timestamp ts        = doc.getTimestamp("fechaCreacion");
+                        Date fecha          = ts != null ? ts.toDate() : null;
 
-                        listaLogs.add(new Log(
+                        String dia = claveDia(fecha);
+                        if (!dia.equals(ultimoDia)) {
+                            nuevos.add(etiquetaDia(fecha));   // encabezado de fecha
+                            ultimoDia = dia;
+                        }
+
+                        nuevos.add(new Log(
                                 descripcion != null ? descripcion : "",
-                                formatearFecha(ts),
+                                horaDe(fecha),
                                 tipo != null ? tipo : Log.TIPO_CUENTA,
                                 rol != null ? rol : ""));
                     }
-                    adapter.actualizarLista(new ArrayList<>(listaLogs));
+                    adapter.actualizarLista(nuevos);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error al cargar logs", Toast.LENGTH_SHORT).show());
     }
 
-    /** Convierte un Timestamp en "Hoy 3:59 pm" / "Ayer 11:39 pm" / "27/03/2026 2:39 am". */
-    private String formatearFecha(Timestamp ts) {
-        if (ts == null) return "";
-        Date fecha = ts.toDate();
-
-        Calendar cFecha = Calendar.getInstance();
-        cFecha.setTime(fecha);
-        Calendar hoy = Calendar.getInstance();
-        Calendar ayer = Calendar.getInstance();
-        ayer.add(Calendar.DAY_OF_YEAR, -1);
-
-        String hora = horaFmt.format(fecha).toLowerCase(Locale.ENGLISH);
-
-        if (mismoDia(cFecha, hoy)) {
-            return "Hoy " + hora;
-        } else if (mismoDia(cFecha, ayer)) {
-            return "Ayer " + hora;
-        } else {
-            return fechaFmt.format(fecha) + " " + hora;
-        }
+    /** Clave de agrupación por día (año + día del año). */
+    private String claveDia(Date fecha) {
+        if (fecha == null) return "sin-fecha";
+        Calendar c = Calendar.getInstance();
+        c.setTime(fecha);
+        return c.get(Calendar.YEAR) + "-" + c.get(Calendar.DAY_OF_YEAR);
     }
 
-    private boolean mismoDia(Calendar a, Calendar b) {
-        return a.get(Calendar.YEAR) == b.get(Calendar.YEAR)
-                && a.get(Calendar.DAY_OF_YEAR) == b.get(Calendar.DAY_OF_YEAR);
+    /** Etiqueta del encabezado de día, ej. "24 de mayo". */
+    private String etiquetaDia(Date fecha) {
+        if (fecha == null) return "Sin fecha";
+        return headerFmt.format(fecha);
+    }
+
+    /** Hora del log, ej. "3:59 pm". */
+    private String horaDe(Date fecha) {
+        if (fecha == null) return "";
+        return horaFmt.format(fecha).toLowerCase(Locale.ENGLISH);
     }
 
     // ── DatePicker ───────────────────────────────────────────────────────────
