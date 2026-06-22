@@ -516,11 +516,14 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         etDialogUbicacion.setText(etUbicacion.getText());
 
         final AutocompleteSessionToken[] dialogSessionToken = { AutocompleteSessionToken.newInstance() };
+        final boolean[] isUpdatingAddress = {false};
         SugerenciasAdapter dialogAdapter = new SugerenciasAdapter(prediction -> {
             rvDialogSugerencias.setVisibility(View.GONE);
             String fullText = prediction.getFullText(null).toString();
+            isUpdatingAddress[0] = true;
             etDialogUbicacion.setText(fullText);
             etDialogUbicacion.setSelection(fullText.length());
+            isUpdatingAddress[0] = false;
 
             List<Place.Field> fields = Arrays.asList(
                     Place.Field.ID,
@@ -566,6 +569,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdatingAddress[0]) return;
                 if (dialogDebounceRunnable[0] != null) {
                     dialogDebounceHandler.removeCallbacks(dialogDebounceRunnable[0]);
                 }

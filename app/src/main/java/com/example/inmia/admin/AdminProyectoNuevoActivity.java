@@ -95,6 +95,8 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private final Handler debounceHandler = new Handler(Looper.getMainLooper());
     private Runnable debounceRunnable;
 
+    private boolean isUpdatingAddress = false;
+
     private double selLat = 0;
     private double selLng = 0;
     private String selPlaceId = null;
@@ -173,6 +175,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdatingAddress) return;
                 selPlaceId = null;
                 tvDireccionSeleccionada.setVisibility(View.GONE);
 
@@ -440,8 +443,10 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private void onSugerenciaSeleccionada(com.google.android.libraries.places.api.model.AutocompletePrediction p) {
         rvSugerencias.setVisibility(View.GONE);
         String fullText = p.getFullText(null).toString();
+        isUpdatingAddress = true;
         etUbicacion.setText(fullText);
         etUbicacion.setSelection(fullText.length());
+        isUpdatingAddress = false;
 
         List<Place.Field> fields = Arrays.asList(
                 Place.Field.ID,
