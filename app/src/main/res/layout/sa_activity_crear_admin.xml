@@ -298,6 +298,26 @@
                                 android:imeOptions="actionNext"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvSugerenciasAdmin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:maxHeight="240dp"
+                            android:background="@android:color/white"
+                            android:elevation="4dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvDireccionSeleccionadaAdmin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp"
+                            android:padding="8dp"
+                            android:textSize="12sp"
+                            android:textStyle="italic"
+                            android:visibility="gone" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
