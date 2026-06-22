@@ -141,9 +141,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Aprobada"
-                        android:textColor="@color/inmia_info"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/inmia_white"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:gravity="center"
+                        android:background="@drawable/bg_badge_green" />
 
                     <TextView
                         android:id="@+id/tvProyectoSeparacionDetalle"

@@ -7,9 +7,6 @@ plugins {
 
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 android {
     namespace 'com.example.inmia'
     compileSdk {
@@ -53,6 +50,7 @@ dependencies {
     implementation libs.recyclerview
     implementation platform('com.google.firebase:firebase-bom:34.14.0')
     implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
     implementation("com.google.firebase:firebase-auth")
     implementation 'com.google.firebase:firebase-storage'
     testImplementation libs.junit
@@ -61,6 +59,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.google.android.gms:play-services-maps:19.2.0'
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation 'com.google.android.libraries.places:places:3.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
