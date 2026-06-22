@@ -14,7 +14,9 @@ import com.example.inmia.R;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.ProyectoViewHolder> {
 
@@ -27,7 +29,8 @@ public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.Proy
     @NonNull
     @Override
     public ProyectoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_proyecto, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_proyecto_cliente, parent, false);
         return new ProyectoViewHolder(view);
     }
 
@@ -35,38 +38,66 @@ public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.Proy
     public void onBindViewHolder(@NonNull ProyectoViewHolder holder, int position) {
         Proyecto proyecto = listaProyectos.get(position);
 
-        holder.tvNombre.setText(proyecto.getNombre());
-        holder.tvUbicacion.setText(proyecto.getUbicacion());
-        holder.tvEtiqueta.setText(proyecto.getEstadoProyecto());
-        holder.imgProyecto.setImageResource(proyecto.getImagenHeroPrincipal());
+        holder.tvNombre.setText(proyecto.getNombre() != null ? proyecto.getNombre() : "Sin nombre");
+        holder.tvUbicacion.setText(proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "Lima");
 
-        String precioMostrar = "Consultar precio";
-        if (proyecto.getTipologias() != null && !proyecto.getTipologias().isEmpty()) {
+        if (proyecto.getImagenHeroPrincipal() != 0) {
+            holder.imgProyecto.setImageResource(proyecto.getImagenHeroPrincipal());
+        }
+
+        String estado = proyecto.getEstadoProyecto();
+        if (estado == null) estado = "Venta";
+        holder.tvEstado.setText(estado);
+        switch (estado) {
+            case "Preventa":
+                holder.tvEstado.setBackgroundResource(R.drawable.bg_badge_preventa);
+                break;
+            case "Planos":
+                holder.tvEstado.setBackgroundResource(R.drawable.bg_badge_planos);
+                break;
+            default:
+                holder.tvEstado.setBackgroundResource(R.drawable.bg_badge_estado);
+                break;
+        }
+
+        List<Tipologia> tipologias = proyecto.getTipologias();
+        if (tipologias != null && !tipologias.isEmpty()) {
+
             double minPrecio = Double.MAX_VALUE;
-            for (Tipologia tipo : proyecto.getTipologias()) {
-                if (tipo.getPrecio() != null && !tipo.getPrecio().isEmpty()) {
+            for (Tipologia t : tipologias) {
+                if (t.getPrecio() != null && !t.getPrecio().isEmpty()) {
                     try {
-                        double precioActual = Double.parseDouble(tipo.getPrecio());
-                        if (precioActual < minPrecio) minPrecio = precioActual;
-                    } catch (NumberFormatException e) {
-
-                    }
+                        double p = Double.parseDouble(t.getPrecio());
+                        if (p < minPrecio) minPrecio = p;
+                    } catch (NumberFormatException ignored) {}
                 }
             }
             if (minPrecio != Double.MAX_VALUE) {
-                precioMostrar = "Desde S/." + String.format("%.2f", minPrecio);
+                NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+                holder.tvPrecio.setText("S/. " + nf.format((long) minPrecio));
+            } else {
+                holder.tvPrecio.setText("Consultar");
             }
+
+            // Cantidad de tipologías
+            int total = tipologias.size();
+            holder.tvTipologiasCount.setText(total + (total == 1 ? " tipología" : " tipologías"));
+
+        } else {
+            holder.tvPrecio.setText("Consultar");
+            holder.tvTipologiasCount.setText("Sin tipologías");
         }
-        holder.tvPrecio.setText(precioMostrar);
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), ClienteDetallePropiedadActivity.class);
+        // Click card → detalle del proyecto
+        holder.itemView.setOnClickListener(v -> abrirDetalle(v, proyecto));
+        holder.tvVerTipologias.setOnClickListener(v -> abrirDetalle(v, proyecto));
+    }
 
-            intent.putExtra("PROYECTO_ID", proyecto.getId());
-            intent.putExtra("PROYECTO_NOMBRE", proyecto.getNombre());
-
-            v.getContext().startActivity(intent);
-        });
+    private void abrirDetalle(View v, Proyecto proyecto) {
+        Intent intent = new Intent(v.getContext(), ClienteDetallePropiedadActivity.class);
+        intent.putExtra("PROYECTO_ID", proyecto.getId());
+        intent.putExtra("PROYECTO_NOMBRE", proyecto.getNombre());
+        v.getContext().startActivity(intent);
     }
 
     @Override
@@ -75,16 +106,18 @@ public class ProyectosAdapter extends RecyclerView.Adapter<ProyectosAdapter.Proy
     }
 
     public static class ProyectoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvUbicacion, tvPrecio, tvEtiqueta;
         ImageView imgProyecto;
+        TextView tvNombre, tvUbicacion, tvEstado, tvPrecio, tvTipologiasCount, tvVerTipologias;
 
         public ProyectoViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvProjectName);
-            tvUbicacion = itemView.findViewById(R.id.tvProjectLocation);
-            tvPrecio = itemView.findViewById(R.id.tvProjectPrice);
-            tvEtiqueta = itemView.findViewById(R.id.tvBadge);
-            imgProyecto = itemView.findViewById(R.id.imgProject);
+            imgProyecto       = itemView.findViewById(R.id.imgProyecto);
+            tvNombre          = itemView.findViewById(R.id.tvNombre);
+            tvUbicacion       = itemView.findViewById(R.id.tvUbicacion);
+            tvEstado          = itemView.findViewById(R.id.tvEstado);
+            tvPrecio          = itemView.findViewById(R.id.tvPrecio);
+            tvTipologiasCount = itemView.findViewById(R.id.tvTipologiasCount);
+            tvVerTipologias   = itemView.findViewById(R.id.tvVerTipologias);
         }
     }
 }

@@ -6,49 +6,92 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.inmia.R;
-import com.google.android.material.card.MaterialCardView;
-import java.util.List;
 import com.example.inmia.models.Notificacion;
+import com.google.android.material.card.MaterialCardView;
+
+import java.util.List;
 
 public class NotificacionAdapter extends RecyclerView.Adapter<NotificacionAdapter.ViewHolder> {
 
-    private List<Notificacion> listaNotificaciones;
+    public interface OnNotifClick {
+        void onClick(Notificacion notif);
+    }
 
-    public NotificacionAdapter(List<Notificacion> listaNotificaciones) {
-        this.listaNotificaciones = listaNotificaciones;
+    private final List<Notificacion> lista;
+    private final OnNotifClick listener;
+
+    public NotificacionAdapter(List<Notificacion> lista, OnNotifClick listener) {
+        this.lista = lista;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_notificacion, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_notificacion, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Notificacion notif = listaNotificaciones.get(position);
+        Notificacion notif = lista.get(position);
 
-        holder.tvNotifText.setText(notif.getTexto());
-        holder.tvNotifTime.setText(notif.getFechaHora());
-
-        if (notif.getTipo().equals("ERROR") || notif.getTipo().equals("CANCELADO")) {
-            holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#FFCDD2"));
-            holder.imgNotifIcon.setImageResource(R.drawable.ic_close);
-            holder.imgNotifIcon.setColorFilter(Color.parseColor("#C62828"));
+        if (notif.getTitulo() != null && !notif.getTitulo().isEmpty()) {
+            holder.tvNotifText.setText(notif.getTitulo());
         } else {
-            holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#A8E6CF"));
-            holder.imgNotifIcon.setImageResource(R.drawable.ic_check);
-            holder.imgNotifIcon.setColorFilter(Color.parseColor("#2E7D32"));
+            holder.tvNotifText.setText(notif.getTexto());
         }
+
+        holder.tvNotifTime.setText(notif.getFechaFormateada());
+
+        holder.itemView.setBackgroundColor(
+                notif.isLeido() ? Color.TRANSPARENT : Color.parseColor("#F0FAF9"));
+
+        switch (notif.getTipo() != null ? notif.getTipo() : "") {
+            case "MENSAJE":
+                holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#D0F0FF"));
+                holder.imgNotifIcon.setImageResource(R.drawable.ic_chat);
+                holder.imgNotifIcon.setColorFilter(Color.parseColor("#0277BD"));
+                break;
+            case "CITA":
+                holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#FFF9C4"));
+                holder.imgNotifIcon.setImageResource(R.drawable.ic_calendar);
+                holder.imgNotifIcon.setColorFilter(Color.parseColor("#F57F17"));
+                break;
+            case "SEPARACION":
+                boolean rechazada = notif.getTexto() != null &&
+                        notif.getTexto().toLowerCase().contains("rechaz");
+                if (rechazada) {
+                    holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#FFCDD2"));
+                    holder.imgNotifIcon.setImageResource(R.drawable.ic_close);
+                    holder.imgNotifIcon.setColorFilter(Color.parseColor("#C62828"));
+                } else {
+                    holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#A8E6CF"));
+                    holder.imgNotifIcon.setImageResource(R.drawable.ic_check);
+                    holder.imgNotifIcon.setColorFilter(Color.parseColor("#2E7D32"));
+                }
+                break;
+            default:
+                holder.cardIconContainer.setCardBackgroundColor(Color.parseColor("#A8E6CF"));
+                holder.imgNotifIcon.setImageResource(R.drawable.ic_check);
+                holder.imgNotifIcon.setColorFilter(Color.parseColor("#2E7D32"));
+                break;
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onClick(notif);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return listaNotificaciones.size();
+        return lista.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -58,10 +101,10 @@ public class NotificacionAdapter extends RecyclerView.Adapter<NotificacionAdapte
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNotifText = itemView.findViewById(R.id.tvNotifText);
-            tvNotifTime = itemView.findViewById(R.id.tvNotifTime);
+            tvNotifText       = itemView.findViewById(R.id.tvNotifText);
+            tvNotifTime       = itemView.findViewById(R.id.tvNotifTime);
             cardIconContainer = itemView.findViewById(R.id.cardIconContainer);
-            imgNotifIcon = itemView.findViewById(R.id.imgNotifIcon);
+            imgNotifIcon      = itemView.findViewById(R.id.imgNotifIcon);
         }
     }
 }

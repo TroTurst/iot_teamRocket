@@ -165,7 +165,16 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
                                 String precio = mapaTipo.get("precio") != null ? mapaTipo.get("precio").toString() : "0";
                                 String nombreTipo = "Departamento Tipo " + (i + 1);
 
-                                Tipologia tipo = new Tipologia(String.valueOf(i), nombreTipo, "Moderno", metraje, cuartos, "2", "Sí", precio, "Disponible", 0, null, false, "A+", false, true, false, true, Integer.parseInt(cuartos), "Laminado", false, "Natural", false, "Premium");
+                                Tipologia tipo = new Tipologia(String.valueOf(i), nombreTipo,
+                                        "Moderno", metraje, cuartos,
+                                        "2", "Sí", precio,
+                                        "Disponible", 0,
+                                        null, false, "A+",
+                                        false, true, false,
+                                        true, Integer.parseInt(cuartos),
+                                        "Laminado", false,
+                                        "Natural", false,
+                                        "Premium");
                                 listaTipologias.add(tipo);
                             }
                         }
@@ -300,7 +309,11 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
         popup.getMenu().add("Descargar Brochure");
 
         popup.setOnMenuItemClickListener(item -> {
-            if (item.getTitle().toString().equals("Descargar Brochure")) {
+            if (item.getTitle().toString().equals("Compartir Proyecto")) {
+                mostrarDialogoQR(proyectoNombre);
+                return true;
+
+            } else if (item.getTitle().toString().equals("Descargar Brochure")) {
                 String url = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750";
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
                 request.setTitle("Brochure " + proyectoNombre);
@@ -314,5 +327,69 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
             return false;
         });
         popup.show();
+    }
+
+    private void mostrarDialogoQR(String nombreProyecto) {
+        if (nombreProyecto == null || nombreProyecto.isEmpty()) {
+            Toast.makeText(this, "Cargando datos del proyecto...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            com.journeyapps.barcodescanner.BarcodeEncoder barcodeEncoder = new com.journeyapps.barcodescanner.BarcodeEncoder();
+            android.graphics.Bitmap bitmap = barcodeEncoder.encodeBitmap(nombreProyecto, com.google.zxing.BarcodeFormat.QR_CODE, 600, 600);
+
+            ImageView imgQR = new ImageView(this);
+            imgQR.setImageBitmap(bitmap);
+            imgQR.setPadding(50, 50, 50, 50);
+
+            new android.app.AlertDialog.Builder(this)
+                    .setTitle("Compartir Proyecto")
+                    .setMessage("Muestra este código para que otro usuario vaya directo a " + nombreProyecto)
+                    .setView(imgQR)
+                    .setNeutralButton("Descargar QR", (dialog, which) -> descargarImagenQR(bitmap, nombreProyecto))
+                    .setPositiveButton("Cerrar", null)
+                    .show();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al generar el QR", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void descargarImagenQR(android.graphics.Bitmap bitmap, String nombreProyecto) {
+        try {
+            String nombreArchivo = "QR_" + nombreProyecto.replace(" ", "_") + "_" + System.currentTimeMillis() + ".jpg";
+            android.content.ContentValues values = new android.content.ContentValues();
+            values.put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, nombreArchivo);
+            values.put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                values.put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/INMIA");
+                values.put(android.provider.MediaStore.Images.Media.IS_PENDING, 1);
+            }
+
+            android.net.Uri uri = getContentResolver().insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            if (uri != null) {
+                java.io.OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                if (outputStream != null) {
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+
+                    // Le avisamos a Android que ya terminamos para que lo muestre
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        values.clear();
+                        values.put(android.provider.MediaStore.Images.Media.IS_PENDING, 0);
+                        getContentResolver().update(uri, values, null, null);
+                    }
+
+                    Toast.makeText(this, "¡QR guardado! Revisa la carpeta Pictures/INMIA", Toast.LENGTH_LONG).show();
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 }

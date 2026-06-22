@@ -273,6 +273,9 @@
         <activity
             android:name=".cliente.ClienteCambiarPasswordActivity"
             android:exported="false" />
+        <activity
+            android:name=".cliente.ClienteVerTodosActivity"
+            android:exported="false" />
 
     </application>
 
