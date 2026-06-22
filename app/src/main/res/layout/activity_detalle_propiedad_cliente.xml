@@ -66,6 +66,7 @@
                         android:padding="9dp"
                         android:src="@drawable/ic_more_vert"
                         app:tint="#FFFFFF"/>
+
                 </FrameLayout>
 
                 <TextView

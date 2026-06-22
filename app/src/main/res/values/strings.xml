@@ -261,5 +261,6 @@
     <string name="admin_reportes_asesor_ventas">Ventas</string>
     <string name="admin_reportes_asesor_citas">Citas</string>
     <string name="admin_reportes_asesor_monto">Monto</string>
-
+    <string name="scan_qr">Escanear código QR</string>
+    <string name="see_all">Ver todos</string>
 </resources>
