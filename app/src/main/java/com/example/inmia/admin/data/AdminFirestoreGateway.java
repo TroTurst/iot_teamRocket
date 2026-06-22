@@ -437,17 +437,6 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 .addOnFailureListener(callback::onError);
     }
 
-    public void updateProjectImagenes(String projectId, List<String> urls, FirestoreCallback<Void> callback) {
-        if (projectId == null || projectId.trim().isEmpty()) {
-            callback.onError(new IllegalArgumentException("projectId vacío"));
-            return;
-        }
-        db.collection("proyectos").document(projectId)
-                .update("imagenesUrls", urls != null ? urls : new ArrayList<>())
-                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
-                .addOnFailureListener(callback::onError);
-    }
-
     public void assignAllProjectsByDistritos(String asesorId, List<String> distritos, String companyId, FirestoreCallback<Integer> callback) {
         if (asesorId == null || asesorId.trim().isEmpty()) {
             callback.onError(new IllegalArgumentException("asesorId vacío"));

@@ -87,6 +87,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
     private Proyecto currentProyecto;
     private Tipologia currentTipologia;
+    private boolean isActivityDestroyed = false;
 
     private List<String> currentImageUrls = new ArrayList<>();
 
@@ -346,7 +347,9 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         List<String> urls = p.getImagenesUrls();
         if (urls != null && !urls.isEmpty()) {
             currentImageUrls = new ArrayList<>(urls);
-            Glide.with(this).load(urls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            if (!isDestroyed()) {
+                Glide.with(this).load(urls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            }
             renderizarMiniaturasUrls(urls);
         } else if (p.getImagenHeroPrincipal() != 0) {
             imgHeroProyecto.setImageResource(p.getImagenHeroPrincipal());
@@ -427,13 +430,17 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         List<String> tipUrls = tipologia.getImagenesUrls();
         if (tipUrls != null && !tipUrls.isEmpty()) {
             currentImageUrls = new ArrayList<>(tipUrls);
-            Glide.with(this).load(tipUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            if (!isDestroyed()) {
+                Glide.with(this).load(tipUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+            }
             renderizarMiniaturasUrls(tipUrls);
         } else {
             List<String> projUrls = currentProyecto.getImagenesUrls();
             if (projUrls != null && !projUrls.isEmpty()) {
                 currentImageUrls = new ArrayList<>(projUrls);
-                Glide.with(this).load(projUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+                if (!isDestroyed()) {
+                    Glide.with(this).load(projUrls.get(0)).placeholder(R.drawable.ic_add).centerCrop().into(imgHeroProyecto);
+                }
                 renderizarMiniaturasUrls(projUrls);
             } else {
                 currentImageUrls = new ArrayList<>();
@@ -585,6 +592,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        isActivityDestroyed = true;
         super.onDestroy();
         if (mapaAdminProyecto != null) mapaAdminProyecto.onDetach();
     }

@@ -50,7 +50,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
@@ -118,6 +120,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private ImageView imgHeroProyectoNuevo;
     private RecyclerView rvGaleriaNuevo;
     private GaleriaFotosAdapter galeriaAdapter;
+    private Tipologia tipologiaPhotoTarget = null;
 
     private String extractDistrict(Place place) {
         if (place.getAddressComponents() == null) return "";
@@ -143,6 +146,17 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                 }
             });
 
+    private final ActivityResultLauncher<String> tipologiaFotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null && tipologiaPhotoTarget != null) {
+                    List<String> urls = tipologiaPhotoTarget.getImagenesUrls();
+                    urls.add(uri.toString());
+                    tipologiaPhotoTarget.setImagenesUrls(urls);
+                    tipologiasAdapter.notifyDataSetChanged();
+                    tipologiaPhotoTarget = null;
+                }
+            });
+
     private final ActivityResultLauncher<String> galeriaFotoLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
@@ -151,105 +165,74 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                 }
             });
 
-    private void subirImagenesYGuardar(Proyecto proyecto, String projectId) {
-        List<String> todasUrls = new ArrayList<>();
-        // Add hero URL placeholder
-        todasUrls.add("");
-        final int[] uploadCount = {0};
-        int totalSubidas = (heroFotoUri != null ? 1 : 0) + galeriaUris.size();
+    private void subirFotosYGuardar(Proyecto proyecto, String projectId) {
+        int total = (heroFotoUri != null ? 1 : 0) + galeriaUris.size();
+        final Map<Integer, List<String>> tipUrlsMap = new HashMap<>();
+        int tipLocal = 0;
+        for (int t = 0; t < proyecto.getTipologias().size(); t++) {
+            Tipologia tip = proyecto.getTipologias().get(t);
+            if (tip.getImagenesUrls() == null) continue;
+            List<String> existing = new ArrayList<>();
+            for (String url : tip.getImagenesUrls()) {
+                if (url != null && url.startsWith("http")) existing.add(url);
+                else if (url != null && !url.isEmpty()) tipLocal++;
+            }
+            tipUrlsMap.put(t, existing);
+        }
+        final int totalUploads = total + tipLocal;
 
-        if (totalSubidas == 0) {
-            proyecto.setImagenesUrls(new ArrayList<>());
-            gateway.updateProjectImagenes(projectId, new ArrayList<>(),
-                    new AdminFirestoreGateway.FirestoreCallback<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(AdminProyectoNuevoActivity.this,
-                                        "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
-                                finish();
-                            });
-                        }
+        final List<String> projectUrls = new ArrayList<>();
+        final int[] completed = {0};
+        final Proyecto finalProyecto = proyecto;
+        final String finalProjectId = projectId;
 
-                        @Override
-                        public void onError(Exception e) {
-                            runOnUiThread(() -> finish());
-                        }
-                    });
+        Runnable checkDone = () -> {
+            completed[0]++;
+            if (completed[0] == totalUploads) {
+                finalProyecto.setImagenesUrls(projectUrls);
+                for (int i = 0; i < finalProyecto.getTipologias().size(); i++) {
+                    List<String> u = tipUrlsMap.get(i);
+                    if (u != null) finalProyecto.getTipologias().get(i).setImagenesUrls(u);
+                }
+                gateway.updateProject(finalProjectId, finalProyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                    @Override public void onSuccess(Void v) {
+                        LogHelper.registrar("Se creó el proyecto " + finalProyecto.getNombre() + (companyName != null ? " en " + companyName : ""), com.example.inmia.models.Log.TIPO_PROYECTO, LogHelper.ROL_ADMIN);
+                        runOnUiThread(() -> { Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show(); finish(); });
+                    }
+                    @Override public void onError(Exception e) { runOnUiThread(() -> { btnCrearProyecto.setEnabled(true); btnCrearProyecto.setText("Crear proyecto"); Toast.makeText(AdminProyectoNuevoActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show(); }); }
+                });
+            }
+        };
+
+        if (totalUploads == 0) {
+            finalProyecto.setImagenesUrls(new ArrayList<>());
+            gateway.saveProject(finalProyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
+                @Override public void onSuccess(String id) { runOnUiThread(() -> { Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show(); finish(); }); }
+                @Override public void onError(Exception e) { runOnUiThread(() -> finish()); }
+            });
             return;
         }
 
         if (heroFotoUri != null) {
-            StorageReference heroRef = FirebaseStorage.getInstance().getReference()
-                    .child("proyectos/" + projectId + "/hero_0.jpg");
-            heroRef.putFile(heroFotoUri)
-                    .addOnSuccessListener(task -> heroRef.getDownloadUrl()
-                            .addOnSuccessListener(url -> {
-                                todasUrls.add(0, url.toString());
-                                uploadCount[0]++;
-                                if (uploadCount[0] == totalSubidas) {
-                                    finalizarConUrls(projectId, todasUrls);
-                                }
-                            }))
-                    .addOnFailureListener(e -> {
-                        todasUrls.add(0, "");
-                        uploadCount[0]++;
-                        if (uploadCount[0] == totalSubidas) {
-                            finalizarConUrls(projectId, todasUrls);
-                        }
-                    });
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/hero_0.jpg");
+            r.putFile(heroFotoUri).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { projectUrls.add(0, u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
         }
-
         for (int i = 0; i < galeriaUris.size(); i++) {
-            final int idx = i;
-            Uri uri = galeriaUris.get(i);
-            StorageReference galRef = FirebaseStorage.getInstance().getReference()
-                    .child("proyectos/" + projectId + "/gallery_" + i + ".jpg");
-            galRef.putFile(uri)
-                    .addOnSuccessListener(task -> galRef.getDownloadUrl()
-                            .addOnSuccessListener(url -> {
-                                todasUrls.add(url.toString());
-                                uploadCount[0]++;
-                                if (uploadCount[0] == totalSubidas) {
-                                    finalizarConUrls(projectId, todasUrls);
-                                }
-                            }))
-                    .addOnFailureListener(e -> {
-                        todasUrls.add("");
-                        uploadCount[0]++;
-                        if (uploadCount[0] == totalSubidas) {
-                            finalizarConUrls(projectId, todasUrls);
-                        }
-                    });
+            int fi = i;
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/gallery_" + fi + ".jpg");
+            r.putFile(galeriaUris.get(i)).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { projectUrls.add(u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
         }
-    }
-
-    private void finalizarConUrls(String projectId, List<String> urls) {
-        List<String> cleanUrls = new ArrayList<>();
-        for (String url : urls) {
-            if (url != null && !url.isEmpty()) cleanUrls.add(url);
+        for (int t = 0; t < finalProyecto.getTipologias().size(); t++) {
+            final int ft = t;
+            List<String> src = finalProyecto.getTipologias().get(t).getImagenesUrls();
+            if (src == null) continue;
+            for (int p = 0; p < src.size(); p++) {
+                String url = src.get(p);
+                if (url == null || url.isEmpty() || url.startsWith("http")) continue;
+                StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/tipologia_" + ft + "_" + p + ".jpg");
+                r.putFile(Uri.parse(url)).addOnSuccessListener(task -> r.getDownloadUrl().addOnSuccessListener(dl -> { synchronized(tipUrlsMap) { List<String> l = tipUrlsMap.get(ft); if (l == null) { l = new ArrayList<>(); tipUrlsMap.put(ft, l); } l.add(dl.toString()); } checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+            }
         }
-        gateway.updateProjectImagenes(projectId, cleanUrls,
-                new AdminFirestoreGateway.FirestoreCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(AdminProyectoNuevoActivity.this,
-                                    "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
-                            finish();
-                        });
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(AdminProyectoNuevoActivity.this,
-                                    "Proyecto creado, error al guardar fotos",
-                                    Toast.LENGTH_LONG).show();
-                            finish();
-                        });
-                    }
-                });
     }
 
     @Override
@@ -303,6 +286,18 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                     tipologiasAdapter.notifyDataSetChanged();
                 },
                 (tipologia, position) -> {
+                },
+                (tipologia, position) -> {
+                    tipologiaPhotoTarget = tipologia;
+                    tipologiaFotoLauncher.launch("image/*");
+                },
+                (tipologia, fotoIndex) -> {
+                    List<String> urls = tipologia.getImagenesUrls();
+                    if (fotoIndex >= 0 && fotoIndex < urls.size()) {
+                        urls.remove(fotoIndex);
+                        tipologia.setImagenesUrls(urls);
+                        tipologiasAdapter.notifyDataSetChanged();
+                    }
                 }
         );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
@@ -562,17 +557,15 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         proyecto.setImagenHeroPrincipal(R.drawable.onboarding1);
 
         btnCrearProyecto.setEnabled(false);
-        btnCrearProyecto.setText("Creando...");
+        btnCrearProyecto.setText("Subiendo fotos...");
 
         gateway.saveProject(proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
             @Override
             public void onSuccess(String projectId) {
-                LogHelper.registrar(
-                        "Se creó el proyecto " + titulo
-                                + (companyName != null ? " en " + companyName : ""),
-                        com.example.inmia.models.Log.TIPO_PROYECTO,
-                        LogHelper.ROL_ADMIN);
-                subirImagenesYGuardar(proyecto, projectId);
+                LogHelper.registrar("Se creó el proyecto " + titulo + (companyName != null ? " en " + companyName : ""), com.example.inmia.models.Log.TIPO_PROYECTO, LogHelper.ROL_ADMIN);
+
+                btnCrearProyecto.setText("Subiendo fotos...");
+                subirFotosYGuardar(proyecto, projectId);
             }
 
             @Override
