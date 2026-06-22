@@ -28,4 +28,35 @@
         <item>Terminada</item>
         <item>Cancelada</item>
     </string-array>
+
+    <array name="precio_initial">
+        <item>0</item>
+        <item>2000000</item>
+    </array>
+
+    <array name="area_initial">
+        <item>0</item>
+        <item>500</item>
+    </array>
+
+    <array name="dormitorios_initial">
+        <item>1</item>
+        <item>5</item>
+    </array>
+
+    <string-array name="tipologias_min_options">
+        <item>Sin minimo</item>
+        <item>Al menos 1</item>
+        <item>Al menos 2</item>
+        <item>Al menos 3</item>
+        <item>Al menos 5</item>
+    </string-array>
+
+    <string-array name="ordenar_por_options">
+        <item>Sin orden</item>
+        <item>Precio: Mayor a menor</item>
+        <item>Precio: Menor a mayor</item>
+        <item>Nombre: A-Z</item>
+        <item>Nombre: Z-A</item>
+    </string-array>
 </resources>

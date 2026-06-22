@@ -2,29 +2,46 @@ package com.example.inmia.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.adapters.SugerenciasAdapter;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.example.inmia.util.LogHelper;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AdminProyectoEditarActivity extends AppCompatActivity {
@@ -36,6 +53,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     private String companyId;
     private String companyName;
     private String proyectoId;
+    private View btnEditarDatosProyecto;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -73,6 +91,15 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
     private Proyecto proyectoOriginal;
 
+    private static final LatLng LIMA_SW = new LatLng(-12.25, -77.20);
+    private static final LatLng LIMA_NE = new LatLng(-11.85, -76.85);
+
+    private PlacesClient placesClient;
+
+    private double selLat = 0;
+    private double selLng = 0;
+    private String selPlaceId = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,12 +116,15 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackEditarProyecto);
+        btnEditarDatosProyecto = findViewById(R.id.btnEditarDatosProyecto);
         btnAgregarTipologia = findViewById(R.id.btnAgregarTipologia);
         btnActualizarProyecto = findViewById(R.id.btnActualizarProyecto);
         rvTipologiasAgregadas = findViewById(R.id.rvTipologiasAgregadas);
 
         etTitulo = findViewById(R.id.etTituloProyecto);
         etUbicacion = findViewById(R.id.etUbicacionProyecto);
+        etTitulo.setEnabled(false);
+        etUbicacion.setEnabled(false);
         etDescripcion = findViewById(R.id.etDescripcionProyecto);
         etPrecio = findViewById(R.id.etPrecioProyecto);
         etArea = findViewById(R.id.etAreaProyecto);
@@ -133,11 +163,15 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
+        placesClient = com.google.android.libraries.places.api.Places.createClient(this);
+
         configurarSpinners();
         resolverContextoAdmin();
         cargarProyectoExistente();
 
         btnBack.setOnClickListener(v -> finish());
+
+        btnEditarDatosProyecto.setOnClickListener(v -> mostrarDialogoEditarDatos());
 
         btnAgregarTipologia.setOnClickListener(v -> agregarTipologiaDesdeFormulario());
 
@@ -193,9 +227,22 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Proyecto proyecto) {
                 proyectoOriginal = proyecto;
+                
+                if ("Entregado".equalsIgnoreCase(proyecto.getEstadoProyecto())) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(AdminProyectoEditarActivity.this, 
+                            "Proyecto entregado, no se puede editar", Toast.LENGTH_LONG).show();
+                        finish();
+                    });
+                    return;
+                }
+                
                 runOnUiThread(() -> {
                     etTitulo.setText(proyecto.getNombre());
                     etUbicacion.setText(proyecto.getUbicacion());
+                    selLat = proyecto.getLatitud();
+                    selLng = proyecto.getLongitud();
+                    selPlaceId = null;
                     etDescripcion.setText(proyecto.getDescripcion());
 
                     String estado = proyecto.getEstadoProyecto();
@@ -383,6 +430,8 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre(titulo);
         proyecto.setUbicacion(ubicacion.isEmpty() ? "Sin ubicación" : ubicacion);
+        proyecto.setLatitud(selLat);
+        proyecto.setLongitud(selLng);
         proyecto.setDescripcion(descripcion.isEmpty() ? "Sin descripción" : descripcion);
         proyecto.setEstadoProyecto(estado.isEmpty() ? "En planos" : estado);
         proyecto.setInmobiliaria(companyName != null ? companyName : "Inmobiliaria");
@@ -449,5 +498,140 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private void mostrarDialogoEditarDatos() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_editar_datos_proyecto, null);
+        builder.setView(dialogView);
+
+        TextInputEditText etDialogTitulo = dialogView.findViewById(R.id.etDialogTitulo);
+        TextInputEditText etDialogUbicacion = dialogView.findViewById(R.id.etDialogUbicacion);
+        RecyclerView rvDialogSugerencias = dialogView.findViewById(R.id.rvDialogSugerencias);
+        TextView tvDialogDireccionSeleccionada = dialogView.findViewById(R.id.tvDialogDireccionSeleccionada);
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnDialogCancelar);
+        MaterialButton btnGuardar = dialogView.findViewById(R.id.btnDialogGuardar);
+
+        etDialogTitulo.setText(etTitulo.getText());
+        etDialogUbicacion.setText(etUbicacion.getText());
+
+        final AutocompleteSessionToken[] dialogSessionToken = { AutocompleteSessionToken.newInstance() };
+        SugerenciasAdapter dialogAdapter = new SugerenciasAdapter(prediction -> {
+            rvDialogSugerencias.setVisibility(View.GONE);
+            String fullText = prediction.getFullText(null).toString();
+            etDialogUbicacion.setText(fullText);
+            etDialogUbicacion.setSelection(fullText.length());
+
+            List<Place.Field> fields = Arrays.asList(
+                    Place.Field.ID,
+                    Place.Field.LAT_LNG,
+                    Place.Field.ADDRESS
+            );
+
+            FetchPlaceRequest fetchRequest = FetchPlaceRequest.builder(prediction.getPlaceId(), fields)
+                    .setSessionToken(dialogSessionToken[0])
+                    .build();
+
+            placesClient.fetchPlace(fetchRequest)
+                    .addOnSuccessListener(response -> {
+                        Place place = response.getPlace();
+                        LatLng latLng = place.getLatLng();
+                        if (latLng != null) {
+                            selLat = latLng.latitude;
+                            selLng = latLng.longitude;
+                        }
+                        selPlaceId = place.getId();
+
+                        String address = place.getAddress();
+                        tvDialogDireccionSeleccionada.setText(address + "\n(" + selLat + ", " + selLng + ")");
+                        tvDialogDireccionSeleccionada.setVisibility(View.VISIBLE);
+
+                        dialogSessionToken[0] = AutocompleteSessionToken.newInstance();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("AdminEditar", "fetchPlace falló", e);
+                        Toast.makeText(AdminProyectoEditarActivity.this,
+                                "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                    });
+        });
+        rvDialogSugerencias.setLayoutManager(new LinearLayoutManager(this));
+        rvDialogSugerencias.setAdapter(dialogAdapter);
+
+        Handler dialogDebounceHandler = new Handler(Looper.getMainLooper());
+        Runnable[] dialogDebounceRunnable = new Runnable[1];
+
+        etDialogUbicacion.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (dialogDebounceRunnable[0] != null) {
+                    dialogDebounceHandler.removeCallbacks(dialogDebounceRunnable[0]);
+                }
+                String query = s.toString().trim();
+                if (query.length() < 3) {
+                    rvDialogSugerencias.setVisibility(View.GONE);
+                    return;
+                }
+                dialogDebounceRunnable[0] = () -> {
+                    RectangularBounds bounds = RectangularBounds.newInstance(LIMA_SW, LIMA_NE);
+                    FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                            .setSessionToken(dialogSessionToken[0])
+                            .setLocationBias(bounds)
+                            .setCountries("PE")
+                            .setQuery(query)
+                            .build();
+
+                    placesClient.findAutocompletePredictions(request)
+                            .addOnSuccessListener(response -> {
+                                dialogAdapter.setData(response.getAutocompletePredictions());
+                                rvDialogSugerencias.setVisibility(
+                                        response.getAutocompletePredictions().isEmpty() ? View.GONE : View.VISIBLE);
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("AdminEditar", "Dialog autocomplete falló", e);
+                                rvDialogSugerencias.setVisibility(View.GONE);
+                            });
+                };
+                dialogDebounceHandler.postDelayed(dialogDebounceRunnable[0], 300);
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+
+        btnGuardar.setOnClickListener(v -> {
+            String nuevoTitulo = etDialogTitulo.getText() != null ? etDialogTitulo.getText().toString().trim() : "";
+            String nuevaUbicacion = etDialogUbicacion.getText() != null ? etDialogUbicacion.getText().toString().trim() : "";
+
+            if (nuevoTitulo.isEmpty()) {
+                Toast.makeText(AdminProyectoEditarActivity.this,
+                        "El nombre del proyecto no puede estar vacío", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (nuevaUbicacion.isEmpty()) {
+                Toast.makeText(AdminProyectoEditarActivity.this,
+                        "Ingresa la dirección del proyecto", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            etTitulo.setText(nuevoTitulo);
+            etUbicacion.setText(nuevaUbicacion.isEmpty() ? "Sin ubicación" : nuevaUbicacion);
+
+            if (proyectoOriginal != null) {
+                proyectoOriginal.setNombre(nuevoTitulo);
+                proyectoOriginal.setUbicacion(nuevaUbicacion.isEmpty() ? "Sin ubicación" : nuevaUbicacion);
+                proyectoOriginal.setLatitud(selLat);
+                proyectoOriginal.setLongitud(selLng);
+            }
+
+            dialog.dismiss();
+            Toast.makeText(AdminProyectoEditarActivity.this, "Datos actualizados", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.show();
     }
 }

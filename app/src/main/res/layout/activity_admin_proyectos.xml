@@ -181,14 +181,35 @@ android:textColor="#000000"
                                 android:textColorHint="#9CB7B7"
                                 android:textSize="16sp" />
 
-                            <ImageView
-                                android:id="@+id/btnFiltroMock"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                            <FrameLayout
+                                android:id="@+id/btnFiltros"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
                                 android:clickable="true"
-                                android:contentDescription="Filtros"
                                 android:focusable="true"
-                                android:src="@android:drawable/ic_menu_sort_by_size" />
+                                android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    android:contentDescription="Filtros"
+                                    android:src="@android:drawable/ic_menu_sort_by_size"
+                                    app:tint="@color/inmia_teal_dark" />
+
+                                <TextView
+                                    android:id="@+id/tvBadgeFiltros"
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="top|end"
+                                    android:background="@drawable/badge_background"
+                                    android:gravity="center"
+                                    android:text="!"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="8sp"
+                                    android:textStyle="bold"
+                                    android:visibility="gone" />
+                            </FrameLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 

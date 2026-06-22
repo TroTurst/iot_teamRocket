@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_blanco_redondeado_arriba"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Filtros"
+            android:textColor="@color/inmia_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnCerrarFiltros"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/inmia_teal_dark" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Estado del proyecto"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupEstados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleSelection="false"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="4dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEnPlanos"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En planos"
+                    app:chipBackgroundColor="@drawable/chip_background_color"
+                    android:textColor="@drawable/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEnPreventa"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En preventa"
+                    app:chipBackgroundColor="@drawable/chip_background_color"
+                    android:textColor="@drawable/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEnVenta"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En venta"
+                    app:chipBackgroundColor="@drawable/chip_background_color"
+                    android:textColor="@drawable/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEntregado"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entregado"
+                    app:chipBackgroundColor="@drawable/chip_background_color"
+                    android:textColor="@drawable/chip_text_color" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Precio (S/)"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPrecioRango"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="S/ 0 - S/ 2,000,000"
+                android:textColor="#7A9E9E"
+                android:textSize="12sp" />
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sliderPrecio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:valueFrom="0"
+                android:valueTo="2000000"
+                android:stepSize="10000"
+                app:values="@array/precio_initial"
+                app:labelBehavior="floating" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Area (m²)"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAreaRango"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="0 - 500 m²"
+                android:textColor="#7A9E9E"
+                android:textSize="12sp" />
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sliderArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:valueFrom="0"
+                android:valueTo="500"
+                android:stepSize="5"
+                app:values="@array/area_initial"
+                app:labelBehavior="floating" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Dormitorios"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDormitoriosRango"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="1 - 5+"
+                android:textColor="#7A9E9E"
+                android:textSize="12sp" />
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sliderDormitorios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:valueFrom="1"
+                android:valueTo="5"
+                android:stepSize="1"
+                app:values="@array/dormitorios_initial"
+                app:labelBehavior="floating" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Minimo de tipologias"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerTipologias"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Ordenar por"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerOrdenar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutOtrosFiltrosHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Otros filtros"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/ivArrowOtrosFiltros"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/arrow_down_float"
+                    app:tint="@color/inmia_teal_dark" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutOtrosFiltros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchPetFriendly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Pet friendly"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchAscensor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con ascensor"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchTerraza"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con terraza"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchBalcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con balcon"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchAireAcondicionado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con aire acondicionado"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchCocinaIntegrada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con cocina integrada"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchAmueblado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Amueblado"
+                    android:textColor="@color/inmia_text" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchPersianas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Con persianas automaticas"
+                    android:textColor="@color/inmia_text" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLimpiarFiltros"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Limpiar"
+            android:textAllCaps="false"
+            android:textColor="@color/inmia_teal_dark"
+            app:cornerRadius="24dp"
+            app:strokeColor="@color/inmia_teal_dark" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAplicarFiltros"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Aplicar"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/inmia_teal_dark"
+            app:cornerRadius="24dp" />
+    </LinearLayout>
+
+</LinearLayout>

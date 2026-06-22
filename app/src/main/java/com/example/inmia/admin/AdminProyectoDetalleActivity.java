@@ -28,6 +28,7 @@ import com.google.android.material.chip.ChipGroup;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
     private int heroImageResActual = 0;
 
     private MapView mapaAdminProyecto;
+    private View cardMapaProyecto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,12 +146,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         chipGroupTipologiaFeatures = findViewById(R.id.chipGroupTipologiaFeatures);
 
         mapaAdminProyecto = findViewById(R.id.mapaAdminProyecto);
-        if (mapaAdminProyecto != null) {
-            mapaAdminProyecto.setMultiTouchControls(true);
-            GeoPoint puntoInicio = new GeoPoint(-12.046374, -77.042793);
-            mapaAdminProyecto.getController().setZoom(15.0);
-            mapaAdminProyecto.getController().setCenter(puntoInicio);
-        }
+        cardMapaProyecto = findViewById(R.id.cardMapaProyecto);
 
         configurarSeleccion();
         configurarRecyclerMiniaturas();
@@ -302,6 +299,8 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
             imgHeroProyecto.setImageResource(p.getImagenHeroPrincipal());
         }
 
+        configurarMapa(p);
+
         // Ficha proyecto
         setTextOrDash(tvInmobiliariaProyecto, p.getInmobiliaria());
         setTextOrDash(tvReferenciaProyecto, p.getReferencia());
@@ -324,6 +323,43 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
             addChip(chipGroupProyectoExtras, "—");
         }
 
+        // Ocultar botón editar si el proyecto está entregado
+        View btnEditar = findViewById(R.id.btnEditarProyectoDetalle);
+        if (btnEditar != null) {
+            if ("Entregado".equalsIgnoreCase(p.getEstadoProyecto())) {
+                btnEditar.setVisibility(View.GONE);
+            } else {
+                btnEditar.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void configurarMapa(Proyecto p) {
+        if (mapaAdminProyecto == null || cardMapaProyecto == null) return;
+
+        if (p.getLatitud() == 0 && p.getLongitud() == 0) {
+            cardMapaProyecto.setVisibility(View.GONE);
+            return;
+        }
+
+        cardMapaProyecto.setVisibility(View.VISIBLE);
+        mapaAdminProyecto.setMultiTouchControls(true);
+
+        GeoPoint puntoProyecto = new GeoPoint(p.getLatitud(), p.getLongitud());
+        mapaAdminProyecto.getController().setZoom(15.0);
+        mapaAdminProyecto.getController().setCenter(puntoProyecto);
+
+        Marker marker = new Marker(mapaAdminProyecto);
+        marker.setPosition(puntoProyecto);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker.setTitle(p.getNombre());
+        marker.setSnippet(p.getUbicacion());
+        marker.setOnMarkerClickListener((m, mapView) -> {
+            m.showInfoWindow();
+            return true;
+        });
+        mapaAdminProyecto.getOverlays().add(marker);
+        mapaAdminProyecto.invalidate();
     }
 
     private void mostrarTipologia(Tipologia tipologia) {

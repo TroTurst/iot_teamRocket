@@ -575,6 +575,8 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
         Map<String, Object> ubicacion = new HashMap<>();
         ubicacion.put("direccion", proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "");
+        ubicacion.put("latitud", proyecto.getLatitud());
+        ubicacion.put("longitud", proyecto.getLongitud());
         projectData.put("ubicacion", ubicacion);
 
         List<Map<String, Object>> tipologiasList = new ArrayList<>();
@@ -641,6 +643,8 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
         Map<String, Object> ubicacion = new HashMap<>();
         ubicacion.put("direccion", proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "");
+        ubicacion.put("latitud", proyecto.getLatitud());
+        ubicacion.put("longitud", proyecto.getLongitud());
         projectData.put("ubicacion", ubicacion);
 
         List<Map<String, Object>> tipologiasList = new ArrayList<>();
@@ -718,7 +722,10 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         proyecto.setId(doc.getId());
         proyecto.setNombre(safeString(doc.getString("nombre"), "Proyecto sin nombre"));
         proyecto.setDescripcion(safeString(doc.getString("descripcion"), ""));
-        proyecto.setUbicacion(extractDireccion(doc.get("ubicacion")));
+        Map<String, Object> ubicacionMap = getMap(doc.get("ubicacion"));
+        proyecto.setUbicacion(extractDireccion(ubicacionMap));
+        proyecto.setLatitud(getDouble(ubicacionMap, "latitud", 0.0));
+        proyecto.setLongitud(getDouble(ubicacionMap, "longitud", 0.0));
         proyecto.setEstadoProyecto(mapEstadoProyecto(doc.getString("estado")));
         proyecto.setImagenHeroPrincipal(R.drawable.onboarding1);
         proyecto.setInmobiliaria(safeString(doc.getString("inmobiliariaNombre"), companyId));
@@ -856,9 +863,8 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         return winner;
     }
 
-    private String extractDireccion(Object value) {
-        Map<String, Object> ubicacion = getMap(value);
-        if (ubicacion.isEmpty()) {
+    private String extractDireccion(Map<String, Object> ubicacion) {
+        if (ubicacion == null || ubicacion.isEmpty()) {
             return "Ubicación no disponible";
         }
         return safeString(ubicacion.get("direccion"), "Ubicación no disponible");
@@ -866,7 +872,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
     private String mapEstadoProyecto(String rawEstado) {
         if (rawEstado == null) {
-            return "Venta";
+            return "En venta";
         }
         String normalized = rawEstado.trim().toLowerCase(Locale.getDefault());
         if (normalized.contains("plan")) {
@@ -874,6 +880,9 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         }
         if (normalized.contains("pre")) {
             return "En preventa";
+        }
+        if (normalized.contains("entreg")) {
+            return "Entregado";
         }
         return "En venta";
     }
