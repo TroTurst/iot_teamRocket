@@ -1,6 +1,7 @@
 package com.example.inmia.cliente;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -57,6 +58,7 @@ public class ClienteChatActivity extends AppCompatActivity {
         recibirDatosDelChat();
         cargarMensajesEnTiempoReal();
         configurarBotonEnviar();
+
     }
 
     private void inicializarVistas() {
@@ -156,4 +158,6 @@ public class ClienteChatActivity extends AppCompatActivity {
                     });
         });
     }
+
+
 }
