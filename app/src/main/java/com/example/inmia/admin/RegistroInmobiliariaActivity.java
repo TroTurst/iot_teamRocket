@@ -27,6 +27,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
@@ -365,31 +370,96 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
                 ? mAuth.getCurrentUser().getUid() : "";
         String nombreEmpresa = getText(etNombreEmpresa);
 
-        db.collection("usuarios").document(adminId)
-                .update("esPrimeraVez", false)
-                .addOnSuccessListener(unused -> {
-                    LogHelper.registrar(
-                            "Se completó el registro de la inmobiliaria " + nombreEmpresa,
-                            Log.TIPO_PROYECTO,
-                            LogHelper.ROL_ADMIN,
-                            nombreEmpresa, adminId);
-                    Toast.makeText(this,
-                            "¡Inmobiliaria registrada exitosamente!",
-                            Toast.LENGTH_LONG).show();
+        // Collect selected photo URIs
+        final List<Uri> fotosParaSubir = new ArrayList<>();
+        if (uriFoto1 != null) fotosParaSubir.add(uriFoto1);
+        if (uriFoto2 != null) fotosParaSubir.add(uriFoto2);
+        if (uriFoto3 != null) fotosParaSubir.add(uriFoto3);
+        if (uriFoto4 != null) fotosParaSubir.add(uriFoto4);
 
-                    Intent intent = new Intent(this, AdminHomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+        if (fotosParaSubir.isEmpty()) {
+            // No photos to upload, just save
+            db.collection("usuarios").document(adminId)
+                    .update("esPrimeraVez", false)
+                    .addOnSuccessListener(unused -> continuar(nombreEmpresa, adminId, null))
+                    .addOnFailureListener(e -> fallo("Error al guardar: " + e.getMessage()));
+            return;
+        }
+
+        // Get inmobiliariaId first
+        db.collection("usuarios").document(adminId).get()
+                .addOnSuccessListener(adminDoc -> {
+                    String inmobId = adminDoc.getString("inmobiliariaId");
+                    if (inmobId == null || inmobId.isEmpty()) {
+                        continuar(nombreEmpresa, adminId, null);
+                        return;
+                    }
+
+                    final List<String> uploadedUrls = new ArrayList<>();
+                    final int[] completed = {0};
+                    final int total = fotosParaSubir.size();
+
+                    for (int i = 0; i < fotosParaSubir.size(); i++) {
+                        final int idx = i;
+                        Uri uri = fotosParaSubir.get(i);
+                        StorageReference ref = FirebaseStorage.getInstance().getReference()
+                                .child("fotos_inmobiliaria/" + inmobId + "/promo_" + idx + ".jpg");
+                        ref.putFile(uri)
+                                .addOnSuccessListener(task -> ref.getDownloadUrl()
+                                        .addOnSuccessListener(url -> {
+                                            uploadedUrls.add(url.toString());
+                                            completed[0]++;
+                                            if (completed[0] == total) {
+                                                guardarFotosYFinalizar(inmobId, uploadedUrls, nombreEmpresa, adminId);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            completed[0]++;
+                                            if (completed[0] == total) {
+                                                guardarFotosYFinalizar(inmobId, uploadedUrls, nombreEmpresa, adminId);
+                                            }
+                                        }))
+                                .addOnFailureListener(e -> {
+                                    completed[0]++;
+                                    if (completed[0] == total) {
+                                        guardarFotosYFinalizar(inmobId, uploadedUrls, nombreEmpresa, adminId);
+                                    }
+                                });
+                    }
                 })
-                .addOnFailureListener(e -> {
-                    btnGuardar.setEnabled(true);
-                    btnGuardar.setText("Guardar y continuar");
-                    Toast.makeText(this,
-                            "Error al guardar: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> fallo("Error al obtener datos: " + e.getMessage()));
+    }
+
+    private void guardarFotosYFinalizar(String inmobId, List<String> urls, String nombreEmpresa, String adminId) {
+        db.collection("inmobiliarias").document(inmobId)
+                .update("fotosPromo", urls)
+                .addOnSuccessListener(unused -> continuar(nombreEmpresa, adminId, null))
+                .addOnFailureListener(e -> continuar(nombreEmpresa, adminId, null));
+    }
+
+    private void continuar(String nombreEmpresa, String adminId, Void unused) {
+        LogHelper.registrar(
+                "Se completó el registro de la inmobiliaria " + nombreEmpresa,
+                Log.TIPO_PROYECTO,
+                LogHelper.ROL_ADMIN,
+                nombreEmpresa, adminId);
+        Toast.makeText(this,
+                "¡Inmobiliaria registrada exitosamente!",
+                Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(this, AdminHomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void fallo(String msg) {
+        runOnUiThread(() -> {
+            btnGuardar.setEnabled(true);
+            btnGuardar.setText("Guardar y continuar");
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private String getText(TextInputEditText et) {
