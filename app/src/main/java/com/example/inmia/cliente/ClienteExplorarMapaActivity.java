@@ -1,8 +1,6 @@
 package com.example.inmia.cliente;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 
 import com.example.inmia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,13 +16,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.osmdroid.config.Configuration;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-
-public class ClienteExplorarMapaActivity extends AppCompatActivity {
-    private MapView mapaReal;
+public class ClienteExplorarMapaActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MaterialCardView cardFloatingProperty;
     private TextView tvTextoUbicacion;
     private TextView tvTextoPrecio;
@@ -36,18 +36,11 @@ public class ClienteExplorarMapaActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        Context ctx = getApplicationContext();
-        SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
-        Configuration.getInstance().load(ctx, prefs);
-        Configuration.getInstance().setUserAgentValue(getPackageName());
-
         setContentView(R.layout.activity_explorar_mapa_cliente);
 
-        mapaReal = findViewById(R.id.mapaReal);
-        mapaReal.setMultiTouchControls(true);
-        GeoPoint puntoInicio = new GeoPoint(-12.046374, -77.042793);
-        mapaReal.getController().setZoom(15.0);
-        mapaReal.getController().setCenter(puntoInicio);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+            .findFragmentById(R.id.mapFragment);
+        if (mapFragment != null) mapFragment.getMapAsync(this);
 
         cardFloatingProperty = findViewById(R.id.cardFloatingProperty);
         cardFloatingProperty.setOnClickListener(v -> {
@@ -111,15 +104,18 @@ public class ClienteExplorarMapaActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mapaReal != null) mapaReal.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mapaReal != null) mapaReal.onPause();
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        LatLng palmLiving = new LatLng(-12.0976, -77.0365);
+        googleMap.addMarker(new MarkerOptions()
+            .position(palmLiving)
+            .title("Palm Living")
+            .snippet("San Isidro, Lima"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(palmLiving, 15f));
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.setOnMarkerClickListener(marker -> {
+            cardFloatingProperty.setVisibility(View.VISIBLE);
+            return false;
+        });
     }
     private void mostrarBottomSheetMasFiltros() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
