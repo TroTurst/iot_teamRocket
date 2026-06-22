@@ -66,7 +66,7 @@ public class ClienteBuzonNotificacionesActivity extends AppCompatActivity {
         if (uid == null) return;
 
         db.collection("notificaciones")
-                .whereEqualTo("usuarioId", uid)
+                .whereEqualTo("usuarioId", FirebaseAuth.getInstance().getUid())
                 .orderBy("fechaCreacion", Query.Direction.DESCENDING)
                 .addSnapshotListener((snapshot, error) -> {
                     if (error != null || snapshot == null) return;
@@ -90,7 +90,6 @@ public class ClienteBuzonNotificacionesActivity extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
 
-                    // Subtítulo dinámico
                     if (tvContador != null) {
                         tvContador.setText(noLeidas > 0
                                 ? noLeidas + " sin leer"

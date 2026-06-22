@@ -1,5 +1,6 @@
 package com.example.inmia.cliente;
 
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -7,13 +8,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class NotificacionHelper {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
     public static void crearNotifMensaje(String usuarioId, String nombreAsesor, String chatId) {
+
+        Log.d("NOTIF_FLOW", "3. Entró a crearNotifMensaje");
+
         Map<String, Object> notif = new HashMap<>();
         notif.put("usuarioId", usuarioId);
         notif.put("tipo", "MENSAJE");
@@ -22,13 +24,17 @@ public class NotificacionHelper {
         notif.put("leido", false);
         notif.put("fechaCreacion", Timestamp.now());
         notif.put("referenciaId", chatId);
+
         guardar(notif);
     }
 
-
     public static void crearNotifSeparacion(String usuarioId, String nombreProyecto,
                                             String estado, String separacionId) {
+
+        Log.d("NOTIF_FLOW", "3. Entró a crearNotifSeparacion");
+
         boolean esExito = "ACEPTADA".equals(estado);
+
         Map<String, Object> notif = new HashMap<>();
         notif.put("usuarioId", usuarioId);
         notif.put("tipo", "SEPARACION");
@@ -39,12 +45,15 @@ public class NotificacionHelper {
         notif.put("leido", false);
         notif.put("fechaCreacion", Timestamp.now());
         notif.put("referenciaId", separacionId);
+
         guardar(notif);
     }
 
-
     public static void crearNotifCita(String usuarioId, String nombreAsesor,
                                       String fechaCita, String citaId) {
+
+        Log.d("NOTIF_FLOW", "3. Entró a crearNotifCita");
+
         Map<String, Object> notif = new HashMap<>();
         notif.put("usuarioId", usuarioId);
         notif.put("tipo", "CITA");
@@ -53,14 +62,19 @@ public class NotificacionHelper {
         notif.put("leido", false);
         notif.put("fechaCreacion", Timestamp.now());
         notif.put("referenciaId", citaId);
+
         guardar(notif);
     }
 
-
     private static void guardar(Map<String, Object> notif) {
+
+        Log.d("NOTIF_FLOW", "4. Entró a guardar()");
+
         db.collection("notificaciones")
                 .add(notif)
+                .addOnSuccessListener(doc ->
+                        Log.d("NOTIF_FLOW", "5. FIRESTORE OK ID = " + doc.getId()))
                 .addOnFailureListener(e ->
-                        android.util.Log.e("NotificacionHelper", "Error al guardar notif", e));
+                        Log.e("NOTIF_FLOW", "5. FIRESTORE ERROR", e));
     }
 }

@@ -29,7 +29,6 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
     private FirebaseFirestore db;
     private String citaId = "";
 
-    // Vistas
     private TextView tvNombreProyectoDetalle, tvInmobiliariaProyectoDetalle, tvUbicacionProyectoDetalle;
     private TextView tvEstadoReserva, tvFechaHoraCita, tvNombreAsesorCita, tvDetallesTipologiaCita, tvTelefonoAsesorCita;
     private ImageView imgHeroDetalleCita, imgMiniaturaProyecto;
@@ -205,7 +204,6 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                     btnHablarAsesor.setEnabled(true);
 
                     if (!query.isEmpty()) {
-                        // ¡Encontramos el chat! Sacamos su ID y nos vamos
                         String chatId = query.getDocuments().get(0).getId();
                         Intent intent = new Intent(this, ClienteChatActivity.class);
                         intent.putExtra("CHAT_ID", chatId);
