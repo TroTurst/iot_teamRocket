@@ -7,6 +7,12 @@ plugins {
 
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
 android {
     namespace 'com.example.inmia'
     compileSdk {
@@ -25,7 +31,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-            MAPS_API_KEY: properties.getProperty('MAPS_API_KEY', '')
+            MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', '')
         ]
     }
 
