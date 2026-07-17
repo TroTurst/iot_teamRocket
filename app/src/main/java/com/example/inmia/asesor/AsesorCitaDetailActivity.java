@@ -121,9 +121,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
                 citaCancelada = true;
                 AsesorFirestoreRepository.get().updateCitaEstado(citaDocId, "cancelada");
                 if (btnCancelarCita != null) {
-                    btnCancelarCita.setText("Cancelada");
-                    btnCancelarCita.setEnabled(false);
-                    btnCancelarCita.setAlpha(0.6f);
+                    btnCancelarCita.setVisibility(View.GONE);
                 }
                 if (tvEstadoCitaDetalle != null) {
                     tvEstadoCitaDetalle.setText("Cancelada");
@@ -184,9 +182,7 @@ public class AsesorCitaDetailActivity extends AppCompatActivity {
 
         citaCancelada = "Cancelada".equalsIgnoreCase(estado);
         if (citaCancelada && btnCancelarCita != null) {
-            btnCancelarCita.setText("Cancelada");
-            btnCancelarCita.setEnabled(false);
-            btnCancelarCita.setAlpha(0.6f);
+            btnCancelarCita.setVisibility(View.GONE);
         }
     }
 

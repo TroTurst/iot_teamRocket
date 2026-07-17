@@ -90,7 +90,19 @@
     <string name="admin_asesor_historial_citas">Historial de citas</string>
     <string name="admin_asesor_historial_citas_desc">Citas recientes del asesor</string>
     <string name="admin_asesor_proyectos_activos">Proyectos activos</string>
-    <string name="admin_asesor_proyectos_activos_desc">Estos son los proyectos donde Carlos Mendoza esta participando actualmente</string>
+    <string name="admin_asesor_proyectos_activos_desc">Estos son los proyectos donde %1$s está participando actualmente</string>
+
+    <string name="admin_asesor_distritos_label">Distritos de trabajo</string>
+    <string name="admin_asesor_distritos_vacio">Sin distritos asignados</string>
+    <string name="admin_asesor_distritos_editar">Editar distritos</string>
+    <string name="admin_asesor_distritos_guardar">Guardar distritos</string>
+    <string name="admin_asesor_distritos_cancelar">Cancelar</string>
+    <string name="admin_asesor_distritos_asignados">Distritos asignados: %1$d</string>
+    <string name="admin_asesor_proyectos_asignados_auto">Se asignaron %1$d proyectos automáticamente</string>
+    <string name="admin_asesor_btn_asignar_proyectos">Asignar proyectos</string>
+    <string name="admin_asesor_asignar_proyectos_titulo">Asignar proyectos al asesor</string>
+    <string name="admin_asesor_asignar_proyectos_guardar">Guardar</string>
+    <string name="admin_asesor_asignar_proyectos_cancelar">Cancelar</string>
 
     <string name="admin_cita_estado_demo">Confirmada</string>
     <string name="admin_cita_proyecto_demo">Proyecto</string>

@@ -133,6 +133,7 @@
 
                 <!-- Foto 1 -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardFotoRef1"
                     android:layout_width="0dp"
                     android:layout_height="140dp"
                     android:layout_weight="1"
@@ -140,40 +141,18 @@
                     app:cardCornerRadius="14dp"
                     app:cardElevation="6dp">
 
-                    <FrameLayout
+                    <ImageView
+                        android:id="@+id/imgFotoRef1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/inmia_teal_dark">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🏢"
-                            android:textSize="40sp"/>
-
-                        <!-- Overlay oscuro inferior -->
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_gravity="bottom"
-                            android:background="#66000000"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:layout_margin="8dp"
-                            android:text="Foto 1"
-                            android:textColor="#FFFFFF"
-                            android:textSize="11sp"
-                            android:textStyle="bold"/>
-                    </FrameLayout>
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
 
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Foto 2 -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardFotoRef2"
                     android:layout_width="0dp"
                     android:layout_height="140dp"
                     android:layout_weight="1"
@@ -181,48 +160,12 @@
                     app:cardCornerRadius="14dp"
                     app:cardElevation="6dp">
 
-                    <FrameLayout
+                    <ImageView
+                        android:id="@+id/imgFotoRef2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/inmia_teal_light">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🏊"
-                            android:textSize="40sp"/>
-
-                        <!-- Badge con número de fotos restantes -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top|end"
-                            android:layout_margin="8dp"
-                            android:text="10+"
-                            android:textColor="#FFFFFF"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="8dp"
-                            android:paddingVertical="4dp"
-                            android:background="#66000000"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_gravity="bottom"
-                            android:background="#66000000"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|start"
-                            android:layout_margin="8dp"
-                            android:text="Foto 2"
-                            android:textColor="#FFFFFF"
-                            android:textSize="11sp"
-                            android:textStyle="bold"/>
-                    </FrameLayout>
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
 
                 </com.google.android.material.card.MaterialCardView>
 

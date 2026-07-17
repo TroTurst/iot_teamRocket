@@ -284,20 +284,35 @@
                         android:textColor="#6F8F8F"
                         android:textSize="13sp" />
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_marginTop="10dp"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="0dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/admin_asesor_distritos_label"
+                        android:textColor="@color/inmia_teal_dark"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:contentDescription="@string/admin_asesor_mapa_cd"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/images_2" />
-                    </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:id="@+id/tvDistritosCarlos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text=""
+                        android:textColor="#6F8F8F"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditarDistritosCarlos"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/admin_asesor_distritos_editar"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        app:backgroundTint="@color/inmia_teal_dark"
+                        app:cornerRadius="18dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -525,11 +540,25 @@
                             android:layout_width="0dp"
                             android:layout_height="40dp"
                             android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
+                            android:layout_marginEnd="4dp"
                             android:text="@string/admin_asesor_btn_citas"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
-                            android:textSize="13sp"
+                            android:textSize="11sp"
+                            app:backgroundTint="@color/inmia_teal_dark"
+                            app:cornerRadius="20dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsignarProyectosCarlos"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:text="@string/admin_asesor_btn_asignar_proyectos"
+                            android:textAllCaps="false"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
                             app:backgroundTint="@color/inmia_teal_dark"
                             app:cornerRadius="20dp" />
 
@@ -538,11 +567,11 @@
                             android:layout_width="0dp"
                             android:layout_height="40dp"
                             android:layout_weight="1"
-                            android:layout_marginStart="6dp"
+                            android:layout_marginStart="4dp"
                             android:text="@string/admin_asesor_btn_proyectos"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
-                            android:textSize="13sp"
+                            android:textSize="11sp"
                             app:backgroundTint="@color/inmia_teal_dark"
                             app:cornerRadius="20dp" />
                     </LinearLayout>
@@ -597,10 +626,11 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvProyectosDescCarlos"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="@string/admin_asesor_proyectos_activos_desc"
+                            android:text=""
                             android:textColor="#6F8F8F"
                             android:textSize="12sp" />
 

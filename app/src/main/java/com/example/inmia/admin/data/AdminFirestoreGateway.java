@@ -18,6 +18,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -396,6 +397,110 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 .addOnFailureListener(callback::onError);
     }
 
+    public void updateAsesorDistritos(String asesorId, List<String> distritos, FirestoreCallback<Void> callback) {
+        if (asesorId == null || asesorId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("asesorId vacío"));
+            return;
+        }
+
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("distritos", distritos != null ? distritos : new ArrayList<>());
+        if (distritos != null && !distritos.isEmpty()) {
+            datos.put("distrito", distritos.get(0));
+        }
+
+        db.collection("usuarios").document(asesorId)
+                .update(datos)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void updateProjectDistrito(String projectId, String distrito, FirestoreCallback<Void> callback) {
+        if (projectId == null || projectId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("projectId vacío"));
+            return;
+        }
+        db.collection("proyectos").document(projectId)
+                .update("distrito", distrito != null ? distrito : "")
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void updateProjectAsesores(String projectId, List<String> asesoresIds, FirestoreCallback<Void> callback) {
+        if (projectId == null || projectId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("projectId vacío"));
+            return;
+        }
+        db.collection("proyectos").document(projectId)
+                .update("asesoresIds", asesoresIds != null ? asesoresIds : new ArrayList<>())
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void assignAllProjectsByDistritos(String asesorId, List<String> distritos, String companyId, FirestoreCallback<Integer> callback) {
+        if (asesorId == null || asesorId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("asesorId vacío"));
+            return;
+        }
+        if (distritos == null || distritos.isEmpty()) {
+            callback.onSuccess(0);
+            return;
+        }
+        if (companyId == null || companyId.trim().isEmpty()) {
+            callback.onSuccess(0);
+            return;
+        }
+
+        db.collection("proyectos")
+                .whereEqualTo("inmobiliariaId", companyId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot == null || querySnapshot.isEmpty()) {
+                        callback.onSuccess(0);
+                        return;
+                    }
+
+                    final int[] count = {0};
+                    List<QueryDocumentSnapshot> toUpdate = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        String projectDistrito = safeString(doc.getString("distrito"), "");
+                        if (distritos.contains(projectDistrito)) {
+                            List<String> asesoresIds = castStringList(doc.get("asesoresIds"));
+                            if (!asesoresIds.contains(asesorId)) {
+                                toUpdate.add(doc);
+                            }
+                        }
+                    }
+
+                    if (toUpdate.isEmpty()) {
+                        callback.onSuccess(0);
+                        return;
+                    }
+
+                    final int[] updated = {0};
+                    for (QueryDocumentSnapshot doc : toUpdate) {
+                        List<String> asesoresIds = castStringList(doc.get("asesoresIds"));
+                        asesoresIds.add(asesorId);
+                        db.collection("proyectos").document(doc.getId())
+                                .update("asesoresIds", asesoresIds)
+                                .addOnSuccessListener(aVoid -> {
+                                    updated[0]++;
+                                    if (updated[0] == toUpdate.size()) {
+                                        callback.onSuccess(updated[0]);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    updated[0]++;
+                                    if (updated[0] == toUpdate.size()) {
+                                        callback.onSuccess(updated[0]);
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(callback::onError);
+    }
+
     public void observeAdvisorById(String advisorId, FirestoreCallback<Asesor> callback) {
         if (advisorId == null || advisorId.trim().isEmpty()) {
             callback.onError(new IllegalArgumentException("advisorId vacío"));
@@ -561,6 +666,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
         Map<String, Object> projectData = new HashMap<>();
         projectData.put("nombre", proyecto.getNombre() != null ? proyecto.getNombre() : "");
+        projectData.put("distrito", proyecto.getDistrito() != null ? proyecto.getDistrito() : "");
         projectData.put("descripcion", proyecto.getDescripcion() != null ? proyecto.getDescripcion() : "");
         projectData.put("estado", proyecto.getEstadoProyecto() != null ? proyecto.getEstadoProyecto() : "En planos");
         projectData.put("inmobiliariaId", companyId);
@@ -572,6 +678,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         projectData.put("qrUrl", proyecto.getQrCode() != null ? proyecto.getQrCode() : "");
         projectData.put("areasComunes", proyecto.getExtras() != null ? proyecto.getExtras() : new ArrayList<>());
         projectData.put("asesoresIds", proyecto.getVendedores() != null ? proyecto.getVendedores() : new ArrayList<>());
+        projectData.put("imagenesUrls", proyecto.getImagenesUrls() != null ? proyecto.getImagenesUrls() : new ArrayList<>());
 
         Map<String, Object> ubicacion = new HashMap<>();
         ubicacion.put("direccion", proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "");
@@ -603,6 +710,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 tipologiaData.put("amueblado", tip.isAmueblado());
                 tipologiaData.put("persianasAutomaticas", tip.isPersianasAutomaticas());
                 tipologiaData.put("closets", tip.getClosets());
+                tipologiaData.put("imagenesUrls", tip.getImagenesUrls() != null ? tip.getImagenesUrls() : new ArrayList<>());
                 tipologiasList.add(tipologiaData);
             }
         }
@@ -629,6 +737,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
 
         Map<String, Object> projectData = new HashMap<>();
         projectData.put("nombre", proyecto.getNombre() != null ? proyecto.getNombre() : "");
+        projectData.put("distrito", proyecto.getDistrito() != null ? proyecto.getDistrito() : "");
         projectData.put("descripcion", proyecto.getDescripcion() != null ? proyecto.getDescripcion() : "");
         projectData.put("estado", proyecto.getEstadoProyecto() != null ? proyecto.getEstadoProyecto() : "En planos");
         projectData.put("inmobiliariaId", companyId);
@@ -640,6 +749,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         projectData.put("qrUrl", proyecto.getQrCode() != null ? proyecto.getQrCode() : "");
         projectData.put("areasComunes", proyecto.getExtras() != null ? proyecto.getExtras() : new ArrayList<>());
         projectData.put("asesoresIds", proyecto.getVendedores() != null ? proyecto.getVendedores() : new ArrayList<>());
+        projectData.put("imagenesUrls", proyecto.getImagenesUrls() != null ? proyecto.getImagenesUrls() : new ArrayList<>());
 
         Map<String, Object> ubicacion = new HashMap<>();
         ubicacion.put("direccion", proyecto.getUbicacion() != null ? proyecto.getUbicacion() : "");
@@ -721,6 +831,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         Proyecto proyecto = new Proyecto();
         proyecto.setId(doc.getId());
         proyecto.setNombre(safeString(doc.getString("nombre"), "Proyecto sin nombre"));
+        proyecto.setDistrito(safeString(doc.getString("distrito"), ""));
         proyecto.setDescripcion(safeString(doc.getString("descripcion"), ""));
         Map<String, Object> ubicacionMap = getMap(doc.get("ubicacion"));
         proyecto.setUbicacion(extractDireccion(ubicacionMap));
@@ -736,6 +847,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         proyecto.setPetFriendly(getBoolean(doc.get("petFriendly"), false));
         proyecto.setExtras(castStringList(doc.get("areasComunes")));
         proyecto.setVendedores(castStringList(doc.get("asesoresIds")));
+        proyecto.setImagenesUrls(castStringList(doc.get("imagenesUrls")));
 
         List<Tipologia> tipologias = new ArrayList<>();
         List<Map<String, Object>> tipologiasData = castMapList(doc.get("tipologias"));
@@ -757,7 +869,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         String nombre = String.format(Locale.getDefault(), "%.0f m² · %dd", metraje, dormitorios);
         String descripcion = String.format(Locale.getDefault(), "Tipología de %.0f m² con %d dormitorios.", metraje, dormitorios);
 
-        return new Tipologia(
+        Tipologia tipologia = new Tipologia(
                 "tip_" + (index + 1),
                 nombre,
                 descripcion,
@@ -782,6 +894,13 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 false,
                 "Estándar"
         );
+
+        List<String> imgUrls = castStringList(data.get("imagenesUrls"));
+        if (!imgUrls.isEmpty()) {
+            tipologia.setImagenesUrls(imgUrls);
+        }
+
+        return tipologia;
     }
 
     private Asesor mapAsesor(DocumentSnapshot doc) {
@@ -795,6 +914,10 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
         String estado = getBoolean(doc.get("activo"), true) ? "Activo" : "Inactivo";
         String rol = safeString(doc.getString("rol"), "Asesor inmobiliario");
         String distrito = safeString(doc.getString("distrito"), zonaTrabajo);
+        List<String> distritos = castStringList(doc.get("distritos"));
+        if (distritos.isEmpty() && !"—".equals(distrito)) {
+            distritos = Collections.singletonList(distrito);
+        }
 
         int metaVentas = getInt(doc.get("metaVentasMensual"), 0);
         int metaCitas = getInt(doc.get("metaCitasMensual"), 0);
@@ -807,6 +930,7 @@ public void observeProjectById(String projectId, FirestoreCallback<Proyecto> cal
                 doc.getId(),
                 nombre,
                 distrito,
+                distritos,
                 rol,
                 correo,
                 telefono,

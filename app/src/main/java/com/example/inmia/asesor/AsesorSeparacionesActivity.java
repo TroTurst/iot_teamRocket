@@ -191,18 +191,18 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
             filtradas.add(item);
         }
 
-        separacionesPendientes = filtrarPorEstado(filtradas, "Por aprobar");
-        separacionesAprobadas  = filtrarPorEstado(filtradas, "Aprobada");
+        separacionesPendientes = filtrarPorEstado(filtradas, "Pendiente");
+        separacionesAprobadas  = filtrarPorEstado(filtradas, "Aprobado");
         separacionesTerminadas = filtrarPorEstadoTerminado(filtradas);
 
         pendientesAdapter.updateItems(separacionesPendientes);
         aprobadasAdapter.updateItems(separacionesAprobadas);
         terminadasAdapter.updateItems(separacionesTerminadas);
 
-        boolean mostrarPendientes = estado.isEmpty() || "Todas".equalsIgnoreCase(estado) || "Por aprobar".equalsIgnoreCase(estado);
-        boolean mostrarAprobadas  = estado.isEmpty() || "Todas".equalsIgnoreCase(estado) || "Aprobada".equalsIgnoreCase(estado);
+        boolean mostrarPendientes = estado.isEmpty() || "Todas".equalsIgnoreCase(estado) || "Pendiente".equalsIgnoreCase(estado);
+        boolean mostrarAprobadas  = estado.isEmpty() || "Todas".equalsIgnoreCase(estado) || "Aprobado".equalsIgnoreCase(estado);
         boolean mostrarTerminadas = estado.isEmpty() || "Todas".equalsIgnoreCase(estado)
-            || "Terminada".equalsIgnoreCase(estado) || "Cancelada".equalsIgnoreCase(estado);
+            || "Terminado".equalsIgnoreCase(estado) || "Cancelado".equalsIgnoreCase(estado);
 
         setSeccionVisible(tvTituloPendientes, recyclerSeparacionesPendientes,
             mostrarPendientes && !separacionesPendientes.isEmpty());
@@ -236,7 +236,7 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         List<SeparacionItem> result = new ArrayList<>();
         for (SeparacionItem item : all) {
             String s = item.getStatus();
-            if ("Terminada".equalsIgnoreCase(s) || "Cancelada".equalsIgnoreCase(s)) result.add(item);
+            if ("Terminado".equalsIgnoreCase(s) || "Cancelado".equalsIgnoreCase(s)) result.add(item);
         }
         return result;
     }
@@ -256,6 +256,11 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
         }
     }
 
+    @Override
+    public void onDetails(SeparacionItem item) {
+        openDetallesSeparacion(item);
+    }
+
     private void showConfirmDialog(SeparacionItem item, int position) {
         mostrarDialogoAccion(
             "Confirmar separacion",
@@ -263,9 +268,9 @@ public class AsesorSeparacionesActivity extends AppCompatActivity implements Sep
             "Confirmar", "Cancelar",
             R.color.inmia_info, R.drawable.bg_badge_teal,
             () -> {
-                AsesorFirestoreRepository.get().updateSeparacionEstado(item.getDocId(), "aprobada");
+                AsesorFirestoreRepository.get().updateSeparacionEstado(item.getDocId(), "aprobado");
                 SeparacionItem updated = new SeparacionItem(
-                    "Aprobada", R.color.inmia_info,
+                    "Aprobado", R.color.inmia_info,
                     item.getProject(), item.getLocation(), item.getCompany(),
                     "Detalles", true,
                     item.getDocId(), item.getClienteId(),

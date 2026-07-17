@@ -1,6 +1,9 @@
 package com.example.inmia.admin;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,16 +12,22 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.adapters.SugerenciasAdapter;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
@@ -39,10 +48,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class AdminProyectoEditarActivity extends AppCompatActivity {
 
@@ -99,6 +113,147 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     private double selLat = 0;
     private double selLng = 0;
     private String selPlaceId = null;
+    private String selDistrito = null;
+
+    private Uri heroFotoUri = null;
+    private final List<Uri> newGaleriaUris = new ArrayList<>();
+    private List<String> existingImageUrls = new ArrayList<>();
+    private ImageView imgHeroProyectoEditar;
+    private RecyclerView rvGaleriaEditar;
+    private AdminProyectoNuevoActivity.GaleriaFotosAdapter galeriaAdapter;
+    private Tipologia tipologiaPhotoTarget = null;
+
+    private String extractDistrict(Place place) {
+        if (place.getAddressComponents() == null) return "";
+        List<com.google.android.libraries.places.api.model.AddressComponent> components = place.getAddressComponents().asList();
+        for (com.google.android.libraries.places.api.model.AddressComponent component : components) {
+            if (component.getTypes().contains("sublocality_level_1")) {
+                return component.getName();
+            }
+        }
+        for (com.google.android.libraries.places.api.model.AddressComponent component : components) {
+            if (component.getTypes().contains("locality")) {
+                return component.getName();
+            }
+        }
+        return "";
+    }
+
+    private final ActivityResultLauncher<String> heroFotoLauncherEditar =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    heroFotoUri = uri;
+                    Glide.with(this).load(uri).centerCrop().into(imgHeroProyectoEditar);
+                }
+            });
+
+    private final ActivityResultLauncher<String> tipologiaFotoLauncherEditar =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null && tipologiaPhotoTarget != null) {
+                    List<String> urls = tipologiaPhotoTarget.getImagenesUrls();
+                    urls.add(uri.toString());
+                    tipologiaPhotoTarget.setImagenesUrls(urls);
+                    tipologiasAdapter.notifyDataSetChanged();
+                    tipologiaPhotoTarget = null;
+                }
+            });
+
+    private final ActivityResultLauncher<String> galeriaFotoLauncherEditar =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    newGaleriaUris.add(uri);
+                    if (galeriaAdapter != null) galeriaAdapter.notifyItemInserted(newGaleriaUris.size() - 1);
+                }
+            });
+
+    private void subirNuevasFotosYGuardar(String projectId) {
+        final List<String> projectUrls = new ArrayList<>(existingImageUrls);
+        final Map<Integer, List<String>> tipUrlsMap = new HashMap<>();
+
+        int localTipCount = 0;
+        if (proyectoOriginal != null && proyectoOriginal.getTipologias() != null) {
+            for (int t = 0; t < proyectoOriginal.getTipologias().size(); t++) {
+                Tipologia tip = proyectoOriginal.getTipologias().get(t);
+                if (tip.getImagenesUrls() != null) {
+                    List<String> existing = new ArrayList<>();
+                    for (String url : tip.getImagenesUrls()) {
+                        if (url != null && url.startsWith("http")) existing.add(url);
+                        else if (url != null && !url.isEmpty()) localTipCount++;
+                    }
+                    tipUrlsMap.put(t, existing);
+                }
+            }
+        }
+
+        final int total = (heroFotoUri != null ? 1 : 0) + newGaleriaUris.size() + localTipCount;
+        final int[] completed = {0};
+        final String pid = projectId;
+
+        Runnable checkDone = () -> {
+            completed[0]++;
+            if (completed[0] == total) {
+                // Build final Proyecto and do ONE updateProject call
+                Proyecto p = new Proyecto();
+                p.setNombre(texto(etTitulo));
+                p.setDistrito(selDistrito != null ? selDistrito : "");
+                p.setUbicacion(texto(etUbicacion));
+                p.setLatitud(selLat);
+                p.setLongitud(selLng);
+                p.setDescripcion(texto(etDescripcion));
+                p.setEstadoProyecto(spinnerEstadoProyecto.getSelectedItem().toString());
+                p.setInmobiliaria(companyName != null ? companyName : "Inmobiliaria");
+                p.setPetFriendly(switchPetFriendly.isChecked());
+                p.setConAscensor(switchConAscensor.isChecked());
+                p.setAntiguedad("Nuevo");
+                p.setTipologias(tipologiasAgregadas);
+                p.setTipologiaPrincipal(tipologiasAgregadas.get(0));
+                p.setImagenesUrls(projectUrls);
+                for (int i = 0; i < p.getTipologias().size(); i++) {
+                    List<String> u = tipUrlsMap.get(i);
+                    if (u != null) p.getTipologias().get(i).setImagenesUrls(u);
+                }
+                if (proyectoOriginal != null) {
+                    p.setId(proyectoOriginal.getId());
+                    p.setReferencia(proyectoOriginal.getReferencia());
+                    p.setQrCode(proyectoOriginal.getQrCode());
+                    p.setVendedores(proyectoOriginal.getVendedores() != null ? new ArrayList<>(proyectoOriginal.getVendedores()) : new ArrayList<String>());
+                }
+
+                gateway.updateProject(pid, p, companyId, new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                    @Override public void onSuccess(Void v) { runOnUiThread(() -> { Toast.makeText(AdminProyectoEditarActivity.this, "Proyecto actualizado", Toast.LENGTH_LONG).show(); setResult(RESULT_OK); finish(); }); }
+                    @Override public void onError(Exception e) { runOnUiThread(() -> { Toast.makeText(AdminProyectoEditarActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show(); }); }
+                });
+            }
+        };
+
+        if (total == 0) {
+            checkDone.run();
+            return;
+        }
+
+        if (heroFotoUri != null) {
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + pid + "/hero_0.jpg");
+            r.putFile(heroFotoUri).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { if (!projectUrls.isEmpty()) projectUrls.set(0, u.toString()); else projectUrls.add(u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+        }
+        for (int i = 0; i < newGaleriaUris.size(); i++) {
+            int fi = i;
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + pid + "/gallery_" + (existingImageUrls.size() + fi) + ".jpg");
+            r.putFile(newGaleriaUris.get(i)).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { projectUrls.add(u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+        }
+        if (proyectoOriginal != null && proyectoOriginal.getTipologias() != null) {
+            for (int t = 0; t < proyectoOriginal.getTipologias().size(); t++) {
+                Tipologia tip = proyectoOriginal.getTipologias().get(t);
+                if (tip.getImagenesUrls() == null) continue;
+                final int ft = t;
+                for (int p = 0; p < tip.getImagenesUrls().size(); p++) {
+                    String url = tip.getImagenesUrls().get(p);
+                    if (url == null || url.isEmpty() || url.startsWith("http")) continue;
+                    StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + pid + "/tipologia_" + ft + "_" + p + ".jpg");
+                    r.putFile(Uri.parse(url)).addOnSuccessListener(task -> r.getDownloadUrl().addOnSuccessListener(dl -> { synchronized(tipUrlsMap) { List<String> l = tipUrlsMap.get(ft); if (l == null) { l = new ArrayList<>(); tipUrlsMap.put(ft, l); } l.add(dl.toString()); } checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,11 +314,38 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
                     tipologiaEditandoIndex = position;
                     btnAgregarTipologia.setText("Actualizar tipología");
                     populateFormWithTipologia(tipologia);
+                },
+                (tipologia, position) -> {
+                    tipologiaPhotoTarget = tipologia;
+                    tipologiaFotoLauncherEditar.launch("image/*");
+                },
+                (tipologia, fotoIndex) -> {
+                    List<String> urls = tipologia.getImagenesUrls();
+                    if (fotoIndex >= 0 && fotoIndex < urls.size()) {
+                        urls.remove(fotoIndex);
+                        tipologia.setImagenesUrls(urls);
+                        tipologiasAdapter.notifyDataSetChanged();
+                    }
                 }
         );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
         placesClient = com.google.android.libraries.places.api.Places.createClient(this);
+
+        imgHeroProyectoEditar = findViewById(R.id.imgHeroProyectoEditar);
+        rvGaleriaEditar = findViewById(R.id.rvGaleriaEditar);
+        rvGaleriaEditar.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        galeriaAdapter = new AdminProyectoNuevoActivity.GaleriaFotosAdapter(newGaleriaUris, idx -> {
+            newGaleriaUris.remove(idx);
+            galeriaAdapter.notifyDataSetChanged();
+        });
+        rvGaleriaEditar.setAdapter(galeriaAdapter);
+
+        View cardHeroFoto = findViewById(R.id.cardHeroFotoEditar);
+        cardHeroFoto.setOnClickListener(v -> heroFotoLauncherEditar.launch("image/*"));
+
+        View btnAgregarFotoGaleria = findViewById(R.id.btnAgregarFotoGaleriaEditar);
+        btnAgregarFotoGaleria.setOnClickListener(v -> galeriaFotoLauncherEditar.launch("image/*"));
 
         configurarSpinners();
         resolverContextoAdmin();
@@ -243,7 +425,18 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
                     selLat = proyecto.getLatitud();
                     selLng = proyecto.getLongitud();
                     selPlaceId = null;
+                    selDistrito = proyecto.getDistrito();
                     etDescripcion.setText(proyecto.getDescripcion());
+
+                    // Load existing images
+                    List<String> urls = proyecto.getImagenesUrls();
+                    if (urls != null && !urls.isEmpty()) {
+                        existingImageUrls = new ArrayList<>(urls);
+                        Glide.with(AdminProyectoEditarActivity.this).load(urls.get(0))
+                                .centerCrop().placeholder(R.drawable.ic_add).into(imgHeroProyectoEditar);
+                    }
+
+                    resolveProjectDistritoFromLatLng(proyecto);
 
                     String estado = proyecto.getEstadoProyecto();
                     if (estado != null) {
@@ -429,6 +622,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre(titulo);
+        proyecto.setDistrito(selDistrito != null ? selDistrito : "");
         proyecto.setUbicacion(ubicacion.isEmpty() ? "Sin ubicación" : ubicacion);
         proyecto.setLatitud(selLat);
         proyecto.setLongitud(selLng);
@@ -446,7 +640,10 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             proyecto.setId(proyectoOriginal.getId());
             proyecto.setReferencia(proyectoOriginal.getReferencia());
             proyecto.setQrCode(proyectoOriginal.getQrCode());
-        }
+            proyecto.setVendedores(proyectoOriginal.getVendedores() != null
+                    ? new ArrayList<>(proyectoOriginal.getVendedores())
+                    : new ArrayList<String>());
+            }
 
         Log.d("AdminEditar", "tipologiasAgregadas tiene " + tipologiasAgregadas.size() + " tipologias");
         for (int i = 0; i < tipologiasAgregadas.size(); i++) {
@@ -455,29 +652,55 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         }
         Log.d("AdminEditar", "proyectoId a actualizar: " + proyectoId);
 
-        gateway.updateProject(proyectoId, proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("AdminEditar", "Proyecto actualizado exitosamente en Firebase");
-                LogHelper.registrar(
-                        "Se editó el proyecto " + titulo,
-                        com.example.inmia.models.Log.TIPO_PROYECTO,
-                        LogHelper.ROL_ADMIN);
-                runOnUiThread(() -> {
-                    Toast.makeText(AdminProyectoEditarActivity.this, "Proyecto actualizado", Toast.LENGTH_LONG).show();
-                    setResult(RESULT_OK);
-                    finish();
-                });
-            }
+        btnActualizarProyecto.setEnabled(false);
+        btnActualizarProyecto.setText("Subiendo fotos...");
+        subirNuevasFotosYGuardar(proyectoId);
+    }
 
-            @Override
-            public void onError(Exception e) {
-                Log.e("AdminEditar", "Error actualizando proyecto: " + e.getMessage());
-                runOnUiThread(() -> {
-                    Toast.makeText(AdminProyectoEditarActivity.this, "Error al actualizar: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+    private void resolveProjectDistritoFromLatLng(Proyecto proyecto) {
+        if (proyecto == null) return;
+        if (proyecto.getDistrito() != null && !proyecto.getDistrito().isEmpty()) return;
+        if (proyecto.getLatitud() == 0 && proyecto.getLongitud() == 0) return;
+
+        new Thread(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(proyecto.getLatitud(), proyecto.getLongitud(), 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    String distrito = null;
+                    if (address.getSubLocality() != null && !address.getSubLocality().isEmpty()) {
+                        distrito = address.getSubLocality();
+                    } else if (address.getLocality() != null && !address.getLocality().isEmpty()) {
+                        distrito = address.getLocality();
+                    }
+                    if (distrito != null && !distrito.isEmpty()) {
+                        final String distritoFinal = distrito;
+                        runOnUiThread(() -> {
+                            selDistrito = distritoFinal;
+                            proyecto.setDistrito(distritoFinal);
+                            if (proyectoOriginal != null) {
+                                proyectoOriginal.setDistrito(distritoFinal);
+                            }
+                            gateway.updateProjectDistrito(proyecto.getId(), distritoFinal,
+                                    new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("AdminEditar", "Distrito actualizado: " + distritoFinal);
+                                        }
+
+                                        @Override
+                                        public void onError(Exception e) {
+                                            Log.e("AdminEditar", "Error al guardar distrito", e);
+                                        }
+                                    });
+                        });
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("AdminEditar", "Geocoder error", e);
             }
-        });
+        }).start();
     }
 
     private String texto(TextInputEditText editText) {
@@ -516,16 +739,20 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         etDialogUbicacion.setText(etUbicacion.getText());
 
         final AutocompleteSessionToken[] dialogSessionToken = { AutocompleteSessionToken.newInstance() };
-        SugerenciasAdapter dialogAdapter = new SugerenciasAdapter(prediction -> {
+        final boolean[] isUpdatingAddress = {false};
+            SugerenciasAdapter dialogAdapter = new SugerenciasAdapter(prediction -> {
             rvDialogSugerencias.setVisibility(View.GONE);
             String fullText = prediction.getFullText(null).toString();
+            isUpdatingAddress[0] = true;
             etDialogUbicacion.setText(fullText);
             etDialogUbicacion.setSelection(fullText.length());
+            isUpdatingAddress[0] = false;
 
             List<Place.Field> fields = Arrays.asList(
                     Place.Field.ID,
                     Place.Field.LAT_LNG,
-                    Place.Field.ADDRESS
+                    Place.Field.ADDRESS,
+                    Place.Field.ADDRESS_COMPONENTS
             );
 
             FetchPlaceRequest fetchRequest = FetchPlaceRequest.builder(prediction.getPlaceId(), fields)
@@ -541,9 +768,12 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
                             selLng = latLng.longitude;
                         }
                         selPlaceId = place.getId();
+                        selDistrito = extractDistrict(place);
 
                         String address = place.getAddress();
-                        tvDialogDireccionSeleccionada.setText(address + "\n(" + selLat + ", " + selLng + ")");
+                        tvDialogDireccionSeleccionada.setText(address
+                                + (selDistrito != null && !selDistrito.isEmpty() ? " (" + selDistrito + ")" : "")
+                                + "\n(" + selLat + ", " + selLng + ")");
                         tvDialogDireccionSeleccionada.setVisibility(View.VISIBLE);
 
                         dialogSessionToken[0] = AutocompleteSessionToken.newInstance();
@@ -566,6 +796,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdatingAddress[0]) return;
                 if (dialogDebounceRunnable[0] != null) {
                     dialogDebounceHandler.removeCallbacks(dialogDebounceRunnable[0]);
                 }
@@ -623,6 +854,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
             if (proyectoOriginal != null) {
                 proyectoOriginal.setNombre(nuevoTitulo);
+                proyectoOriginal.setDistrito(selDistrito != null ? selDistrito : "");
                 proyectoOriginal.setUbicacion(nuevaUbicacion.isEmpty() ? "Sin ubicación" : nuevaUbicacion);
                 proyectoOriginal.setLatitud(selLat);
                 proyectoOriginal.setLongitud(selLng);

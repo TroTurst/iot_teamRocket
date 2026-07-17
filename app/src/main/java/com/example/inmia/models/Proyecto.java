@@ -17,6 +17,7 @@ public class Proyecto {
 
     private String id;                    // ID único del proyecto
     private String nombre;                // Nombre/título del proyecto
+    private String distrito;              // Distrito donde se ubica el proyecto
     private String ubicacion;             // Dirección/ubicación del proyecto
     private double latitud;               // Coordenada latitud del proyecto
     private double longitud;              // Coordenada longitud del proyecto
@@ -34,7 +35,8 @@ public class Proyecto {
     private boolean petFriendly;          // Acepta mascotas
     private List<String> extras;          // Características extras (coworking, piscina, etc)
     private Tipologia tipologiaPrincipal; // Tipología principal (la que se ve primero)
-    private String qrCode;                // Código QR del proyecto
+    private String qrCode;
+    private List<String> imagenesUrls;
 
     // Constructor
     public Proyecto() {}
@@ -79,6 +81,7 @@ public class Proyecto {
     // Getters
     public String getId() { return id; }
     public String getNombre() { return nombre; }
+    public String getDistrito() { return distrito; }
     public String getUbicacion() { return ubicacion; }
     public double getLatitud() { return latitud; }
     public double getLongitud() { return longitud; }
@@ -97,10 +100,12 @@ public class Proyecto {
     public List<String> getExtras() { return extras; }
     public Tipologia getTipologiaPrincipal() { return tipologiaPrincipal; }
     public String getQrCode() { return qrCode; }
+    public List<String> getImagenesUrls() { return imagenesUrls; }
 
     // Setters
     public void setId(String id) { this.id = id; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setDistrito(String distrito) { this.distrito = distrito; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
     public void setLatitud(double latitud) { this.latitud = latitud; }
     public void setLongitud(double longitud) { this.longitud = longitud; }
@@ -119,5 +124,6 @@ public class Proyecto {
     public void setExtras(List<String> extras) { this.extras = extras; }
     public void setTipologiaPrincipal(Tipologia tipologiaPrincipal) { this.tipologiaPrincipal = tipologiaPrincipal; }
     public void setQrCode(String qrCode) { this.qrCode = qrCode; }
+    public void setImagenesUrls(List<String> imagenesUrls) { this.imagenesUrls = imagenesUrls; }
 }
 

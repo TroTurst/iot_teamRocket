@@ -1,5 +1,8 @@
 package com.example.inmia.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Modelo que representa una Tipología de Departamento
  *
@@ -18,8 +21,9 @@ public class Tipologia {
     private String estacionamiento;       // Info de estacionamiento (ej: "Sin estacionamiento")
     private String precio;                // Precio total (ej: "S/ 420,000")
     private String estado;                // Estado de disponibilidad (ej: "Disponible")
-    private int imagenHero;               // Imagen principal de esta tipología
-    private int[] imagenes;               // Array de imágenes de esta tipología
+    private int imagenHero;
+    private int[] imagenes;
+    private List<String> imagenesUrls = new ArrayList<>();
     private boolean patio;                // Si tiene patio
     private String certificadoEnergetico; // Tipo de certificado (A, B, C, D, etc)
     private boolean terraza;              // Si tiene terraza
@@ -95,6 +99,7 @@ public class Tipologia {
     public String getEstado() { return estado; }
     public int getImagenHero() { return imagenHero; }
     public int[] getImagenes() { return imagenes; }
+    public List<String> getImagenesUrls() { return imagenesUrls; }
     public boolean isPatio() { return patio; }
     public String getCertificadoEnergetico() { return certificadoEnergetico; }
     public boolean isTerraza() { return terraza; }
@@ -119,6 +124,7 @@ public class Tipologia {
     public void setEstado(String estado) { this.estado = estado; }
     public void setImagenHero(int imagenHero) { this.imagenHero = imagenHero; }
     public void setImagenes(int[] imagenes) { this.imagenes = imagenes; }
+    public void setImagenesUrls(List<String> imagenesUrls) { this.imagenesUrls = imagenesUrls != null ? imagenesUrls : new ArrayList<String>(); }
     public void setPatio(boolean patio) { this.patio = patio; }
     public void setCertificadoEnergetico(String certificadoEnergetico) { this.certificadoEnergetico = certificadoEnergetico; }
     public void setTerraza(boolean terraza) { this.terraza = terraza; }

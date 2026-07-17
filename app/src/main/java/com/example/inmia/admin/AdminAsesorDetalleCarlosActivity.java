@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,8 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
     private String companyId;
     private String asesorId;
     private Asesor currentAsesor;
+    private boolean autoAssignTriggered = false;
+    private List<Proyecto> allCompanyProjects = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,10 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
         View btnBack = findViewById(R.id.btnBackDetalleCarlos);
         View btnDetalleCita = findViewById(R.id.btnDetalleCitaCarlos);
+        View btnAsignarProyectos = findViewById(R.id.btnAsignarProyectosCarlos);
         View btnGestionProyectos = findViewById(R.id.btnGestionProyectosCarlos);
         View btnAsignarMetas = findViewById(R.id.btnAsignarMetasCarlos);
+        View btnEditarDistritos = findViewById(R.id.btnEditarDistritosCarlos);
         View layoutProyectosActivos = findViewById(R.id.layoutProyectosActivosCarlos);
         View layoutCitas = findViewById(R.id.layoutCitasCarlos);
         NestedScrollView scrollView = findViewById(R.id.scrollViewAsesorDetalleCarlos);
@@ -113,6 +119,10 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                         gateway.observeProjectsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<>() {
                             @Override
                             public void onSuccess(List<Proyecto> value) {
+                                if (value != null) {
+                                    allCompanyProjects = value;
+                                }
+
                                 List<Proyecto> filtrados = new ArrayList<>();
                                 if (value != null) {
                                     for (Proyecto proyecto : value) {
@@ -122,6 +132,25 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                                     }
                                 }
                                 adapter.setProyectos(filtrados);
+
+                                // Auto-assign if empty and advisor has districts (only once)
+                                if (filtrados.isEmpty() && !autoAssignTriggered && currentAsesor != null) {
+                                    List<String> distritos = currentAsesor.getDistritos();
+                                    if (distritos != null && !distritos.isEmpty()) {
+                                        autoAssignTriggered = true;
+                                        gateway.assignAllProjectsByDistritos(
+                                                asesorId, distritos, companyId,
+                                                new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                                                    @Override
+                                                    public void onSuccess(Integer count) {
+                                                        // Snapshot listener will auto-refresh
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Exception e) { }
+                                                });
+                                    }
+                                }
                             }
 
                             @Override
@@ -182,6 +211,22 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
             }
         });
 
+        btnEditarDistritos.setOnClickListener(v -> {
+            if (currentAsesor != null) {
+                mostrarDialogoDistritos(currentAsesor);
+            } else {
+                Toast.makeText(this, "Cargando asesor...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnAsignarProyectos.setOnClickListener(v -> {
+            if (currentAsesor != null) {
+                mostrarDialogoAsignarProyectos(currentAsesor);
+            } else {
+                Toast.makeText(this, "Cargando asesor...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -217,6 +262,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         TextView tvZonaTrabajo = findViewById(R.id.tvZonaTrabajoCarlos);
         TextView tvCitas = findViewById(R.id.tvCitasCarlos);
         TextView tvVentas = findViewById(R.id.tvVentasCarlos);
+        TextView tvDistritos = findViewById(R.id.tvDistritosCarlos);
         TextInputEditText etMetaVentas = findViewById(R.id.etMetaVentasCarlos);
         TextInputEditText etMetaCitas = findViewById(R.id.etMetaCitasCarlos);
         TextInputEditText etMetaGanancias = findViewById(R.id.etMetaGananciasCarlos);
@@ -235,6 +281,22 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
         etMetaVentas.setText(String.valueOf(asesor.getMetaVentasMensual()));
         etMetaCitas.setText(String.valueOf(asesor.getMetaCitasMensual()));
         etMetaGanancias.setText(String.valueOf(asesor.getMetaGananciasMensual()));
+
+        List<String> distritos = asesor.getDistritos();
+        if (distritos != null && !distritos.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < distritos.size(); i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(distritos.get(i));
+            }
+            tvDistritos.setText(sb.toString());
+        } else {
+            tvDistritos.setText(R.string.admin_asesor_distritos_vacio);
+        }
+
+        // Descripción dinámica de proyectos
+        TextView tvProyectosDesc = findViewById(R.id.tvProyectosDescCarlos);
+        tvProyectosDesc.setText(getString(R.string.admin_asesor_proyectos_activos_desc, asesor.getNombre()));
 
         // Foto de perfil real si existe, sino el avatar por defecto
         String fotoUrl = asesor.getFotoUrl();
@@ -302,6 +364,212 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
                     });
                 })
                 .setNegativeButton(R.string.admin_metas_cancelar, null)
+                .show();
+    }
+
+    private void mostrarDialogoDistritos(Asesor asesor) {
+        ScrollView contentView = (ScrollView) LayoutInflater.from(this).inflate(R.layout.dialog_asignar_distritos, null);
+
+        List<String> selectedDistritos = asesor.getDistritos();
+        int[] checkBoxIds = {
+                R.id.cbAncon, R.id.cbAte, R.id.cbBarranco, R.id.cbBrena,
+                R.id.cbCarabayllo, R.id.cbCercadoLima, R.id.cbChorrillos, R.id.cbComas,
+                R.id.cbElAgustino, R.id.cbIndependencia, R.id.cbJesusMaria, R.id.cbLaMolina,
+                R.id.cbLaVictoria, R.id.cbLince, R.id.cbLosOlivos, R.id.cbMagdalena,
+                R.id.cbMiraflores, R.id.cbPuebloLibre, R.id.cbPuentePiedra, R.id.cbRimac,
+                R.id.cbSanBorja, R.id.cbSanIsidro, R.id.cbSanJuanLurigancho, R.id.cbSanJuanMiraflores,
+                R.id.cbSanLuis, R.id.cbSanMartin, R.id.cbSanMiguel, R.id.cbSantaAnita,
+                R.id.cbSantiagoSurco, R.id.cbSurquillo, R.id.cbVillaElSalvador, R.id.cbVillaMariaTriunfo
+        };
+
+        // Pre-select checkboxes based on current districts
+        for (int id : checkBoxIds) {
+            CheckBox cb = contentView.findViewById(id);
+            if (cb != null) {
+                String districtName = cb.getText().toString();
+                if (selectedDistritos != null && selectedDistritos.contains(districtName)) {
+                    cb.setChecked(true);
+                }
+            }
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_asesor_distritos_editar)
+                .setView(contentView)
+                .setPositiveButton(R.string.admin_asesor_distritos_guardar, (dialog, which) -> {
+                    List<String> newDistritos = new ArrayList<>();
+                    for (int id : checkBoxIds) {
+                        CheckBox cb = contentView.findViewById(id);
+                        if (cb != null && cb.isChecked()) {
+                            newDistritos.add(cb.getText().toString());
+                        }
+                    }
+
+                    gateway.updateAsesorDistritos(asesor.getId(), newDistritos,
+                            new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    gateway.assignAllProjectsByDistritos(asesor.getId(), newDistritos, companyId,
+                                            new AdminFirestoreGateway.FirestoreCallback<Integer>() {
+                                                @Override
+                                                public void onSuccess(Integer assignedCount) {
+                                                    runOnUiThread(() -> {
+                                                        Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                                                "Distritos actualizados" +
+                                                                        (assignedCount > 0 ? ". Se asignaron " + assignedCount + " proyectos automáticamente" : ""),
+                                                                Toast.LENGTH_LONG).show();
+
+                                                        // Refresh advisor data
+                                                        gateway.observeAdvisorById(asesor.getId(), new AdminFirestoreGateway.FirestoreCallback<Asesor>() {
+                                                            @Override
+                                                            public void onSuccess(Asesor updatedAsesor) {
+                                                                currentAsesor = updatedAsesor;
+                                                                poblarPerfil(updatedAsesor);
+                                                            }
+
+                                                            @Override
+                                                            public void onError(Exception e) {
+                                                                // Silently fail, just re-show current
+                                                            }
+                                                        });
+
+                                                        // Also refresh the projects list
+                                                        gateway.observeProjectsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<Proyecto>() {
+                                                            @Override
+                                                            public void onSuccess(List<Proyecto> value) {
+                                                                List<Proyecto> filtrados = new ArrayList<>();
+                                                                if (value != null) {
+                                                                    for (Proyecto proyecto : value) {
+                                                                        if (proyecto.getVendedores() != null && proyecto.getVendedores().contains(asesor.getId())) {
+                                                                            filtrados.add(proyecto);
+                                                                        }
+                                                                    }
+                                                                }
+                                                                runOnUiThread(() -> {
+                                                                    RecyclerView rv = findViewById(R.id.recyclerViewProyectosCarlos);
+                                                                    if (rv != null && rv.getAdapter() instanceof AdminProyectoAdapter) {
+                                                                        ((AdminProyectoAdapter) rv.getAdapter()).setProyectos(filtrados);
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onError(Exception e) { }
+                                                        });
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onError(Exception e) {
+                                                    runOnUiThread(() -> {
+                                                        Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                                                "Distritos actualizados, pero error al asignar proyectos",
+                                                                Toast.LENGTH_LONG).show();
+                                                    });
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                                "Error al guardar distritos: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+                })
+                .setNegativeButton(R.string.admin_asesor_distritos_cancelar, null)
+                .show();
+    }
+
+    private void mostrarDialogoAsignarProyectos(Asesor asesor) {
+        if (allCompanyProjects == null || allCompanyProjects.isEmpty()) {
+            Toast.makeText(this, "No hay proyectos disponibles", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int size = allCompanyProjects.size();
+        CharSequence[] projectNames = new CharSequence[size];
+        String[] projectIds = new String[size];
+        boolean[] checkedItems = new boolean[size];
+
+        for (int i = 0; i < size; i++) {
+            Proyecto p = allCompanyProjects.get(i);
+            String distrito = p.getDistrito();
+            if (distrito != null && !distrito.isEmpty()) {
+                projectNames[i] = p.getNombre() + " (" + distrito + ")";
+            } else {
+                projectNames[i] = p.getNombre();
+            }
+            projectIds[i] = p.getId();
+            checkedItems[i] = p.getVendedores() != null && p.getVendedores().contains(asesor.getId());
+        }
+
+        // Guardar copia del estado inicial para detectar cambios
+        final boolean[] originalChecked = new boolean[size];
+        System.arraycopy(checkedItems, 0, originalChecked, 0, size);
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_asesor_asignar_proyectos_titulo)
+                .setMultiChoiceItems(projectNames, checkedItems, (dialog, which, isChecked) -> {
+                    checkedItems[which] = isChecked;
+                })
+                .setPositiveButton(R.string.admin_asesor_asignar_proyectos_guardar, (dialog, which) -> {
+                    // Find what changed
+                    List<Integer> toUpdate = new ArrayList<>();
+                    for (int i = 0; i < size; i++) {
+                        if (checkedItems[i] != originalChecked[i]) {
+                            toUpdate.add(i);
+                        }
+                    }
+
+                    if (toUpdate.isEmpty()) {
+                        Toast.makeText(this, "Sin cambios", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    final int[] completed = {0};
+                    for (int idx : toUpdate) {
+                        List<String> asesoresIds = new ArrayList<>();
+                        if (allCompanyProjects.get(idx).getVendedores() != null) {
+                            asesoresIds.addAll(allCompanyProjects.get(idx).getVendedores());
+                        }
+
+                        if (checkedItems[idx] && !asesoresIds.contains(asesor.getId())) {
+                            asesoresIds.add(asesor.getId());
+                        } else if (!checkedItems[idx]) {
+                            asesoresIds.remove(asesor.getId());
+                        }
+
+                        gateway.updateProjectAsesores(projectIds[idx], asesoresIds,
+                                new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        completed[0]++;
+                                        if (completed[0] == toUpdate.size()) {
+                                            runOnUiThread(() -> {
+                                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                                        "Proyectos actualizados", Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        completed[0]++;
+                                        if (completed[0] == toUpdate.size()) {
+                                            runOnUiThread(() -> {
+                                                Toast.makeText(AdminAsesorDetalleCarlosActivity.this,
+                                                        "Error al actualizar algunos proyectos", Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton(R.string.admin_asesor_asignar_proyectos_cancelar, null)
                 .show();
     }
 

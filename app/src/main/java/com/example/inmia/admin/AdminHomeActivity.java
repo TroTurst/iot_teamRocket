@@ -4,17 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
 import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class AdminHomeActivity extends AppCompatActivity {
     private TextView tvDescripcionProyecto;
     private TextView tvCountProyectos;
     private TextView tvCountAsesores;
+    private ImageView imgFotoRef1, imgFotoRef2;
 
     private AdminFirestoreGateway gateway;
     private String companyId;
@@ -56,6 +60,8 @@ public class AdminHomeActivity extends AppCompatActivity {
         tvDescripcionProyecto = findViewById(R.id.tvDescripcionProyecto);
         tvCountProyectos    = findViewById(R.id.tvCountProyectos);
         tvCountAsesores     = findViewById(R.id.tvCountAsesores);
+        imgFotoRef1         = findViewById(R.id.imgFotoRef1);
+        imgFotoRef2         = findViewById(R.id.imgFotoRef2);
 
         findViewById(R.id.btnVerMasProyecto).setOnClickListener(v -> {
             if (proyectoDestacado != null) {
@@ -74,6 +80,27 @@ public class AdminHomeActivity extends AppCompatActivity {
                 companyId = context.getCompanyId();
                 if (tvNombreEmpresa != null) {
                     tvNombreEmpresa.setText(context.getCompanyName());
+                }
+
+                // Load reference photos from inmobiliaria
+                if (companyId != null && !companyId.isEmpty()) {
+                    FirebaseFirestore.getInstance().collection("inmobiliarias")
+                            .document(companyId).get()
+                            .addOnSuccessListener(doc -> {
+                                if (!doc.exists()) return;
+                                List<String> fotos = (List<String>) doc.get("fotosPromo");
+                                if (fotos == null || fotos.isEmpty()) return;
+                                if (fotos.size() > 0 && fotos.get(0) != null && !fotos.get(0).isEmpty()) {
+                                    imgFotoRef1.setVisibility(View.VISIBLE);
+                                    Glide.with(AdminHomeActivity.this).load(fotos.get(0))
+                                            .centerCrop().placeholder(R.drawable.ic_add).into(imgFotoRef1);
+                                }
+                                if (fotos.size() > 1 && fotos.get(1) != null && !fotos.get(1).isEmpty()) {
+                                    imgFotoRef2.setVisibility(View.VISIBLE);
+                                    Glide.with(AdminHomeActivity.this).load(fotos.get(1))
+                                            .centerCrop().placeholder(R.drawable.ic_add).into(imgFotoRef2);
+                                }
+                            });
                 }
 
                 gateway.observeUnreadNotifications(context.getUserId(), new AdminFirestoreGateway.FirestoreCallback<Integer>() {

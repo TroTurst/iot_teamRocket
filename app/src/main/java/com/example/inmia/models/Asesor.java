@@ -1,9 +1,13 @@
 package com.example.inmia.models;
 
+import java.util.Collections;
+import java.util.List;
+
 public class Asesor {
     private final String id;
     private final String nombre;
     private final String distrito;
+    private final List<String> distritos;
     private final String rol;
     private final String email;
     private final String telefono;
@@ -35,9 +39,32 @@ public class Asesor {
                   int citasMensualActual,
                   int gananciasMensualActual,
                   int fotoResId) {
+        this(id, nombre, distrito, Collections.<String>emptyList(), rol, email, telefono, dni, estado, zonaTrabajo,
+                metaVentasMensual, metaCitasMensual, metaGananciasMensual,
+                ventasMensualActual, citasMensualActual, gananciasMensualActual, fotoResId);
+    }
+
+    public Asesor(String id,
+                  String nombre,
+                  String distrito,
+                  List<String> distritos,
+                  String rol,
+                  String email,
+                  String telefono,
+                  String dni,
+                  String estado,
+                  String zonaTrabajo,
+                  int metaVentasMensual,
+                  int metaCitasMensual,
+                  int metaGananciasMensual,
+                  int ventasMensualActual,
+                  int citasMensualActual,
+                  int gananciasMensualActual,
+                  int fotoResId) {
         this.id = id;
         this.nombre = nombre;
         this.distrito = distrito;
+        this.distritos = distritos != null ? distritos : Collections.<String>emptyList();
         this.rol = rol;
         this.email = email;
         this.telefono = telefono;
@@ -63,6 +90,10 @@ public class Asesor {
 
     public String getDistrito() {
         return distrito;
+    }
+
+    public List<String> getDistritos() {
+        return distritos;
     }
 
     public String getRol() {

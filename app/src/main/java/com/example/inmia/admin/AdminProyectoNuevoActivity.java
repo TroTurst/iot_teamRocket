@@ -1,22 +1,30 @@
 package com.example.inmia.admin;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.adapters.SugerenciasAdapter;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
@@ -37,10 +45,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
@@ -95,10 +107,133 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private final Handler debounceHandler = new Handler(Looper.getMainLooper());
     private Runnable debounceRunnable;
 
+    private boolean isUpdatingAddress = false;
+
     private double selLat = 0;
     private double selLng = 0;
     private String selPlaceId = null;
     private String selDireccionFormateada = null;
+    private String selDistrito = null;
+
+    private Uri heroFotoUri = null;
+    private final List<Uri> galeriaUris = new ArrayList<>();
+    private ImageView imgHeroProyectoNuevo;
+    private RecyclerView rvGaleriaNuevo;
+    private GaleriaFotosAdapter galeriaAdapter;
+    private Tipologia tipologiaPhotoTarget = null;
+
+    private String extractDistrict(Place place) {
+        if (place.getAddressComponents() == null) return "";
+        List<com.google.android.libraries.places.api.model.AddressComponent> components = place.getAddressComponents().asList();
+        for (com.google.android.libraries.places.api.model.AddressComponent component : components) {
+            if (component.getTypes().contains("sublocality_level_1")) {
+                return component.getName();
+            }
+        }
+        for (com.google.android.libraries.places.api.model.AddressComponent component : components) {
+            if (component.getTypes().contains("locality")) {
+                return component.getName();
+            }
+        }
+        return "";
+    }
+
+    private final ActivityResultLauncher<String> heroFotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    heroFotoUri = uri;
+                    Glide.with(this).load(uri).centerCrop().into(imgHeroProyectoNuevo);
+                }
+            });
+
+    private final ActivityResultLauncher<String> tipologiaFotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null && tipologiaPhotoTarget != null) {
+                    List<String> urls = tipologiaPhotoTarget.getImagenesUrls();
+                    urls.add(uri.toString());
+                    tipologiaPhotoTarget.setImagenesUrls(urls);
+                    tipologiasAdapter.notifyDataSetChanged();
+                    tipologiaPhotoTarget = null;
+                }
+            });
+
+    private final ActivityResultLauncher<String> galeriaFotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    galeriaUris.add(uri);
+                    if (galeriaAdapter != null) galeriaAdapter.notifyItemInserted(galeriaUris.size() - 1);
+                }
+            });
+
+    private void subirFotosYGuardar(Proyecto proyecto, String projectId) {
+        int total = (heroFotoUri != null ? 1 : 0) + galeriaUris.size();
+        final Map<Integer, List<String>> tipUrlsMap = new HashMap<>();
+        int tipLocal = 0;
+        for (int t = 0; t < proyecto.getTipologias().size(); t++) {
+            Tipologia tip = proyecto.getTipologias().get(t);
+            if (tip.getImagenesUrls() == null) continue;
+            List<String> existing = new ArrayList<>();
+            for (String url : tip.getImagenesUrls()) {
+                if (url != null && url.startsWith("http")) existing.add(url);
+                else if (url != null && !url.isEmpty()) tipLocal++;
+            }
+            tipUrlsMap.put(t, existing);
+        }
+        final int totalUploads = total + tipLocal;
+
+        final List<String> projectUrls = new ArrayList<>();
+        final int[] completed = {0};
+        final Proyecto finalProyecto = proyecto;
+        final String finalProjectId = projectId;
+
+        Runnable checkDone = () -> {
+            completed[0]++;
+            if (completed[0] == totalUploads) {
+                finalProyecto.setImagenesUrls(projectUrls);
+                for (int i = 0; i < finalProyecto.getTipologias().size(); i++) {
+                    List<String> u = tipUrlsMap.get(i);
+                    if (u != null) finalProyecto.getTipologias().get(i).setImagenesUrls(u);
+                }
+                gateway.updateProject(finalProjectId, finalProyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                    @Override public void onSuccess(Void v) {
+                        LogHelper.registrar("Se creó el proyecto " + finalProyecto.getNombre() + (companyName != null ? " en " + companyName : ""), com.example.inmia.models.Log.TIPO_PROYECTO, LogHelper.ROL_ADMIN);
+                        runOnUiThread(() -> { Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show(); finish(); });
+                    }
+                    @Override public void onError(Exception e) { runOnUiThread(() -> { btnCrearProyecto.setEnabled(true); btnCrearProyecto.setText("Crear proyecto"); Toast.makeText(AdminProyectoNuevoActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show(); }); }
+                });
+            }
+        };
+
+        if (totalUploads == 0) {
+            finalProyecto.setImagenesUrls(new ArrayList<>());
+            gateway.saveProject(finalProyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
+                @Override public void onSuccess(String id) { runOnUiThread(() -> { Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show(); finish(); }); }
+                @Override public void onError(Exception e) { runOnUiThread(() -> finish()); }
+            });
+            return;
+        }
+
+        if (heroFotoUri != null) {
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/hero_0.jpg");
+            r.putFile(heroFotoUri).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { projectUrls.add(0, u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+        }
+        for (int i = 0; i < galeriaUris.size(); i++) {
+            int fi = i;
+            StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/gallery_" + fi + ".jpg");
+            r.putFile(galeriaUris.get(i)).addOnSuccessListener(t -> r.getDownloadUrl().addOnSuccessListener(u -> { projectUrls.add(u.toString()); checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+        }
+        for (int t = 0; t < finalProyecto.getTipologias().size(); t++) {
+            final int ft = t;
+            List<String> src = finalProyecto.getTipologias().get(t).getImagenesUrls();
+            if (src == null) continue;
+            for (int p = 0; p < src.size(); p++) {
+                String url = src.get(p);
+                if (url == null || url.isEmpty() || url.startsWith("http")) continue;
+                StorageReference r = FirebaseStorage.getInstance().getReference().child("proyectos/" + finalProjectId + "/tipologia_" + ft + "_" + p + ".jpg");
+                r.putFile(Uri.parse(url)).addOnSuccessListener(task -> r.getDownloadUrl().addOnSuccessListener(dl -> { synchronized(tipUrlsMap) { List<String> l = tipUrlsMap.get(ft); if (l == null) { l = new ArrayList<>(); tipUrlsMap.put(ft, l); } l.add(dl.toString()); } checkDone.run(); }).addOnFailureListener(e -> checkDone.run())).addOnFailureListener(e -> checkDone.run());
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,11 +286,38 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                     tipologiasAdapter.notifyDataSetChanged();
                 },
                 (tipologia, position) -> {
+                },
+                (tipologia, position) -> {
+                    tipologiaPhotoTarget = tipologia;
+                    tipologiaFotoLauncher.launch("image/*");
+                },
+                (tipologia, fotoIndex) -> {
+                    List<String> urls = tipologia.getImagenesUrls();
+                    if (fotoIndex >= 0 && fotoIndex < urls.size()) {
+                        urls.remove(fotoIndex);
+                        tipologia.setImagenesUrls(urls);
+                        tipologiasAdapter.notifyDataSetChanged();
+                    }
                 }
         );
         rvTipologiasAgregadas.setAdapter(tipologiasAdapter);
 
         configurarSpinners();
+
+        imgHeroProyectoNuevo = findViewById(R.id.imgHeroProyectoNuevo);
+        rvGaleriaNuevo = findViewById(R.id.rvGaleriaNuevo);
+        rvGaleriaNuevo.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        galeriaAdapter = new GaleriaFotosAdapter(galeriaUris, idx -> {
+            galeriaUris.remove(idx);
+            galeriaAdapter.notifyDataSetChanged();
+        });
+        rvGaleriaNuevo.setAdapter(galeriaAdapter);
+
+        View cardHeroFoto = findViewById(R.id.cardHeroFoto);
+        cardHeroFoto.setOnClickListener(v -> heroFotoLauncher.launch("image/*"));
+
+        View btnAgregarFotoGaleria = findViewById(R.id.btnAgregarFotoGaleria);
+        btnAgregarFotoGaleria.setOnClickListener(v -> galeriaFotoLauncher.launch("image/*"));
 
         rvSugerencias = findViewById(R.id.rvSugerencias);
         tvDireccionSeleccionada = findViewById(R.id.tvDireccionSeleccionada);
@@ -173,6 +335,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdatingAddress) return;
                 selPlaceId = null;
                 tvDireccionSeleccionada.setVisibility(View.GONE);
 
@@ -379,6 +542,7 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
 
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre(titulo);
+        proyecto.setDistrito(selDistrito != null ? selDistrito : "");
         proyecto.setUbicacion(ubicacion.isEmpty() ? "Sin ubicación" : ubicacion);
         proyecto.setLatitud(selLat);
         proyecto.setLongitud(selLng);
@@ -392,23 +556,23 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         proyecto.setTipologiaPrincipal(tipologiasAgregadas.get(0));
         proyecto.setImagenHeroPrincipal(R.drawable.onboarding1);
 
+        btnCrearProyecto.setEnabled(false);
+        btnCrearProyecto.setText("Subiendo fotos...");
+
         gateway.saveProject(proyecto, companyId, new AdminFirestoreGateway.FirestoreCallback<String>() {
             @Override
             public void onSuccess(String projectId) {
-                LogHelper.registrar(
-                        "Se creó el proyecto " + titulo
-                                + (companyName != null ? " en " + companyName : ""),
-                        com.example.inmia.models.Log.TIPO_PROYECTO,
-                        LogHelper.ROL_ADMIN);
-                runOnUiThread(() -> {
-                    Toast.makeText(AdminProyectoNuevoActivity.this, "Proyecto creado exitosamente", Toast.LENGTH_LONG).show();
-                    finish();
-                });
+                LogHelper.registrar("Se creó el proyecto " + titulo + (companyName != null ? " en " + companyName : ""), com.example.inmia.models.Log.TIPO_PROYECTO, LogHelper.ROL_ADMIN);
+
+                btnCrearProyecto.setText("Subiendo fotos...");
+                subirFotosYGuardar(proyecto, projectId);
             }
 
             @Override
             public void onError(Exception e) {
                 runOnUiThread(() -> {
+                    btnCrearProyecto.setEnabled(true);
+                    btnCrearProyecto.setText("Crear proyecto");
                     Toast.makeText(AdminProyectoNuevoActivity.this, "Error al crear proyecto: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
             }
@@ -440,13 +604,16 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
     private void onSugerenciaSeleccionada(com.google.android.libraries.places.api.model.AutocompletePrediction p) {
         rvSugerencias.setVisibility(View.GONE);
         String fullText = p.getFullText(null).toString();
+        isUpdatingAddress = true;
         etUbicacion.setText(fullText);
         etUbicacion.setSelection(fullText.length());
+        isUpdatingAddress = false;
 
         List<Place.Field> fields = Arrays.asList(
                 Place.Field.ID,
                 Place.Field.LAT_LNG,
-                Place.Field.ADDRESS
+                Place.Field.ADDRESS,
+                Place.Field.ADDRESS_COMPONENTS
         );
 
         FetchPlaceRequest fetchRequest = FetchPlaceRequest.builder(p.getPlaceId(), fields)
@@ -463,8 +630,10 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
                     }
                     selPlaceId = place.getId();
                     selDireccionFormateada = place.getAddress();
+                    selDistrito = extractDistrict(place);
 
                     tvDireccionSeleccionada.setText(selDireccionFormateada
+                            + (selDistrito != null && !selDistrito.isEmpty() ? " (" + selDistrito + ")" : "")
                             + "\n(" + selLat + ", " + selLng + ")");
                     tvDireccionSeleccionada.setVisibility(View.VISIBLE);
 
@@ -494,6 +663,42 @@ public class AdminProyectoNuevoActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    static class GaleriaFotosAdapter extends RecyclerView.Adapter<GaleriaFotosAdapter.ViewHolder> {
+        private final List<Uri> uris;
+        private final OnRemoveListener listener;
+        interface OnRemoveListener { void onRemove(int index); }
+
+        GaleriaFotosAdapter(List<Uri> uris, OnRemoveListener listener) {
+            this.uris = uris;
+            this.listener = listener;
+        }
+
+        @NonNull @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_galeria_foto, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            Glide.with(holder.itemView.getContext()).load(uris.get(position))
+                    .centerCrop().into(holder.img);
+            holder.imgRemove.setVisibility(View.VISIBLE);
+            holder.imgRemove.setOnClickListener(v -> listener.onRemove(holder.getAdapterPosition()));
+        }
+
+        @Override public int getItemCount() { return uris.size(); }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            ImageView img, imgRemove;
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                img = itemView.findViewById(R.id.imgGaleriaThumb);
+                imgRemove = itemView.findViewById(R.id.imgGaleriaRemove);
+            }
+        }
     }
 
     public static final String EXTRA_PROYECTO_TITULO = "extra_proyecto_titulo";

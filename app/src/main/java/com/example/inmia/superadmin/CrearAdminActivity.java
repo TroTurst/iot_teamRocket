@@ -3,28 +3,47 @@ package com.example.inmia.superadmin;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.inmia.R;
+import com.example.inmia.adapters.SugerenciasAdapter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.example.inmia.models.Log;
 import com.example.inmia.util.LogHelper;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,6 +67,19 @@ public class CrearAdminActivity extends AppCompatActivity {
     // Botón y overlay
     private MaterialButton btnCrearCuenta;
     private FrameLayout layoutLoading;
+
+    // Google Places
+    private RecyclerView rvSugerenciasAdmin;
+    private TextView tvDireccionSeleccionadaAdmin;
+    private SugerenciasAdapter sugerenciasAdapter;
+    private PlacesClient placesClient;
+    private AutocompleteSessionToken sessionToken;
+    private final Handler debounceHandler = new Handler(Looper.getMainLooper());
+    private Runnable debounceRunnable;
+    private boolean isUpdatingAddress = false;
+
+    private static final LatLng LIMA_SW = new LatLng(-12.25, -77.20);
+    private static final LatLng LIMA_NE = new LatLng(-11.85, -76.85);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +115,29 @@ public class CrearAdminActivity extends AppCompatActivity {
         tilInmobiliaria = findViewById(R.id.tilInmobiliaria);
         etInmobiliaria  = findViewById(R.id.etInmobiliaria);
 
+        // Google Places autocomplete para domicilio
+        rvSugerenciasAdmin = findViewById(R.id.rvSugerenciasAdmin);
+        tvDireccionSeleccionadaAdmin = findViewById(R.id.tvDireccionSeleccionadaAdmin);
+        rvSugerenciasAdmin.setLayoutManager(new LinearLayoutManager(this));
+        sugerenciasAdapter = new SugerenciasAdapter(this::onSugerenciaSeleccionada);
+        rvSugerenciasAdmin.setAdapter(sugerenciasAdapter);
+        placesClient = Places.createClient(this);
+        sessionToken = AutocompleteSessionToken.newInstance();
+
+        etDomicilio.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdatingAddress) return;
+                if (debounceRunnable != null) debounceHandler.removeCallbacks(debounceRunnable);
+                String query = s.toString().trim();
+                if (query.length() < 3) { rvSugerenciasAdmin.setVisibility(View.GONE); return; }
+                debounceRunnable = () -> buscarSugerencias(query);
+                debounceHandler.postDelayed(debounceRunnable, 300);
+            }
+        });
+
         // Botón y overlay
         btnCrearCuenta = findViewById(R.id.btnCrearCuenta);
         layoutLoading  = findViewById(R.id.layoutLoading);
@@ -103,6 +158,44 @@ public class CrearAdminActivity extends AppCompatActivity {
                 registrarAdmin();
             }
         });
+    }
+
+    private void buscarSugerencias(String query) {
+        RectangularBounds bounds = RectangularBounds.newInstance(LIMA_SW, LIMA_NE);
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(sessionToken)
+                .setLocationBias(bounds)
+                .setCountries("PE")
+                .setQuery(query)
+                .build();
+        placesClient.findAutocompletePredictions(request)
+                .addOnSuccessListener(response -> {
+                    sugerenciasAdapter.setData(response.getAutocompletePredictions());
+                    rvSugerenciasAdmin.setVisibility(
+                            response.getAutocompletePredictions().isEmpty() ? View.GONE : View.VISIBLE);
+                })
+                .addOnFailureListener(e -> rvSugerenciasAdmin.setVisibility(View.GONE));
+    }
+
+    private void onSugerenciaSeleccionada(com.google.android.libraries.places.api.model.AutocompletePrediction p) {
+        rvSugerenciasAdmin.setVisibility(View.GONE);
+        String fullText = p.getFullText(null).toString();
+        isUpdatingAddress = true;
+        etDomicilio.setText(fullText);
+        etDomicilio.setSelection(fullText.length());
+        isUpdatingAddress = false;
+
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.ADDRESS);
+        FetchPlaceRequest fetchRequest = FetchPlaceRequest.builder(p.getPlaceId(), fields)
+                .setSessionToken(sessionToken).build();
+        placesClient.fetchPlace(fetchRequest)
+                .addOnSuccessListener(response -> {
+                    Place place = response.getPlace();
+                    tvDireccionSeleccionadaAdmin.setText(place.getAddress());
+                    tvDireccionSeleccionadaAdmin.setVisibility(View.VISIBLE);
+                    sessionToken = AutocompleteSessionToken.newInstance();
+                })
+                .addOnFailureListener(e -> {});
     }
 
     private void configurarTipoDocumento() {

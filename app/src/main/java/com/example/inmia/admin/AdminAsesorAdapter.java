@@ -32,6 +32,14 @@ public class AdminAsesorAdapter extends RecyclerView.Adapter<AdminAsesorAdapter.
         this.listener = listener;
     }
 
+    public void setAsesores(List<Asesor> newAsesores) {
+        this.asesores.clear();
+        if (newAsesores != null && newAsesores != this.asesores) {
+            this.asesores.addAll(newAsesores);
+        }
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public AsesorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
