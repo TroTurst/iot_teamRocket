@@ -79,8 +79,9 @@
             android:textColor="@color/inmia_teal_dark"
             android:textSize="11sp"
             android:textStyle="bold"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:gravity="center"
             android:background="@drawable/badge_outline"/>
 
     </LinearLayout>
