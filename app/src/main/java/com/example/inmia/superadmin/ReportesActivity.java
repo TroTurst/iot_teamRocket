@@ -38,6 +38,7 @@ public class ReportesActivity extends AppCompatActivity {
     // Filtros: 0=Semana, 1=Mes, 2=Año, rango manejado aparte
     private TextView tabSemana, tabMes, tabAnio, tabRango;
     private TextView tvVerTodo, tvTotalSeparaciones, tvTotalCitas;
+    private TextView tvSubtituloSeparaciones, tvSubtituloCitas;
     private LinearLayout layoutRankingContainer;
     private LineChart lineChart;
     private FirebaseFirestore db;
@@ -61,6 +62,8 @@ public class ReportesActivity extends AppCompatActivity {
         tvVerTodo              = findViewById(R.id.tvVerTodo);
         tvTotalSeparaciones    = findViewById(R.id.tvTotalSeparaciones);
         tvTotalCitas           = findViewById(R.id.tvTotalCitas);
+        tvSubtituloSeparaciones = findViewById(R.id.tvSubtituloSeparaciones);
+        tvSubtituloCitas        = findViewById(R.id.tvSubtituloCitas);
         layoutRankingContainer = findViewById(R.id.layoutRankingContainer);
         lineChart              = findViewById(R.id.lineChart);
 
@@ -159,7 +162,22 @@ public class ReportesActivity extends AppCompatActivity {
                 break;
         }
 
+        actualizarSubtitulosPeriodo(index);
         cargarDatos(inicio, fin, index);
+    }
+
+    // Evita que los subtítulos de las cajas ("Separaciones totales") se lean como
+    // histórico cuando en realidad muestran solo el período de la pestaña activa.
+    private void actualizarSubtitulosPeriodo(int index) {
+        String sufijo;
+        switch (index) {
+            case 0:  sufijo = "esta semana"; break;
+            case 1:  sufijo = "este mes";    break;
+            case 2:  sufijo = "este año";    break;
+            default: sufijo = "en el rango"; break;
+        }
+        tvSubtituloSeparaciones.setText("Separaciones\n" + sufijo);
+        tvSubtituloCitas.setText("Citas\n" + sufijo);
     }
 
     private void seleccionarRango() {
@@ -191,6 +209,7 @@ public class ReportesActivity extends AppCompatActivity {
                                 fn.set(anioFin, mesFin, diaFin, 23, 59, 59);
                                 fn.set(Calendar.MILLISECOND, 999);
 
+                                actualizarSubtitulosPeriodo(3);
                                 cargarDatos(ini, fn, 3);
                                 Toast.makeText(this, "Rango: " + desde + " → " + hasta,
                                         Toast.LENGTH_SHORT).show();
@@ -394,19 +413,68 @@ public class ReportesActivity extends AppCompatActivity {
                 labels = new String[]{"Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
                 numBuckets = 7;
                 break;
-            case 1: // Mes
-                labels = new String[]{"S1", "S2", "S3", "S4", "S5"};
-                numBuckets = 5;
+            case 1: { // Mes — un punto por día real del mes
+                int numDias = inicio.getActualMaximum(Calendar.DAY_OF_MONTH);
+                numBuckets = numDias;
+                labels = new String[numDias];
+                for (int d = 1; d <= numDias; d++) {
+                    boolean mostrarEtiqueta = (d == 1) || (d == numDias) || (d % 5 == 0);
+                    labels[d - 1] = mostrarEtiqueta ? String.valueOf(d) : "";
+                }
                 break;
+            }
             case 2: // Año
                 labels = new String[]{"Ene", "Feb", "Mar", "Abr", "May", "Jun",
                                       "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
                 numBuckets = 12;
                 break;
-            default: // Rango
-                labels = new String[]{"P1", "P2", "P3", "P4", "P5", "P6"};
-                numBuckets = 6;
+            default: { // Rango — granularidad según la duración: día, semana o mes
+                int spanDias = calcularSpanDias(inicio, fin);
+                Calendar cursor = (Calendar) inicio.clone();
+
+                if (spanDias <= 31) {
+                    boolean cruzaMes = inicio.get(Calendar.MONTH) != fin.get(Calendar.MONTH)
+                            || inicio.get(Calendar.YEAR) != fin.get(Calendar.YEAR);
+                    numBuckets = spanDias;
+                    labels = new String[numBuckets];
+                    int paso = Math.max(1, (int) Math.ceil(numBuckets / 6.0));
+                    for (int i = 0; i < numBuckets; i++) {
+                        boolean mostrar = (i == 0) || (i == numBuckets - 1) || (i % paso == 0);
+                        labels[i] = mostrar
+                                ? (cruzaMes
+                                    ? cursor.get(Calendar.DAY_OF_MONTH) + "/" + (cursor.get(Calendar.MONTH) + 1)
+                                    : String.valueOf(cursor.get(Calendar.DAY_OF_MONTH)))
+                                : "";
+                        cursor.add(Calendar.DAY_OF_MONTH, 1);
+                    }
+                } else if (spanDias <= 366) {
+                    numBuckets = (int) Math.ceil(spanDias / 7.0);
+                    labels = new String[numBuckets];
+                    int paso = Math.max(1, (int) Math.ceil(numBuckets / 6.0));
+                    for (int i = 0; i < numBuckets; i++) {
+                        boolean mostrar = (i == 0) || (i == numBuckets - 1) || (i % paso == 0);
+                        labels[i] = mostrar
+                                ? cursor.get(Calendar.DAY_OF_MONTH) + "/" + (cursor.get(Calendar.MONTH) + 1)
+                                : "";
+                        cursor.add(Calendar.DAY_OF_MONTH, 7);
+                    }
+                } else {
+                    numBuckets = Math.max(1, (fin.get(Calendar.YEAR) - inicio.get(Calendar.YEAR)) * 12
+                            + (fin.get(Calendar.MONTH) - inicio.get(Calendar.MONTH)) + 1);
+                    labels = new String[numBuckets];
+                    String[] mesesAbrev = {"Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                                            "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
+                    int paso = Math.max(1, (int) Math.ceil(numBuckets / 6.0));
+                    for (int i = 0; i < numBuckets; i++) {
+                        boolean mostrar = (i == 0) || (i == numBuckets - 1) || (i % paso == 0);
+                        labels[i] = mostrar
+                                ? mesesAbrev[cursor.get(Calendar.MONTH)] + " " + (cursor.get(Calendar.YEAR) % 100)
+                                : "";
+                        cursor.add(Calendar.MONTH, 1);
+                    }
+                }
                 break;
+            }
         }
 
         int[] sepBuckets  = bucketear(separaciones, periodoIndex, numBuckets, inicio, fin);
@@ -455,8 +523,7 @@ public class ReportesActivity extends AppCompatActivity {
     private int[] bucketear(List<DocumentSnapshot> docs, int periodoIndex,
                               int numBuckets, Calendar inicio, Calendar fin) {
         int[] buckets = new int[numBuckets];
-        long tsInicio = inicio.getTimeInMillis();
-        long span     = fin.getTimeInMillis() - tsInicio;
+        int spanDiasRango = periodoIndex == 3 ? calcularSpanDias(inicio, fin) : 0;
 
         for (DocumentSnapshot doc : docs) {
             Timestamp ts = doc.getTimestamp("fechaCreacion");
@@ -470,21 +537,42 @@ public class ReportesActivity extends AppCompatActivity {
                     int dow = c.get(Calendar.DAY_OF_WEEK);
                     bucket = (dow == Calendar.SUNDAY) ? 6 : dow - Calendar.MONDAY;
                     break;
-                case 1: // Mes — semana del mes (0..4)
-                    bucket = Math.min((c.get(Calendar.DAY_OF_MONTH) - 1) / 7, 4);
+                case 1: // Mes — día real del mes (0..numDias-1)
+                    bucket = c.get(Calendar.DAY_OF_MONTH) - 1;
                     break;
                 case 2: // Año — mes (0..11)
                     bucket = c.get(Calendar.MONTH);
                     break;
-                default: // Rango — dividir en partes iguales
-                    if (span <= 0) { bucket = 0; break; }
-                    long offset = c.getTimeInMillis() - tsInicio;
-                    bucket = (int) Math.min(offset * numBuckets / span, numBuckets - 1);
+                default: // Rango — misma granularidad usada al armar las etiquetas
+                    if (spanDiasRango <= 31) {
+                        bucket = (int) ((medianoche(c) - medianoche(inicio)) / MILLIS_DIA);
+                    } else if (spanDiasRango <= 366) {
+                        int dia = (int) ((medianoche(c) - medianoche(inicio)) / MILLIS_DIA);
+                        bucket = dia / 7;
+                    } else {
+                        bucket = (c.get(Calendar.YEAR) - inicio.get(Calendar.YEAR)) * 12
+                                + (c.get(Calendar.MONTH) - inicio.get(Calendar.MONTH));
+                    }
                     break;
             }
 
             if (bucket >= 0 && bucket < numBuckets) buckets[bucket]++;
         }
         return buckets;
+    }
+
+    private static final long MILLIS_DIA = 24L * 60 * 60 * 1000L;
+
+    private long medianoche(Calendar c) {
+        Calendar x = (Calendar) c.clone();
+        x.set(Calendar.HOUR_OF_DAY, 0);
+        x.set(Calendar.MINUTE, 0);
+        x.set(Calendar.SECOND, 0);
+        x.set(Calendar.MILLISECOND, 0);
+        return x.getTimeInMillis();
+    }
+
+    private int calcularSpanDias(Calendar inicio, Calendar fin) {
+        return (int) ((fin.getTimeInMillis() - inicio.getTimeInMillis()) / MILLIS_DIA) + 1;
     }
 }
