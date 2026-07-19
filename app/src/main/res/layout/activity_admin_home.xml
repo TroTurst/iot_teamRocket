@@ -28,7 +28,7 @@
                     android:id="@+id/imgHeaderLogo"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_logo_inmia"
+                    android:src="@drawable/ic_logo_inmia_blanco"
                     android:contentDescription="@string/cd_logo"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="48dp"
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
@@ -69,7 +69,7 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_notifications"
                         android:contentDescription="Notificaciones"
-                        app:tint="#000000" />
+                        app:tint="#FFFFFF" />
 
                     <TextView
                         android:id="@+id/tvBadgeNotif"
@@ -94,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Seccion: Inicio"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
@@ -111,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ADMINISTRADOR - INICIO"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:letterSpacing="0.15"
