@@ -197,7 +197,7 @@
                     android:id="@+id/btnSolicitudes"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:text="Solicitudes (2)"
+                    android:text="Solicitudes"
                     android:textAllCaps="false"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"

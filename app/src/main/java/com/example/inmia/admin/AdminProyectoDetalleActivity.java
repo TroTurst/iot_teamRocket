@@ -21,12 +21,12 @@ import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
-import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -162,7 +162,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
             return;
         }
 
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+        gateway.resolveAdminContextByUserId(FirebaseAuth.getInstance().getUid(), new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
             @Override
             public void onSuccess(AdminContext context) {
                 companyId = context.getCompanyId();

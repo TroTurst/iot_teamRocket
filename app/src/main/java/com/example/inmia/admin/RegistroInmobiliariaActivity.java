@@ -27,11 +27,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
@@ -380,7 +383,7 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
         if (uriFoto3 != null) fotos.add(uriFoto3);
         if (uriFoto4 != null) fotos.add(uriFoto4);
 
-        // Obtener la inmobiliaria del admin para guardar ahí las fotos
+        // Obtener la inmobiliaria del admin para guardar ahí sus datos y fotos
         db.collection("usuarios").document(adminId).get()
                 .addOnSuccessListener(adminDoc -> {
                     String inmobId = adminDoc.getString("inmobiliariaId");
@@ -392,7 +395,7 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
-                    subirFotosPromocionales(adminId, inmobId, fotos);
+                    guardarDatosInmobiliaria(adminId, inmobId, fotos);
                 })
                 .addOnFailureListener(e -> {
                     btnGuardar.setEnabled(true);
@@ -401,6 +404,61 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
                             "Error al verificar tu cuenta. Intenta de nuevo.",
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    /** Guarda los datos básicos de la inmobiliaria (nombre, contacto, dirección, oficinas). */
+    private void guardarDatosInmobiliaria(String adminId, String inmobId, List<Uri> fotos) {
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombre", getText(etNombreEmpresa));
+        datos.put("correo", getText(etCorreo));
+        datos.put("telefono", getText(etTelefono));
+        datos.put("direccion", getText(etDireccion));
+        datos.put("distrito", getText(etDistrito));
+        datos.put("oficinasExtra", recolectarOficinasExtra());
+
+        db.collection("inmobiliarias").document(inmobId)
+                .set(datos, SetOptions.merge())
+                .addOnSuccessListener(unused -> subirFotosPromocionales(adminId, inmobId, fotos))
+                .addOnFailureListener(e -> {
+                    btnGuardar.setEnabled(true);
+                    btnGuardar.setText("Guardar y continuar");
+                    Toast.makeText(this,
+                            "Error al guardar los datos de la inmobiliaria: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /** Recorre los campos de oficinas adicionales agregados dinámicamente y los agrupa en tríos. */
+    private List<Map<String, String>> recolectarOficinasExtra() {
+        List<Map<String, String>> oficinas = new ArrayList<>();
+        String direccion = null;
+        String distrito = null;
+
+        for (int i = 0; i < layoutOficinasExtra.getChildCount(); i++) {
+            View child = layoutOficinasExtra.getChildAt(i);
+            if (!(child instanceof TextInputLayout)) continue;
+
+            TextInputLayout til = (TextInputLayout) child;
+            String hint = til.getHint() != null ? til.getHint().toString() : "";
+            String valor = til.getEditText() != null && til.getEditText().getText() != null
+                    ? til.getEditText().getText().toString().trim() : "";
+
+            if (hint.startsWith("Dirección de oficina")) {
+                direccion = valor;
+            } else if (hint.equals("Distrito")) {
+                distrito = valor;
+            } else if (hint.startsWith("Referencia")) {
+                Map<String, String> oficina = new HashMap<>();
+                oficina.put("direccion", direccion != null ? direccion : "");
+                oficina.put("distrito", distrito != null ? distrito : "");
+                oficina.put("referencia", valor);
+                oficinas.add(oficina);
+                direccion = null;
+                distrito = null;
+            }
+        }
+
+        return oficinas;
     }
 
     /** Sube cada foto a Storage en paralelo y recolecta sus URLs de descarga. */

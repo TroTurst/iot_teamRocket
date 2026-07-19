@@ -20,7 +20,6 @@ import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
-import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Asesor;
 import com.example.inmia.models.CitaAsesor;
 import com.example.inmia.models.Log;
@@ -28,6 +27,7 @@ import com.example.inmia.models.Proyecto;
 import com.example.inmia.util.LogHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class AdminAsesorDetalleCarlosActivity extends AppCompatActivity {
 
         bottomNav.setSelectedItemId(R.id.nav_asesores);
 
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<>() {
+        gateway.resolveAdminContextByUserId(FirebaseAuth.getInstance().getUid(), new AdminFirestoreGateway.FirestoreCallback<>() {
             @Override
             public void onSuccess(AdminContext context) {
                 companyId = context.getCompanyId();

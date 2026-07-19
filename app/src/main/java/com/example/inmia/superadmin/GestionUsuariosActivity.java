@@ -20,6 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,10 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
     // Firebase
     private FirebaseFirestore db;
+
+    // Solicitudes pendientes
+    private int totalSolicitudesPendientes = 0;
+    private ListenerRegistration solicitudesListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +159,24 @@ public class GestionUsuariosActivity extends AppCompatActivity
 
         // Cargar datos desde Firestore
         cargarUsuariosDeFirestore();
+        escucharSolicitudes();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (solicitudesListener != null) solicitudesListener.remove();
+    }
+
+    private void escucharSolicitudes() {
+        solicitudesListener = db.collection("solicitudes")
+                .whereEqualTo("estado", "pendiente")
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null || snapshot == null) return;
+                    totalSolicitudesPendientes = snapshot.size();
+                    btnSolicitudes.setText("Solicitudes (" + totalSolicitudesPendientes + ")");
+                    actualizarTabVisual(tabActual);
+                });
     }
 
     // ── Carga de datos desde Firestore ──────────────────────────────────────
@@ -304,7 +327,8 @@ public class GestionUsuariosActivity extends AppCompatActivity
                 tabAsesores.setTextColor(getColor(android.R.color.white));
                 tvTituloLista.setText("Lista de asesores (" + listaAsesores.size() + ")");
                 btnNuevo.setVisibility(View.GONE);
-                btnSolicitudes.setVisibility(View.VISIBLE);
+                btnSolicitudes.setVisibility(
+                        totalSolicitudesPendientes > 0 ? View.VISIBLE : View.GONE);
                 break;
             case 2:
                 tabClientes.setBackground(getDrawable(R.drawable.tab_selected_bg_superadmin));

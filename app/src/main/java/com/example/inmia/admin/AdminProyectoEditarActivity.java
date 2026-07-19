@@ -38,6 +38,7 @@ import com.example.inmia.models.Tipologia;
 import com.example.inmia.util.LogHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
@@ -383,7 +384,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     }
 
     private void resolverContextoAdmin() {
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+        gateway.resolveAdminContextByUserId(FirebaseAuth.getInstance().getUid(), new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
             @Override
             public void onSuccess(AdminContext context) {
                 companyId = context.getCompanyId();

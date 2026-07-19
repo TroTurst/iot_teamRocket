@@ -379,7 +379,7 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilOficinaAsesor"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Oficina / Sede"
@@ -391,12 +391,13 @@
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusBottomEnd="12dp">
-                        <com.google.android.material.textfield.TextInputEditText
+                        <AutoCompleteTextView
                             android:id="@+id/etOficinaAsesor"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textCapWords"
-                            android:imeOptions="actionDone"/>
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:cursorVisible="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
