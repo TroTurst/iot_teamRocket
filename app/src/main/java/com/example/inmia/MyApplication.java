@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.android.libraries.places.api.Places;
 
 import org.osmdroid.config.Configuration;
@@ -17,6 +19,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // La app usa colores de marca fijos y no tiene un diseño de modo oscuro;
+        // se fuerza claro para que no dependa del tema del sistema del dispositivo.
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         try {
             ApplicationInfo ai = getPackageManager()

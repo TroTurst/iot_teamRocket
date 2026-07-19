@@ -14,9 +14,9 @@ import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
-import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.example.inmia.models.Proyecto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -74,7 +74,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_inicio);
 
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
+        gateway.resolveAdminContextByUserId(FirebaseAuth.getInstance().getUid(), new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
             @Override
             public void onSuccess(AdminContext context) {
                 companyId = context.getCompanyId();
@@ -88,7 +88,7 @@ public class AdminHomeActivity extends AppCompatActivity {
                             .document(companyId).get()
                             .addOnSuccessListener(doc -> {
                                 if (!doc.exists()) return;
-                                List<String> fotos = (List<String>) doc.get("fotosPromo");
+                                List<String> fotos = (List<String>) doc.get("fotosPromocionales");
                                 if (fotos == null || fotos.isEmpty()) return;
                                 if (fotos.size() > 0 && fotos.get(0) != null && !fotos.get(0).isEmpty()) {
                                     imgFotoRef1.setVisibility(View.VISIBLE);

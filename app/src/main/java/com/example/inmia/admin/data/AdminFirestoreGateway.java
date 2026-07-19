@@ -194,30 +194,26 @@ public class AdminFirestoreGateway {
         this.db = FirebaseFirestore.getInstance();
     }
 
-    public void resolveAdminContextByEmail(String email, FirestoreCallback<AdminContext> callback) {
-        if (email == null || email.trim().isEmpty()) {
-            callback.onError(new IllegalArgumentException("El email no puede estar vacío"));
+    public void resolveAdminContextByUserId(String userId, FirestoreCallback<AdminContext> callback) {
+        if (userId == null || userId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("El id del usuario no puede estar vacío"));
             return;
         }
 
-        db.collection("usuarios")
-                .whereEqualTo("correo", email.trim())
-                .limit(1)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (querySnapshot.isEmpty()) {
+        db.collection("usuarios").document(userId).get()
+                .addOnSuccessListener(userDoc -> {
+                    if (!userDoc.exists()) {
                         callback.onError(new IllegalStateException("No se encontró el usuario admin"));
                         return;
                     }
 
-                    DocumentSnapshot userDoc = querySnapshot.getDocuments().get(0);
-                    String userId = userDoc.getId();
                     String displayName = joinNames(userDoc.getString("nombres"), userDoc.getString("apellidos"), "Administrador");
                     String phone = safeString(userDoc.getString("telefono"), "—");
                     String address = safeString(userDoc.getString("domicilio"), "—");
                     String role = safeString(userDoc.getString("rol"), "admin");
                     boolean active = getBoolean(userDoc.get("activo"), true);
                     String fotoUrl = safeString(userDoc.getString("fotoUrl"), "");
+                    String email = safeString(userDoc.getString("correo"), "");
                     String companyId = safeString(userDoc.getString("inmobiliariaId"), AdminSessionDefaults.DEFAULT_COMPANY_ID);
 
                     db.collection("inmobiliarias").document(companyId).get()

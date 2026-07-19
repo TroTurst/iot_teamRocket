@@ -25,16 +25,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AdminAsesorNuevoActivity extends AppCompatActivity {
 
     private ImageView imgFoto;
     private TextInputEditText etNombre, etApellido, etDni, etFechaNac;
-    private TextInputEditText etEmail, etTelefono, etDomicilio, etOficina;
-    private AutoCompleteTextView actvTipoDocumento;
+    private TextInputEditText etEmail, etTelefono, etDomicilio;
+    private AutoCompleteTextView actvTipoDocumento, actvOficina;
     private MaterialButton btnCrear;
 
     private Uri fotoUri = null;
@@ -67,12 +69,14 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         etEmail           = findViewById(R.id.etEmailAsesor);
         etTelefono        = findViewById(R.id.etTelefonoAsesor);
         etDomicilio       = findViewById(R.id.etDomicilioAsesor);
-        etOficina         = findViewById(R.id.etOficinaAsesor);
+        actvOficina       = findViewById(R.id.etOficinaAsesor);
         btnCrear          = findViewById(R.id.btnCrearAsesor);
 
         String[] tipos = {"DNI", "Carnet de Extranjería"};
         actvTipoDocumento.setAdapter(new ArrayAdapter<>(
                 this, android.R.layout.simple_dropdown_item_1line, tipos));
+
+        cargarOficinasDisponibles();
 
         findViewById(R.id.frameAvatar).setOnClickListener(v -> fotoLauncher.launch("image/*"));
 
@@ -83,6 +87,63 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         findViewById(R.id.btnBackNuevoAsesor).setOnClickListener(v -> finish());
 
         btnCrear.setOnClickListener(v -> enviarSolicitud());
+    }
+
+    /** Carga las oficinas registradas por la inmobiliaria del admin en el combo box. */
+    private void cargarOficinasDisponibles() {
+        String adminId = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "";
+        if (adminId.isEmpty()) return;
+
+        db.collection("usuarios").document(adminId).get()
+                .addOnSuccessListener(adminDoc -> {
+                    String inmobId = adminDoc.getString("inmobiliariaId");
+                    if (inmobId == null || inmobId.isEmpty()) return;
+
+                    db.collection("inmobiliarias").document(inmobId).get()
+                            .addOnSuccessListener(this::poblarOficinas);
+                });
+    }
+
+    private void poblarOficinas(DocumentSnapshot inmobDoc) {
+        List<String> oficinas = new ArrayList<>();
+
+        String labelPrincipal = formatearOficina(
+                inmobDoc.getString("direccion"), inmobDoc.getString("distrito"));
+        if (!labelPrincipal.isEmpty()) {
+            oficinas.add(labelPrincipal);
+        }
+
+        Object extras = inmobDoc.get("oficinasExtra");
+        if (extras instanceof java.util.List) {
+            for (Object item : (java.util.List<?>) extras) {
+                if (!(item instanceof Map)) continue;
+                Map<?, ?> oficina = (Map<?, ?>) item;
+                Object direccion = oficina.get("direccion");
+                Object distrito = oficina.get("distrito");
+                String label = formatearOficina(
+                        direccion != null ? direccion.toString() : null,
+                        distrito != null ? distrito.toString() : null);
+                if (!label.isEmpty()) oficinas.add(label);
+            }
+        }
+
+        if (oficinas.isEmpty()) {
+            Toast.makeText(this,
+                    "Tu inmobiliaria aún no tiene oficinas registradas.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        actvOficina.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_dropdown_item_1line, oficinas));
+    }
+
+    private String formatearOficina(String direccion, String distrito) {
+        String dir = direccion != null ? direccion.trim() : "";
+        String dist = distrito != null ? distrito.trim() : "";
+        if (dir.isEmpty()) return dist;
+        return dist.isEmpty() ? dir : dir + " - " + dist;
     }
 
     private void mostrarDatePicker() {
@@ -106,7 +167,7 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         String email     = texto(etEmail);
         String telefono  = texto(etTelefono);
         String domicilio = texto(etDomicilio);
-        String oficina   = texto(etOficina);
+        String oficina   = actvOficina.getText().toString().trim();
 
         if (nombre.isEmpty() || apellido.isEmpty() || numDoc.isEmpty()
                 || email.isEmpty() || oficina.isEmpty()) {

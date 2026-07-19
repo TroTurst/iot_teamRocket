@@ -16,8 +16,8 @@ import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
-import com.example.inmia.admin.data.AdminSessionDefaults;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminPerfilActivity extends AppCompatActivity {
 
@@ -98,7 +98,7 @@ public class AdminPerfilActivity extends AppCompatActivity {
     }
 
     private void cargarPerfilDesdeFirebase() {
-        gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<>() {
+        gateway.resolveAdminContextByUserId(FirebaseAuth.getInstance().getUid(), new AdminFirestoreGateway.FirestoreCallback<>() {
             @Override
             public void onSuccess(AdminContext context) {
                 if (tvNombreUsuario != null) {

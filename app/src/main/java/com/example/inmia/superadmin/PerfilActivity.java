@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
+import com.example.inmia.util.SesionLocal;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -127,6 +128,7 @@ public class PerfilActivity extends AppCompatActivity {
             R.color.inmia_danger,
             R.drawable.bg_badge_red_circle,
             () -> {
+                SesionLocal.marcarCerrada(this);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |

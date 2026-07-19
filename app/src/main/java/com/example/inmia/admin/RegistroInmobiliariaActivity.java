@@ -27,11 +27,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
@@ -347,15 +350,13 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
             valido = false;
         }
 
-        // ← CAMBIO 3: Validación de fotos comentada — no obligatoria por ahora
-        /*
+        // Mínimo 2 fotos promocionales (requisito del proyecto)
         if (fotosSubidas < 2) {
             Toast.makeText(this,
                     "Debes subir al menos 2 fotos promocionales",
                     Toast.LENGTH_LONG).show();
             valido = false;
         }
-        */
 
         return valido;
     }
@@ -368,8 +369,157 @@ public class RegistroInmobiliariaActivity extends AppCompatActivity {
 
         String adminId = mAuth.getCurrentUser() != null
                 ? mAuth.getCurrentUser().getUid() : "";
-        String nombreEmpresa = getText(etNombreEmpresa);
+        if (adminId.isEmpty()) {
+            btnGuardar.setEnabled(true);
+            btnGuardar.setText("Guardar y continuar");
+            Toast.makeText(this, "Error: sesión no válida.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        // Recolectar las fotos seleccionadas (validación ya garantizó mínimo 2)
+        List<Uri> fotos = new ArrayList<>();
+        if (uriFoto1 != null) fotos.add(uriFoto1);
+        if (uriFoto2 != null) fotos.add(uriFoto2);
+        if (uriFoto3 != null) fotos.add(uriFoto3);
+        if (uriFoto4 != null) fotos.add(uriFoto4);
+
+        // Obtener la inmobiliaria del admin para guardar ahí sus datos y fotos
+        db.collection("usuarios").document(adminId).get()
+                .addOnSuccessListener(adminDoc -> {
+                    String inmobId = adminDoc.getString("inmobiliariaId");
+                    if (inmobId == null || inmobId.isEmpty()) {
+                        btnGuardar.setEnabled(true);
+                        btnGuardar.setText("Guardar y continuar");
+                        Toast.makeText(this,
+                                "Tu cuenta no tiene una inmobiliaria asociada.",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    guardarDatosInmobiliaria(adminId, inmobId, fotos);
+                })
+                .addOnFailureListener(e -> {
+                    btnGuardar.setEnabled(true);
+                    btnGuardar.setText("Guardar y continuar");
+                    Toast.makeText(this,
+                            "Error al verificar tu cuenta. Intenta de nuevo.",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /** Guarda los datos básicos de la inmobiliaria (nombre, contacto, dirección, oficinas). */
+    private void guardarDatosInmobiliaria(String adminId, String inmobId, List<Uri> fotos) {
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombre", getText(etNombreEmpresa));
+        datos.put("correo", getText(etCorreo));
+        datos.put("telefono", getText(etTelefono));
+        datos.put("direccion", getText(etDireccion));
+        datos.put("distrito", getText(etDistrito));
+        datos.put("oficinasExtra", recolectarOficinasExtra());
+
+        db.collection("inmobiliarias").document(inmobId)
+                .set(datos, SetOptions.merge())
+                .addOnSuccessListener(unused -> subirFotosPromocionales(adminId, inmobId, fotos))
+                .addOnFailureListener(e -> {
+                    btnGuardar.setEnabled(true);
+                    btnGuardar.setText("Guardar y continuar");
+                    Toast.makeText(this,
+                            "Error al guardar los datos de la inmobiliaria: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /** Recorre los campos de oficinas adicionales agregados dinámicamente y los agrupa en tríos. */
+    private List<Map<String, String>> recolectarOficinasExtra() {
+        List<Map<String, String>> oficinas = new ArrayList<>();
+        String direccion = null;
+        String distrito = null;
+
+        for (int i = 0; i < layoutOficinasExtra.getChildCount(); i++) {
+            View child = layoutOficinasExtra.getChildAt(i);
+            if (!(child instanceof TextInputLayout)) continue;
+
+            TextInputLayout til = (TextInputLayout) child;
+            String hint = til.getHint() != null ? til.getHint().toString() : "";
+            String valor = til.getEditText() != null && til.getEditText().getText() != null
+                    ? til.getEditText().getText().toString().trim() : "";
+
+            if (hint.startsWith("Dirección de oficina")) {
+                direccion = valor;
+            } else if (hint.equals("Distrito")) {
+                distrito = valor;
+            } else if (hint.startsWith("Referencia")) {
+                Map<String, String> oficina = new HashMap<>();
+                oficina.put("direccion", direccion != null ? direccion : "");
+                oficina.put("distrito", distrito != null ? distrito : "");
+                oficina.put("referencia", valor);
+                oficinas.add(oficina);
+                direccion = null;
+                distrito = null;
+            }
+        }
+
+        return oficinas;
+    }
+
+    /** Sube cada foto a Storage en paralelo y recolecta sus URLs de descarga. */
+    private void subirFotosPromocionales(String adminId, String inmobId, List<Uri> fotos) {
+        StorageReference base = FirebaseStorage.getInstance()
+                .getReference()
+                .child("fotos_promocionales/" + inmobId);
+
+        final String[] urls = new String[fotos.size()];
+        final int[] completadas = {0};
+
+        for (int i = 0; i < fotos.size(); i++) {
+            final int idx = i;
+            StorageReference ref = base.child("foto_" + idx + "_" + System.currentTimeMillis() + ".jpg");
+            ref.putFile(fotos.get(idx))
+                    .addOnSuccessListener(ts -> ref.getDownloadUrl()
+                            .addOnSuccessListener(url -> {
+                                urls[idx] = url.toString();
+                                if (++completadas[0] == fotos.size())
+                                    guardarFotosEnInmobiliaria(adminId, inmobId, urls);
+                            })
+                            .addOnFailureListener(e -> {
+                                if (++completadas[0] == fotos.size())
+                                    guardarFotosEnInmobiliaria(adminId, inmobId, urls);
+                            }))
+                    .addOnFailureListener(e -> {
+                        if (++completadas[0] == fotos.size())
+                            guardarFotosEnInmobiliaria(adminId, inmobId, urls);
+                    });
+        }
+    }
+
+    /** Guarda el array de URLs en el doc de la inmobiliaria. */
+    private void guardarFotosEnInmobiliaria(String adminId, String inmobId, String[] urls) {
+        List<String> lista = new ArrayList<>();
+        for (String u : urls) if (u != null && !u.isEmpty()) lista.add(u);
+
+        if (lista.isEmpty()) {
+            btnGuardar.setEnabled(true);
+            btnGuardar.setText("Guardar y continuar");
+            Toast.makeText(this,
+                    "No se pudieron subir las fotos. Intenta de nuevo.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        db.collection("inmobiliarias").document(inmobId)
+                .update("fotosPromocionales", lista)
+                .addOnSuccessListener(unused -> marcarRegistroCompletado(adminId))
+                .addOnFailureListener(e -> {
+                    btnGuardar.setEnabled(true);
+                    btnGuardar.setText("Guardar y continuar");
+                    Toast.makeText(this,
+                            "Error al guardar las fotos: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /** Marca el primer registro como completado y navega al home. */
+    private void marcarRegistroCompletado(String adminId) {
+        String nombreEmpresa = getText(etNombreEmpresa);
         db.collection("usuarios").document(adminId)
                 .update("esPrimeraVez", false)
                 .addOnSuccessListener(unused -> {

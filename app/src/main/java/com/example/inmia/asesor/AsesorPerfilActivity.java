@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.example.inmia.LoginActivity;
 import com.example.inmia.R;
+import com.example.inmia.util.SesionLocal;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -177,6 +178,7 @@ public class AsesorPerfilActivity extends AppCompatActivity {
 
         btnC.setOnClickListener(v -> dialog.dismiss());
         btnOk.setOnClickListener(v -> {
+            SesionLocal.marcarCerrada(this);
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

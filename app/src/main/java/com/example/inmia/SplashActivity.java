@@ -15,6 +15,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.example.inmia.util.RolRouter;
+import com.example.inmia.util.SesionLocal;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class SplashActivity extends AppCompatActivity {
 
     // Duración del splash en milisegundos (2.5 segundos)
@@ -34,15 +40,49 @@ public class SplashActivity extends AppCompatActivity {
         solicitarPermisoNotificaciones();
         abrirAjustesSiNotificacionesDeshabilitadas();
 
-        // Navegar a MainActivity después del tiempo definido
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashActivity.this, OnboardingActivity.class);
-                startActivity(intent);
-                finish(); // Destruye el Splash para que no vuelva con "atrás"
+        // Navegar según el estado de sesión después del tiempo definido
+        new Handler(Looper.getMainLooper()).postDelayed(this::continuarFlujo, SPLASH_DURATION);
+    }
+
+    /** Si ya hay una sesión de Firebase Auth activa y la cuenta sigue habilitada, salta directo
+     *  a su pantalla de inicio. Si no, sigue el flujo normal de Onboarding → Login. */
+    private void continuarFlujo() {
+        FirebaseUser usuarioActual = FirebaseAuth.getInstance().getCurrentUser();
+        if (usuarioActual == null || !SesionLocal.estaActiva(this)) {
+            // Si FirebaseAuth aún reporta un usuario pero la app marcó la sesión como
+            // cerrada explícitamente, se fuerza el signOut por si quedó un estado
+            // desincronizado en disco (ver SesionLocal).
+            if (usuarioActual != null) {
+                FirebaseAuth.getInstance().signOut();
             }
-        }, SPLASH_DURATION);
+            irAOnboarding();
+            return;
+        }
+
+        FirebaseFirestore.getInstance().collection("usuarios").document(usuarioActual.getUid()).get()
+                .addOnSuccessListener(doc -> {
+                    boolean activo = doc.exists() && Boolean.TRUE.equals(doc.getBoolean("activo"));
+                    Intent intent = activo
+                            ? RolRouter.resolverIntentDestino(this, doc, usuarioActual.getEmail())
+                            : null;
+
+                    if (intent == null) {
+                        FirebaseAuth.getInstance().signOut();
+                        irAOnboarding();
+                        return;
+                    }
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> irAOnboarding());
+    }
+
+    private void irAOnboarding() {
+        Intent intent = new Intent(SplashActivity.this, OnboardingActivity.class);
+        startActivity(intent);
+        finish(); // Destruye el Splash para que no vuelva con "atrás"
     }
 
     private void solicitarPermisoNotificaciones() {

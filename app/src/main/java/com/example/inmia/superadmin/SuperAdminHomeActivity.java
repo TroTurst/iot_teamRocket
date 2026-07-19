@@ -46,6 +46,14 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     // Solicitudes
     private TextView tvTotalSolicitudes;
     private TextView tvDescSolicitudes;
+    private TextView tvSolicitudesDecoracion;
+
+    private static final int COLOR_SOLICITUDES_ALERTA = 0xFFD97706;
+    private static final int COLOR_SOLICITUDES_ALERTA_DECORACION = 0xFFB45F04;
+    private static final int COLOR_SOLICITUDES_ALERTA_DESC = 0xFFFDE9C8;
+    private static final int COLOR_SOLICITUDES_OK = 0xFF1B8D50;
+    private static final int COLOR_SOLICITUDES_OK_DECORACION = 0xFF146B3D;
+    private static final int COLOR_SOLICITUDES_OK_DESC = 0xFFD2F0DF;
 
     // Nuevos este mes
     private TextView tvNuevosEsteMes;
@@ -84,6 +92,7 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
         tvContadorCitas         = findViewById(R.id.tvContadorCitas);
         tvTotalSolicitudes      = findViewById(R.id.tvTotalSolicitudes);
         tvDescSolicitudes       = findViewById(R.id.tvDescSolicitudes);
+        tvSolicitudesDecoracion = findViewById(R.id.tvSolicitudesDecoracion);
         tvNuevosEsteMes         = findViewById(R.id.tvNuevosEsteMes);
         tvSubtituloNuevos       = findViewById(R.id.tvSubtituloNuevos);
 
@@ -225,11 +234,26 @@ public class SuperAdminHomeActivity extends AppCompatActivity {
     }
 
     private void configurarSolicitudes() {
+        cardSolicitudes.setVisibility(View.VISIBLE);
+
+        if (totalSolicitudes == 0) {
+            tvTotalSolicitudes.setText("✓");
+            tvDescSolicitudes.setText("No tienes solicitudes\npendientes");
+            cardSolicitudes.setCardBackgroundColor(COLOR_SOLICITUDES_OK);
+            tvSolicitudesDecoracion.setTextColor(COLOR_SOLICITUDES_OK_DECORACION);
+            tvDescSolicitudes.setTextColor(COLOR_SOLICITUDES_OK_DESC);
+            btnVerSolicitudes.setVisibility(View.GONE);
+            return;
+        }
+
+        btnVerSolicitudes.setVisibility(View.VISIBLE);
         tvTotalSolicitudes.setText(String.valueOf(totalSolicitudes));
         tvDescSolicitudes.setText(totalSolicitudes == 1
                 ? "asesor de ventas\nespera ser habilitado"
                 : "asesores de ventas\nesperan ser habilitados");
-        cardSolicitudes.setVisibility(totalSolicitudes == 0 ? View.GONE : View.VISIBLE);
+        cardSolicitudes.setCardBackgroundColor(COLOR_SOLICITUDES_ALERTA);
+        tvSolicitudesDecoracion.setTextColor(COLOR_SOLICITUDES_ALERTA_DECORACION);
+        tvDescSolicitudes.setTextColor(COLOR_SOLICITUDES_ALERTA_DESC);
     }
 
     private void irAGestionUsuarios() {

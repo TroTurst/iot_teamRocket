@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.LoginActivity;
+import com.example.inmia.util.SesionLocal;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -157,6 +158,7 @@ public class ClientePerfilClienteActivity extends AppCompatActivity {
                 .setTitle("Cerrar sesión")
                 .setMessage("¿Estás seguro que deseas cerrar sesión?")
                 .setPositiveButton("Cerrar sesión", (dialog, which) -> {
+                    SesionLocal.marcarCerrada(this);
                     mAuth.signOut();
 
                     Intent intent = new Intent(this, LoginActivity.class);
