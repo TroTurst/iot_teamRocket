@@ -331,6 +331,86 @@
                         </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="12dp"
+                            android:paddingTop="12dp"
+                            android:paddingBottom="8dp"
+                            android:text="Mi actividad"
+                            android:textColor="@color/inmia_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold"/>
+
+                        <!-- Mis reseñas -->
+                        <LinearLayout
+                            android:id="@+id/layoutMisResenias"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:src="@drawable/ic_star_filled"
+                                app:tint="@color/inmia_teal_dark"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:text="Mis reseñas"
+                                android:textColor="@color/inmia_text"
+                                android:textSize="14sp"/>
+
+                            <!-- Badge con cantidad de reseñas -->
+                            <TextView
+                                android:id="@+id/tvBadgeResenias"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_badge_preventa"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:paddingTop="2dp"
+                                android:paddingBottom="2dp"
+                                android:text="0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="11sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:visibility="gone"/>
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:rotation="180"
+                                android:src="@drawable/ic_arrow_back"
+                                app:tint="#A0BFBF"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- ── CARD: CONFIGURACIÓN ── -->
                 <com.google.android.material.card.MaterialCardView
