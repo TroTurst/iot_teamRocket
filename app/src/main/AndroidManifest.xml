@@ -283,7 +283,8 @@
         <activity
             android:name=".cliente.ClienteVerTodosActivity"
             android:exported="false" />
-
+        <activity android:name=".cliente.ClienteMisReseniasActivity"
+            android:exported="false" />
 
     </application>
 

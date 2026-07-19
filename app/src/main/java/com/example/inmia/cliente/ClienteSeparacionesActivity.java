@@ -54,31 +54,48 @@ public class ClienteSeparacionesActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) return;
 
+        String uid = currentUser.getUid();
+
         db.collection("separaciones")
-                .whereEqualTo("clienteId", currentUser.getUid())
+                .whereEqualTo("clienteId", uid)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) return;
 
                     listaSeparacionesCompletas.clear();
 
+
+                    String sepIdParaValorar      = null;
+                    String proyectoIdParaValorar  = null;
+                    String nombreParaValorar      = null;
+
                     if (value != null) {
                         for (QueryDocumentSnapshot doc : value) {
-                            String estado = doc.getString("estado");
+                            String estado         = doc.getString("estado");
                             String nombreProyecto = doc.getString("nombreProyecto");
-                            String ubicacion = doc.getString("ubicacion");
-                            String inmobiliaria = doc.getString("inmobiliariaNombre");
-                            String imagenUrl = doc.getString("imagenUrl");
+                            String ubicacion      = doc.getString("ubicacion");
+                            String inmobiliaria   = doc.getString("inmobiliariaNombre");
+                            String imagenUrl      = doc.getString("imagenUrl");
 
-                            estado = estado != null ? estado : "En proceso";
+                            estado        = estado != null ? estado : "En proceso";
                             nombreProyecto = nombreProyecto != null ? nombreProyecto : "Proyecto Desconocido";
-                            ubicacion = ubicacion != null ? ubicacion : "Ubicación no especificada";
-                            inmobiliaria = inmobiliaria != null ? inmobiliaria : "Galeon Inmobiliaria";
-                            imagenUrl = imagenUrl != null ? imagenUrl : "";
+                            ubicacion     = ubicacion != null ? ubicacion : "Ubicación no especificada";
+                            inmobiliaria  = inmobiliaria != null ? inmobiliaria : "Galeon Inmobiliaria";
+                            imagenUrl     = imagenUrl != null ? imagenUrl : "";
 
-                            Separacion separacion = new Separacion(estado, nombreProyecto, ubicacion, inmobiliaria, imagenUrl);
+                            Separacion separacion = new Separacion(
+                                    estado, nombreProyecto, ubicacion, inmobiliaria, imagenUrl);
                             separacion.setId(doc.getId());
-
                             listaSeparacionesCompletas.add(separacion);
+
+
+                            boolean esPagada    = "Pagada".equalsIgnoreCase(estado);
+                            boolean sinValorar  = !doc.contains("valoracionProyecto");
+
+                            if (esPagada && sinValorar && sepIdParaValorar == null) {
+                                sepIdParaValorar     = doc.getId();
+                                proyectoIdParaValorar = doc.getString("proyectoId");
+                                nombreParaValorar    = nombreProyecto;
+                            }
                         }
                     }
 
@@ -86,7 +103,19 @@ public class ClienteSeparacionesActivity extends AppCompatActivity {
                     chipGroup.check(R.id.chipSepTodos);
                     adapter = new SeparacionAdapter(listaSeparacionesCompletas);
                     rvSeparaciones.setAdapter(adapter);
+
+
+                    if (sepIdParaValorar != null) {
+                        mostrarDialogValoracion(
+                                sepIdParaValorar, proyectoIdParaValorar, nombreParaValorar, uid);
+                    }
                 });
+    }
+    private void mostrarDialogValoracion(String sepId, String proyectoId,
+                                         String nombreProyecto, String uid) {
+        ProyectoValoracionBottomSheet sheet = ProyectoValoracionBottomSheet.newInstance(
+                sepId, proyectoId, nombreProyecto, uid);
+        sheet.show(getSupportFragmentManager(), "valoracion_proyecto");
     }
 
     private void configurarFiltrosChips() {
