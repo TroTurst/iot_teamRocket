@@ -28,7 +28,7 @@
 
     <!-- Colores de filtro -->
     <color name="filter_container_bg">#AA1B8D50</color>
-    <color name="chip_selected_bg">#25B865</color>
+    <color name="chip_selected_bg">#038554</color>
     <color name="chip_unselected_bg">#E8F5EE</color>
     <color name="chip_selected_text">#FFFFFF</color>
     <color name="chip_unselected_text">#1B8D50</color>

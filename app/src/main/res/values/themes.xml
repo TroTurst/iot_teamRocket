@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/inmia_teal_dark</item>
         <item name="colorPrimaryVariant">@color/inmia_teal_light</item>
         <item name="colorOnPrimary">@color/inmia_white</item>
+        <item name="colorSecondary">@color/inmia_teal_medium</item>
+        <item name="colorOnSecondary">@color/inmia_white</item>
         <item name="android:statusBarColor">@color/inmia_teal_dark</item>
     </style>
 
@@ -31,6 +33,11 @@
         <item name="colorOnPrimary">@color/inmia_white</item>
         <item name="colorSurface">@color/inmia_white</item>
         <item name="colorOnSurface">@color/inmia_text</item>
+    </style>
+
+    <style name="Theme.Inmia.BottomSheet" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="colorSecondary">@color/inmia_teal_medium</item>
+        <item name="colorOnSecondary">@color/inmia_white</item>
     </style>
 
 </resources>

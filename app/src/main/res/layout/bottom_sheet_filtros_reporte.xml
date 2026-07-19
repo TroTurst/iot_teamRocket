@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_blanco_redondeado_arriba"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Filtros del reporte"
+            android:textColor="@color/inmia_text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnCerrarFiltrosReporte"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/inmia_teal_dark" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Periodo"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupPeriodoReporte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="6dp"
+                app:chipSpacingVertical="4dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPeriodoUltimoMes"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\u00daltimo mes"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPeriodoUltimos3"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\u00daltimos 3 meses"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPeriodoEsteAnio"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Este a\u00f1o"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPeriodoTodos"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Todos"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Vista"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupVistaFiltroReporte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="6dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipVistaPorProyecto"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Por proyecto"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipVistaPorAsesor"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Por asesor"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Distrito"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spinnerDistritoFiltroReporte"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp" />
+
+            <LinearLayout
+                android:id="@+id/contenedorAsesorFiltroReporte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Asesor"
+                    android:textColor="@color/inmia_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinnerAsesorFiltroReporte"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/spinner_background"
+                    android:padding="12dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Estado de separaci\u00f3n"
+                android:textColor="@color/inmia_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupEstadoFiltroReporte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleSelection="false"
+                app:chipSpacingHorizontal="6dp"
+                app:chipSpacingVertical="4dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEstadoEnProceso"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="En proceso"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEstadoAprobada"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aprobada"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEstadoPagada"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pagada"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipEstadoRechazada"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rechazada"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    android:textColor="@color/chip_text_color" />
+            </com.google.android.material.chip.ChipGroup>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLimpiarFiltrosReporte"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Limpiar"
+            android:textAllCaps="false"
+            android:textColor="@color/inmia_teal_medium"
+            app:cornerRadius="24dp"
+            app:strokeColor="@color/inmia_teal_medium" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAplicarFiltrosReporte"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Aplicar"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/inmia_teal_medium"
+            app:cornerRadius="24dp" />
+    </LinearLayout>
+</LinearLayout>

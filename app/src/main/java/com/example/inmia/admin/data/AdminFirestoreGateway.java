@@ -354,6 +354,413 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                 });
     }
 
+    public ListenerRegistration observeSeparacionesPendientes(
+            FirestoreListCallback<com.example.inmia.admin.SeparacionPendiente> callback) {
+        return db.collection("separaciones")
+                .whereEqualTo("estado", "aprobado")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        callback.onError(error);
+                        return;
+                    }
+                    if (value == null) {
+                        callback.onSuccess(new ArrayList<>());
+                        return;
+                    }
+
+                    final List<com.example.inmia.admin.SeparacionPendiente> items = new ArrayList<>();
+                    final List<com.google.firebase.firestore.QueryDocumentSnapshot> docs = new ArrayList<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : value) {
+                        docs.add(doc);
+                    }
+
+                    if (docs.isEmpty()) {
+                        callback.onSuccess(items);
+                        return;
+                    }
+
+                    final java.util.concurrent.atomic.AtomicInteger pendientes = new java.util.concurrent.atomic.AtomicInteger(docs.size());
+                    final java.util.Map<String, String> nombresCache = new java.util.HashMap<>();
+                    final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        String clienteId = doc.getString("clienteId");
+                        String nombreProyecto = doc.getString("nombreProyecto");
+                        String ubicacion = doc.getString("ubicacion");
+                        String tipologia = doc.getString("tipologia");
+                        Long montoLong = doc.getLong("montoSeparacion");
+                        com.google.firebase.Timestamp ts = doc.getTimestamp("fechaCreacion");
+
+                        String fechaStr = ts != null ? sdf.format(ts.toDate()) : "—";
+                        String montoStr = montoLong != null
+                                ? "S/ " + String.format(Locale.getDefault(), "%,d", montoLong)
+                                : "—";
+
+                        if (clienteId == null || clienteId.isEmpty()) {
+                            items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                    doc.getId(), nombreProyecto, ubicacion,
+                                    "", "—", tipologia, montoStr, fechaStr));
+                            if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                            continue;
+                        }
+
+                        String cached = nombresCache.get(clienteId);
+                        if (cached != null) {
+                            items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                    doc.getId(), nombreProyecto, ubicacion,
+                                    clienteId, cached, tipologia, montoStr, fechaStr));
+                            if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                            continue;
+                        }
+
+                        db.collection("usuarios").document(clienteId).get()
+                                .addOnSuccessListener(userDoc -> {
+                                    String nom = userDoc.getString("nombres");
+                                    String ape = userDoc.getString("apellidos");
+                                    String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
+                                    if (full.isEmpty()) full = "Cliente";
+                                    nombresCache.put(clienteId, full);
+                                    items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                            doc.getId(), nombreProyecto, ubicacion,
+                                            clienteId, full, tipologia, montoStr, fechaStr));
+                                    if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                                })
+                                .addOnFailureListener(e -> {
+                                    items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                            doc.getId(), nombreProyecto, ubicacion,
+                                            clienteId, "Cliente", tipologia, montoStr, fechaStr));
+                                    if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                                });
+                    }
+                });
+    }
+
+    public void aprobarSeparacion(String docId, FirestoreCallback<Void> callback) {
+        if (docId == null || docId.isEmpty()) {
+            callback.onError(new IllegalArgumentException("docId vacío"));
+            return;
+        }
+        Map<String, Object> upd = new HashMap<>();
+        upd.put("estado", "Aprobada");
+        upd.put("fechaAprobacionAdmin", com.google.firebase.firestore.FieldValue.serverTimestamp());
+        db.collection("separaciones").document(docId)
+                .update(upd)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void rechazarSeparacion(String docId, FirestoreCallback<Void> callback) {
+        if (docId == null || docId.isEmpty()) {
+            callback.onError(new IllegalArgumentException("docId vacío"));
+            return;
+        }
+        Map<String, Object> upd = new HashMap<>();
+        upd.put("estado", "Rechazada");
+        upd.put("fechaRechazoAdmin", com.google.firebase.firestore.FieldValue.serverTimestamp());
+        db.collection("separaciones").document(docId)
+                .update(upd)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void getReportePorProyecto(String companyId,
+                                     long desdeMillis,
+                                     long hastaMillis,
+                                     String distritoFiltro,
+                                     FirestoreListCallback<com.example.inmia.admin.ReporteProyectoItem> callback) {
+        if (companyId == null || companyId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("companyId vacío"));
+            return;
+        }
+
+        db.collection("proyectos")
+                .whereEqualTo("inmobiliariaId", companyId)
+                .get()
+                .addOnSuccessListener(proyectosSnap -> {
+                    final List<com.example.inmia.admin.ReporteProyectoItem> resultados = new ArrayList<>();
+                    if (proyectosSnap == null || proyectosSnap.isEmpty()) {
+                        callback.onSuccess(resultados);
+                        return;
+                    }
+
+                    final java.util.Map<String, com.google.firebase.firestore.QueryDocumentSnapshot> proyectosById = new java.util.HashMap<>();
+                    final java.util.Map<String, java.util.List<String>> asesoresByProyecto = new java.util.HashMap<>();
+                    final java.util.Set<String> asesorIdsGlobal = new java.util.HashSet<>();
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : proyectosSnap) {
+                        String id = doc.getId();
+                        proyectosById.put(id, doc);
+                        List<String> aids = castStringList(doc.get("asesoresIds"));
+                        asesoresByProyecto.put(id, aids);
+                        asesorIdsGlobal.addAll(aids);
+                    }
+
+                    db.collection("usuarios")
+                            .whereEqualTo("rol", "asesor")
+                            .whereEqualTo("inmobiliariaId", companyId)
+                            .get()
+                            .addOnSuccessListener(asesoresSnap -> {
+                                final java.util.Map<String, String> nombresAsesores = new java.util.HashMap<>();
+                                if (asesoresSnap != null) {
+                                    for (com.google.firebase.firestore.QueryDocumentSnapshot a : asesoresSnap) {
+                                        String nom = a.getString("nombres");
+                                        String ape = a.getString("apellidos");
+                                        String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
+                                        if (full.isEmpty()) full = "Sin nombre";
+                                        nombresAsesores.put(a.getId(), full);
+                                    }
+                                }
+
+                                long hastaSeguro = hastaMillis;
+                                if (hastaSeguro <= 0 || hastaSeguro > 4102444800000L) {
+                                    hastaSeguro = System.currentTimeMillis();
+                                }
+                                long desdeSeguro = desdeMillis;
+                                if (desdeSeguro < 0) desdeSeguro = 0;
+                                Log.d("AdminReporte", "Query separaciones: desde=" + desdeSeguro + " hasta=" + hastaSeguro);
+                                final com.google.firebase.Timestamp desdeTs = new com.google.firebase.Timestamp(new java.util.Date(desdeSeguro));
+                                final com.google.firebase.Timestamp hastaTs = new com.google.firebase.Timestamp(new java.util.Date(hastaSeguro));
+
+                                db.collection("separaciones")
+                                        .whereGreaterThanOrEqualTo("fechaCreacion", desdeTs)
+                                        .whereLessThanOrEqualTo("fechaCreacion", hastaTs)
+                                        .get()
+                                        .addOnSuccessListener(separacionesSnap -> {
+                                            final java.util.Map<String, int[]> contadores = new java.util.HashMap<>();
+                                            final java.util.Map<String, Double> montos = new java.util.HashMap<>();
+                                            if (separacionesSnap != null) {
+                                                for (com.google.firebase.firestore.QueryDocumentSnapshot s : separacionesSnap) {
+                                                    String estado = safeString(s.getString("estado"), "");
+                                                    if (!"Aprobada".equalsIgnoreCase(estado)
+                                                            && !"Pagada".equalsIgnoreCase(estado)
+                                                            && !"En proceso".equalsIgnoreCase(estado)
+                                                            && !"aprobado".equalsIgnoreCase(estado)
+                                                            && !"Rechazada".equalsIgnoreCase(estado)) {
+                                                        continue;
+                                                    }
+                                                    String proyectoId = s.getString("proyectoId");
+                                                    if (proyectoId == null) continue;
+
+                                                    com.google.firebase.firestore.QueryDocumentSnapshot proyDoc = proyectosById.get(proyectoId);
+                                                    if (proyDoc == null) continue;
+
+                                                    if (distritoFiltro != null && !distritoFiltro.isEmpty()
+                                                            && !distritoFiltro.equalsIgnoreCase(safeString(proyDoc.getString("distrito"), ""))) {
+                                                        continue;
+                                                    }
+
+                                                    int[] cont = contadores.computeIfAbsent(proyectoId, k -> new int[4]);
+                                                    if ("Aprobada".equalsIgnoreCase(estado) || "aprobado".equalsIgnoreCase(estado)) cont[0]++;
+                                                    else if ("Pagada".equalsIgnoreCase(estado)) cont[1]++;
+                                                    else if ("En proceso".equalsIgnoreCase(estado)) cont[2]++;
+                                                    else if ("Rechazada".equalsIgnoreCase(estado)) cont[3]++;
+
+                                                    Long monto = s.getLong("montoSeparacion");
+                                                    if (monto != null && "Pagada".equalsIgnoreCase(estado)) {
+                                                        montos.merge(proyectoId, (double) monto, Double::sum);
+                                                    }
+                                                }
+                                            }
+
+                                            for (java.util.Map.Entry<String, com.google.firebase.firestore.QueryDocumentSnapshot> entry : proyectosById.entrySet()) {
+                                                String proyectoId = entry.getKey();
+                                                com.google.firebase.firestore.QueryDocumentSnapshot doc = entry.getValue();
+
+                                                if (distritoFiltro != null && !distritoFiltro.isEmpty()
+                                                        && !distritoFiltro.equalsIgnoreCase(safeString(doc.getString("distrito"), ""))) {
+                                                    continue;
+                                                }
+
+                                                int[] cont = contadores.getOrDefault(proyectoId, new int[4]);
+                                                List<String> aids = asesoresByProyecto.getOrDefault(proyectoId, new ArrayList<>());
+                                                StringBuilder nombres = new StringBuilder();
+                                                for (int i = 0; i < aids.size(); i++) {
+                                                    if (i > 0) nombres.append(", ");
+                                                    String n = nombresAsesores.get(aids.get(i));
+                                                    nombres.append(n != null ? n : aids.get(i));
+                                                }
+                                                resultados.add(new com.example.inmia.admin.ReporteProyectoItem(
+                                                        proyectoId,
+                                                        doc.getString("nombre"),
+                                                        doc.getString("distrito"),
+                                                        aids.size(),
+                                                        nombres.toString(),
+                                                        cont[0],
+                                                        cont[1],
+                                                        cont[2],
+                                                        cont[3],
+                                                        montos.getOrDefault(proyectoId, 0.0)
+                                                ));
+                                            }
+
+                                            resultados.sort((a, b) -> Double.compare(b.getMontoTotal(), a.getMontoTotal()));
+                                            callback.onSuccess(resultados);
+                                        })
+                                        .addOnFailureListener(callback::onError);
+                            })
+                            .addOnFailureListener(callback::onError);
+                })
+                .addOnFailureListener(callback::onError);
+    }
+
+    public void getReportePorAsesor(String companyId,
+                                   long desdeMillis,
+                                   long hastaMillis,
+                                   String distritoFiltro,
+                                   String asesorIdFiltro,
+                                   FirestoreListCallback<com.example.inmia.admin.ReporteAsesorItem> callback) {
+        if (companyId == null || companyId.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("companyId vacío"));
+            return;
+        }
+
+        db.collection("usuarios")
+                .whereEqualTo("rol", "asesor")
+                .whereEqualTo("inmobiliariaId", companyId)
+                .get()
+                .addOnSuccessListener(asesoresSnap -> {
+                    if (asesoresSnap == null || asesoresSnap.isEmpty()) {
+                        callback.onSuccess(new ArrayList<>());
+                        return;
+                    }
+
+                    final List<com.example.inmia.admin.ReporteAsesorItem> resultados = new ArrayList<>();
+                    final java.util.Map<String, com.google.firebase.firestore.QueryDocumentSnapshot> asesoresById = new java.util.HashMap<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot a : asesoresSnap) {
+                        asesoresById.put(a.getId(), a);
+                    }
+
+                    db.collection("proyectos")
+                            .whereEqualTo("inmobiliariaId", companyId)
+                            .get()
+                            .addOnSuccessListener(proyectosSnap -> {
+                                final java.util.Map<String, String> proyectoNombreById = new java.util.HashMap<>();
+                                final java.util.Map<String, java.util.List<String>> asesoresByProyecto = new java.util.HashMap<>();
+                                if (proyectosSnap != null) {
+                                    for (com.google.firebase.firestore.QueryDocumentSnapshot p : proyectosSnap) {
+                                        proyectoNombreById.put(p.getId(), safeString(p.getString("nombre"), "Sin nombre"));
+                                        if (distritoFiltro != null && !distritoFiltro.isEmpty()
+                                                && !distritoFiltro.equalsIgnoreCase(safeString(p.getString("distrito"), ""))) {
+                                            continue;
+                                        }
+                                        List<String> aids = castStringList(p.get("asesoresIds"));
+                                        asesoresByProyecto.put(p.getId(), aids);
+                                    }
+                                }
+
+                                long hastaSeguro = hastaMillis;
+                                if (hastaSeguro <= 0 || hastaSeguro > 4102444800000L) {
+                                    hastaSeguro = System.currentTimeMillis();
+                                }
+                                long desdeSeguro = desdeMillis;
+                                if (desdeSeguro < 0) desdeSeguro = 0;
+                                Log.d("AdminReporte", "Query separaciones: desde=" + desdeSeguro + " hasta=" + hastaSeguro);
+                                final com.google.firebase.Timestamp desdeTs = new com.google.firebase.Timestamp(new java.util.Date(desdeSeguro));
+                                final com.google.firebase.Timestamp hastaTs = new com.google.firebase.Timestamp(new java.util.Date(hastaSeguro));
+
+                                db.collection("separaciones")
+                                        .whereGreaterThanOrEqualTo("fechaCreacion", desdeTs)
+                                        .whereLessThanOrEqualTo("fechaCreacion", hastaTs)
+                                        .get()
+                                        .addOnSuccessListener(separacionesSnap -> {
+                                            final java.util.Map<String, int[]> contadores = new java.util.HashMap<>();
+                                            final java.util.Map<String, Double> montos = new java.util.HashMap<>();
+                                            if (separacionesSnap != null) {
+                                                for (com.google.firebase.firestore.QueryDocumentSnapshot s : separacionesSnap) {
+                                                    String estado = safeString(s.getString("estado"), "");
+                                                    if (!"Aprobada".equalsIgnoreCase(estado)
+                                                            && !"Pagada".equalsIgnoreCase(estado)
+                                                            && !"En proceso".equalsIgnoreCase(estado)
+                                                            && !"aprobado".equalsIgnoreCase(estado)
+                                                            && !"Rechazada".equalsIgnoreCase(estado)) {
+                                                        continue;
+                                                    }
+                                                    String proyectoId = s.getString("proyectoId");
+                                                    if (proyectoId == null) continue;
+                                                    List<String> aids = asesoresByProyecto.get(proyectoId);
+                                                    if (aids == null || aids.isEmpty()) continue;
+
+                                                    Long monto = s.getLong("montoSeparacion");
+
+                                                    for (String aid : aids) {
+                                                        if (asesorIdFiltro != null && !asesorIdFiltro.isEmpty() && !aid.equals(asesorIdFiltro)) continue;
+                                                        int[] cont = contadores.computeIfAbsent(aid, k -> new int[4]);
+                                                        if ("Aprobada".equalsIgnoreCase(estado) || "aprobado".equalsIgnoreCase(estado)) cont[0]++;
+                                                        else if ("Pagada".equalsIgnoreCase(estado)) cont[1]++;
+                                                        else if ("En proceso".equalsIgnoreCase(estado)) cont[2]++;
+                                                        else if ("Rechazada".equalsIgnoreCase(estado)) cont[3]++;
+                                                        if (monto != null && "Pagada".equalsIgnoreCase(estado)) {
+                                                            montos.merge(aid, (double) monto, Double::sum);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            db.collection("citas")
+                                                    .whereGreaterThanOrEqualTo("fecha", desdeTs)
+                                                    .whereLessThanOrEqualTo("fecha", hastaTs)
+                                                    .get()
+                                                    .addOnSuccessListener(citasSnap -> {
+                                                        final java.util.Map<String, Integer> citasPorAsesor = new java.util.HashMap<>();
+                                                        if (citasSnap != null) {
+                                                            for (com.google.firebase.firestore.QueryDocumentSnapshot c : citasSnap) {
+                                                                String aid = c.getString("asesorId");
+                                                                if (aid == null) continue;
+                                                                if (asesorIdFiltro != null && !asesorIdFiltro.isEmpty() && !aid.equals(asesorIdFiltro)) continue;
+                                                                citasPorAsesor.merge(aid, 1, Integer::sum);
+                                                            }
+                                                        }
+
+                                                        for (java.util.Map.Entry<String, com.google.firebase.firestore.QueryDocumentSnapshot> entry : asesoresById.entrySet()) {
+                                                            String aid = entry.getKey();
+                                                            if (asesorIdFiltro != null && !asesorIdFiltro.isEmpty() && !aid.equals(asesorIdFiltro)) continue;
+
+                                                            int[] cont = contadores.getOrDefault(aid, new int[4]);
+                                                            List<String> proyectosAsesor = new ArrayList<>();
+                                                            for (java.util.Map.Entry<String, java.util.List<String>> e : asesoresByProyecto.entrySet()) {
+                                                                if (e.getValue() != null && e.getValue().contains(aid)) {
+                                                                    String n = proyectoNombreById.get(e.getKey());
+                                                                    if (n != null) proyectosAsesor.add(n);
+                                                                }
+                                                            }
+                                                            StringBuilder nombres = new StringBuilder();
+                                                            for (int i = 0; i < proyectosAsesor.size(); i++) {
+                                                                if (i > 0) nombres.append(", ");
+                                                                if (i == 2 && proyectosAsesor.size() > 3) {
+                                                                    nombres.append("y ").append(proyectosAsesor.size() - 2).append(" m\u00e1s...");
+                                                                    break;
+                                                                }
+                                                                nombres.append(proyectosAsesor.get(i));
+                                                            }
+
+                                                            com.google.firebase.firestore.QueryDocumentSnapshot aDoc = entry.getValue();
+                                                            String nom = aDoc.getString("nombres");
+                                                            String ape = aDoc.getString("apellidos");
+                                                            String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
+                                                            if (full.isEmpty()) full = "Sin nombre";
+                                                            String zona = safeString(aDoc.getString("zonaTrabajo"), "");
+
+                                                            resultados.add(new com.example.inmia.admin.ReporteAsesorItem(
+                                                                    aid, full, zona,
+                                                                    proyectosAsesor.size(), nombres.toString(),
+                                                                    cont[0], cont[1], cont[2], cont[3],
+                                                                    montos.getOrDefault(aid, 0.0),
+                                                                    citasPorAsesor.getOrDefault(aid, 0)
+                                                            ));
+                                                        }
+
+                                                        resultados.sort((a, b) -> Double.compare(b.getMontoTotal(), a.getMontoTotal()));
+                                                        callback.onSuccess(resultados);
+                                                    })
+                                                    .addOnFailureListener(callback::onError);
+                                        })
+                                        .addOnFailureListener(callback::onError);
+                            })
+                            .addOnFailureListener(callback::onError);
+                })
+                .addOnFailureListener(callback::onError);
+    }
+
     public void saveAsesor(String nombres, String apellidos, String correo, String telefono,
                            String documento, String zonaTrabajo, String companyId,
                            FirestoreCallback<String> callback) {

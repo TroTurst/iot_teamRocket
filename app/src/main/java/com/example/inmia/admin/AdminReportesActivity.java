@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,35 +15,44 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.inmia.R;
 import com.example.inmia.admin.data.AdminFirestoreGateway;
 import com.example.inmia.admin.data.AdminFirestoreGateway.AdminContext;
-import com.example.inmia.admin.data.AdminFirestoreGateway.ReportSnapshot;
 import com.example.inmia.admin.data.AdminSessionDefaults;
-import com.example.inmia.models.Asesor;
+import com.example.inmia.models.ReporteFilter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
+import java.util.TreeSet;
 
-public class AdminReportesActivity extends AppCompatActivity {
+public class AdminReportesActivity extends AppCompatActivity
+        implements BottomSheetFiltrosReporte.OnFiltrosAplicadosListener {
 
     private BottomNavigationView bottomNav;
     private FrameLayout frameNotificaciones;
     private TextView tvBadgeNotif;
-    private TextView tvPeriodoReporte;
-    private ProgressBar pbMetaVentas;
-    private ProgressBar pbTasaCierre;
-    private ProgressBar pbLeads;
-    private TextView tvMetaVentasPct;
-    private TextView tvTasaCierrePct;
-    private TextView tvLeadsPct;
-    private RecyclerView recyclerViewReportes;
-    private ImageView imgAsesorDelMes;
-    private TextView tvNombreAsesorDelMes;
-    private TextView tvZonaAsesorDelMes;
-    private TextView tvVentasAsesorDelMes;
-    private TextView tvCitasAsesorDelMes;
-    private TextView tvMontoAsesorDelMes;
+
+    private RecyclerView recyclerAprobacionesPendientes;
+    private TextView tvAprobacionesVacio;
+    private SeparacionPendienteAdapter separacionesAdapter;
+    private ListenerRegistration separacionesListener;
+
+    private RecyclerView recyclerReporteNuevo;
+    private ReporteAdapter reporteAdapter;
+    private TextView tvReporteConteo;
+    private ProgressBar pbReporteCargando;
+    private FrameLayout btnFiltrosReporte;
+    private TextView tvBadgeFiltrosReporte;
+    private TextView tvFiltrosAplicados;
+
+    private final List<Long> periodosDesde = new ArrayList<>();
+    private final List<Long> periodosHasta = new ArrayList<>();
+    private final List<String> distritosDisponibles = new ArrayList<>();
+    private final List<String> asesoresDisponibles = new ArrayList<>();
+    private final List<String> asesoresNombres      = new ArrayList<>();
+
+    private ReporteFilter filtroActual;
 
     private int totalNotificaciones;
     private AdminFirestoreGateway gateway;
@@ -61,26 +69,71 @@ public class AdminReportesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_reportes);
 
         gateway = new AdminFirestoreGateway();
+        filtroActual = new ReporteFilter();
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         frameNotificaciones = findViewById(R.id.frameNotificaciones);
         tvBadgeNotif = findViewById(R.id.tvBadgeNotif);
-        tvPeriodoReporte = findViewById(R.id.tvPeriodoReporte);
-        pbMetaVentas = findViewById(R.id.pbMetaVentas);
-        pbTasaCierre = findViewById(R.id.pbTasaCierre);
-        pbLeads = findViewById(R.id.pbLeads);
-        tvMetaVentasPct = findViewById(R.id.tvMetaVentasPct);
-        tvTasaCierrePct = findViewById(R.id.tvTasaCierrePct);
-        tvLeadsPct = findViewById(R.id.tvLeadsPct);
-        recyclerViewReportes = findViewById(R.id.recyclerViewReportes);
-        imgAsesorDelMes = findViewById(R.id.imgAsesorDelMes);
-        tvNombreAsesorDelMes = findViewById(R.id.tvNombreAsesorDelMes);
-        tvZonaAsesorDelMes = findViewById(R.id.tvZonaAsesorDelMes);
-        tvVentasAsesorDelMes = findViewById(R.id.tvVentasAsesorDelMes);
-        tvCitasAsesorDelMes = findViewById(R.id.tvCitasAsesorDelMes);
-        tvMontoAsesorDelMes = findViewById(R.id.tvMontoAsesorDelMes);
 
-        recyclerViewReportes.setLayoutManager(new LinearLayoutManager(this));
+        recyclerAprobacionesPendientes = findViewById(R.id.recyclerAprobacionesPendientes);
+        tvAprobacionesVacio = findViewById(R.id.tvAprobacionesVacio);
+
+        recyclerReporteNuevo    = findViewById(R.id.recyclerReporteNuevo);
+        tvReporteConteo         = findViewById(R.id.tvReporteConteo);
+        pbReporteCargando       = findViewById(R.id.pbReporteCargando);
+        btnFiltrosReporte       = findViewById(R.id.btnFiltrosReporte);
+        tvBadgeFiltrosReporte   = findViewById(R.id.tvBadgeFiltrosReporte);
+        tvFiltrosAplicados      = findViewById(R.id.tvFiltrosAplicados);
+
+        recyclerReporteNuevo.setLayoutManager(new LinearLayoutManager(this));
+        reporteAdapter = new ReporteAdapter();
+        recyclerReporteNuevo.setAdapter(reporteAdapter);
+
+        recyclerAprobacionesPendientes.setLayoutManager(new LinearLayoutManager(this));
+        separacionesAdapter = new SeparacionPendienteAdapter(new SeparacionPendienteAdapter.OnAccionClick() {
+            @Override
+            public void onAprobar(SeparacionPendiente item) {
+                gateway.aprobarSeparacion(item.getDocId(), new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void v) {
+                        Toast.makeText(AdminReportesActivity.this, "Separación aprobada", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminReportesActivity.this, "Error al aprobar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+            @Override
+            public void onRechazar(SeparacionPendiente item) {
+                gateway.rechazarSeparacion(item.getDocId(), new AdminFirestoreGateway.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void v) {
+                        Toast.makeText(AdminReportesActivity.this, "Separación rechazada", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(AdminReportesActivity.this, "Error al rechazar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+        recyclerAprobacionesPendientes.setAdapter(separacionesAdapter);
+        separacionesListener = gateway.observeSeparacionesPendientes(new AdminFirestoreGateway.FirestoreListCallback<SeparacionPendiente>() {
+            @Override
+            public void onSuccess(List<SeparacionPendiente> value) {
+                List<SeparacionPendiente> items = value != null ? value : new ArrayList<>();
+                separacionesAdapter.update(items);
+                tvAprobacionesVacio.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+            }
+            @Override
+            public void onError(Exception e) {
+                separacionesAdapter.update(new ArrayList<>());
+                tvAprobacionesVacio.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnFiltrosReporte.setOnClickListener(v -> abrirFiltrosReporte());
 
         configurarBadge();
         bottomNav.setSelectedItemId(R.id.nav_reportes);
@@ -104,107 +157,14 @@ public class AdminReportesActivity extends AppCompatActivity {
                     }
                 });
 
-                String periodoActual = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(new Date());
-
-                gateway.saveMonthlyReportHardcoded(companyId, periodoActual, new AdminFirestoreGateway.FirestoreCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        gateway.observeMonthlyReportByCompany(companyId, periodoActual, new AdminFirestoreGateway.FirestoreCallback<ReportSnapshot>() {
-                            @Override
-                            public void onSuccess(ReportSnapshot snapshot) {
-                                if (snapshot == null) {
-                                    return;
-                                }
-
-                                recyclerViewReportes.setAdapter(new AdminReporteAdapter(snapshot.getItems()));
-                                tvPeriodoReporte.setText(getString(R.string.admin_reportes_periodo_demo) + " · " + snapshot.getPeriodLabel());
-
-                                pbMetaVentas.setProgress(snapshot.getMetaVentasPct());
-                                pbTasaCierre.setProgress(snapshot.getTasaCierrePct());
-                                pbLeads.setProgress(snapshot.getLeadsPct());
-
-                                tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getMetaVentasPct()));
-                                tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getTasaCierrePct()));
-                                tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getLeadsPct()));
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                tvPeriodoReporte.setText("Sin reporte disponible");
-                                recyclerViewReportes.setAdapter(new AdminReporteAdapter(new java.util.ArrayList<>()));
-                                pbMetaVentas.setProgress(0);
-                                pbTasaCierre.setProgress(0);
-                                pbLeads.setProgress(0);
-                                tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                                tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                                tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        String periodoActual = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(new Date());
-                        gateway.observeMonthlyReportByCompany(companyId, periodoActual, new AdminFirestoreGateway.FirestoreCallback<ReportSnapshot>() {
-                            @Override
-                            public void onSuccess(ReportSnapshot snapshot) {
-                                if (snapshot == null) {
-                                    return;
-                                }
-
-                                recyclerViewReportes.setAdapter(new AdminReporteAdapter(snapshot.getItems()));
-                                tvPeriodoReporte.setText(getString(R.string.admin_reportes_periodo_demo) + " · " + snapshot.getPeriodLabel());
-
-                                pbMetaVentas.setProgress(snapshot.getMetaVentasPct());
-                                pbTasaCierre.setProgress(snapshot.getTasaCierrePct());
-                                pbLeads.setProgress(snapshot.getLeadsPct());
-
-                                tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getMetaVentasPct()));
-                                tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getTasaCierrePct()));
-                                tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, snapshot.getLeadsPct()));
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-                                tvPeriodoReporte.setText("Sin reporte disponible");
-                                recyclerViewReportes.setAdapter(new AdminReporteAdapter(new java.util.ArrayList<>()));
-                                pbMetaVentas.setProgress(0);
-                                pbTasaCierre.setProgress(0);
-                                pbLeads.setProgress(0);
-                                tvMetaVentasPct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                                tvTasaCierrePct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                                tvLeadsPct.setText(getString(R.string.admin_reportes_pct_format, 0));
-                            }
-                        });
-                    }
-                });
-
-                gateway.observeAdvisorsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<Asesor>() {
-                    @Override
-                    public void onSuccess(List<Asesor> value) {
-                        if (value == null || value.isEmpty()) {
-                            return;
-                        }
-                        int randomIndex = (int) (Math.random() * value.size());
-                        Asesor asesor = value.get(randomIndex);
-                        runOnUiThread(() -> {
-                            tvNombreAsesorDelMes.setText(asesor.getNombre());
-                            tvZonaAsesorDelMes.setText(asesor.getZonaTrabajo());
-                            tvVentasAsesorDelMes.setText(String.valueOf(asesor.getVentasMensualActual()));
-                            tvCitasAsesorDelMes.setText(String.valueOf(asesor.getCitasMensualActual()));
-                            tvMontoAsesorDelMes.setText(formatSoles(asesor.getGananciasMensualActual()));
-                        });
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                    }
-                });
+                inicializarPeriodos();
+                cargarFiltrosDinamicos(companyId);
+                cargarReporte(companyId);
             }
 
             @Override
             public void onError(Exception e) {
-                tvPeriodoReporte.setText("No se pudo cargar el reporte");
+                Toast.makeText(AdminReportesActivity.this, "No se pudo cargar el reporte", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -259,13 +219,155 @@ public class AdminReportesActivity extends AppCompatActivity {
         finish();
     }
 
-    private String formatSoles(int monto) {
-        if (monto >= 1000000) {
-            return "S/ " + String.format(Locale.getDefault(), "%.1fM", monto / 1000000.0);
-        } else if (monto >= 1000) {
-            return "S/ " + String.format(Locale.getDefault(), "%.1fK", monto / 1000.0);
-        } else {
-            return "S/ " + monto;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (separacionesListener != null) {
+            separacionesListener.remove();
+            separacionesListener = null;
         }
+    }
+
+    private void inicializarPeriodos() {
+        Calendar now = Calendar.getInstance();
+        Calendar inicioMes = Calendar.getInstance();
+        Calendar inicio3Meses = Calendar.getInstance();
+        Calendar inicioAnio = Calendar.getInstance();
+
+        inicioMes.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), 1, 0, 0, 0);
+        inicioMes.set(Calendar.MILLISECOND, 0);
+        inicio3Meses.add(Calendar.MONTH, -3);
+        inicio3Meses.set(Calendar.HOUR_OF_DAY, 0);
+        inicio3Meses.set(Calendar.MINUTE, 0);
+        inicio3Meses.set(Calendar.SECOND, 0);
+        inicio3Meses.set(Calendar.MILLISECOND, 0);
+        inicioAnio.set(now.get(Calendar.YEAR), 0, 1, 0, 0, 0);
+        inicioAnio.set(Calendar.MILLISECOND, 0);
+
+        long ahora = System.currentTimeMillis();
+
+        periodosDesde.clear();
+        periodosDesde.add(inicioMes.getTimeInMillis());
+        periodosDesde.add(inicio3Meses.getTimeInMillis());
+        periodosDesde.add(inicioAnio.getTimeInMillis());
+        periodosDesde.add(0L);
+
+        periodosHasta.clear();
+        periodosHasta.add(ahora);
+        periodosHasta.add(ahora);
+        periodosHasta.add(ahora);
+        periodosHasta.add(ahora);
+    }
+
+    private void cargarFiltrosDinamicos(String companyId) {
+        gateway.observeAdvisorsByCompany(companyId, new AdminFirestoreGateway.FirestoreListCallback<com.example.inmia.models.Asesor>() {
+            @Override
+            public void onSuccess(List<com.example.inmia.models.Asesor> value) {
+                asesoresDisponibles.clear();
+                asesoresNombres.clear();
+                asesoresDisponibles.add("");
+                asesoresNombres.add("Todos los asesores");
+                if (value != null) {
+                    for (com.example.inmia.models.Asesor a : value) {
+                        asesoresDisponibles.add(a.getId());
+                        String nom = a.getNombre() != null ? a.getNombre() : "Sin nombre";
+                        asesoresNombres.add(nom);
+                    }
+                }
+            }
+            @Override
+            public void onError(Exception e) { }
+        });
+
+        FirebaseFirestore.getInstance().collection("proyectos")
+                .whereEqualTo("inmobiliariaId", companyId)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    TreeSet<String> distritos = new TreeSet<>();
+                    if (snap != null) {
+                        for (com.google.firebase.firestore.QueryDocumentSnapshot d : snap) {
+                            String dis = d.getString("distrito");
+                            if (dis != null && !dis.trim().isEmpty()) distritos.add(dis.trim());
+                        }
+                    }
+                    distritosDisponibles.clear();
+                    distritosDisponibles.add("Todos los distritos");
+                    distritosDisponibles.addAll(distritos);
+                })
+                .addOnFailureListener(e -> { });
+    }
+
+    private void cargarReporte(String companyId) {
+        if (filtroActual == null || periodosDesde.isEmpty()) return;
+
+        int idxPeriodo = Math.max(0, Math.min(filtroActual.getPeriodo(), periodosDesde.size() - 1));
+        long desde = periodosDesde.get(idxPeriodo);
+        long hasta = periodosHasta.get(idxPeriodo);
+
+        pbReporteCargando.setVisibility(View.VISIBLE);
+        tvReporteConteo.setText("Cargando...");
+
+        if (filtroActual.getVista() == ReporteFilter.VISTA_POR_ASESOR) {
+            gateway.getReportePorAsesor(companyId, desde, hasta,
+                    filtroActual.getDistrito(),
+                    filtroActual.getAsesorId(),
+                    new AdminFirestoreGateway.FirestoreListCallback<ReporteAsesorItem>() {
+                        @Override
+                        public void onSuccess(List<ReporteAsesorItem> value) {
+                            pbReporteCargando.setVisibility(View.GONE);
+                            reporteAdapter.setAsesores(value);
+                            int total = value == null ? 0 : value.size();
+                            tvReporteConteo.setText(total + " asesor" + (total == 1 ? "" : "es"));
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            pbReporteCargando.setVisibility(View.GONE);
+                            reporteAdapter.setAsesores(new ArrayList<>());
+                            tvReporteConteo.setText("Error al cargar");
+                        }
+                    });
+        } else {
+            gateway.getReportePorProyecto(companyId, desde, hasta,
+                    filtroActual.getDistrito(),
+                    new AdminFirestoreGateway.FirestoreListCallback<ReporteProyectoItem>() {
+                        @Override
+                        public void onSuccess(List<ReporteProyectoItem> value) {
+                            pbReporteCargando.setVisibility(View.GONE);
+                            reporteAdapter.setProyectos(value);
+                            int total = value == null ? 0 : value.size();
+                            tvReporteConteo.setText(total + " proyecto" + (total == 1 ? "" : "s"));
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            pbReporteCargando.setVisibility(View.GONE);
+                            reporteAdapter.setProyectos(new ArrayList<>());
+                            tvReporteConteo.setText("Error al cargar");
+                        }
+                    });
+        }
+    }
+
+    private void abrirFiltrosReporte() {
+        BottomSheetFiltrosReporte bottomSheet = BottomSheetFiltrosReporte.newInstance(
+                filtroActual,
+                distritosDisponibles,
+                asesoresDisponibles,
+                asesoresNombres);
+        bottomSheet.setListener(this);
+        bottomSheet.show(getSupportFragmentManager(), "filtros_reporte");
+    }
+
+    @Override
+    public void onFiltrosAplicados(ReporteFilter filter) {
+        filtroActual = filter;
+        tvBadgeFiltrosReporte.setVisibility(filtroActual.hasActiveFilters() ? View.VISIBLE : View.GONE);
+        String descripcion = filtroActual.describeActiveFilters();
+        if (descripcion.isEmpty()) {
+            tvFiltrosAplicados.setVisibility(View.GONE);
+        } else {
+            tvFiltrosAplicados.setVisibility(View.VISIBLE);
+            tvFiltrosAplicados.setText(descripcion);
+        }
+        cargarReporte(companyId);
     }
 }
