@@ -202,41 +202,66 @@ public class AdminFirestoreGateway {
 
         db.collection("usuarios").document(userId).get()
                 .addOnSuccessListener(userDoc -> {
-                    if (!userDoc.exists()) {
+                    if (userDoc == null || !userDoc.exists()) {
                         callback.onError(new IllegalStateException("No se encontró el usuario admin"));
                         return;
                     }
+                    resolveContextFromUserDoc(userDoc, callback);
+                })
+                .addOnFailureListener(callback::onError);
+    }
 
-                    String displayName = joinNames(userDoc.getString("nombres"), userDoc.getString("apellidos"), "Administrador");
-                    String phone = safeString(userDoc.getString("telefono"), "—");
-                    String address = safeString(userDoc.getString("domicilio"), "—");
-                    String role = safeString(userDoc.getString("rol"), "admin");
-                    boolean active = getBoolean(userDoc.get("activo"), true);
-                    String fotoUrl = safeString(userDoc.getString("fotoUrl"), "");
-                    String email = safeString(userDoc.getString("correo"), "");
-                    String companyId = safeString(userDoc.getString("inmobiliariaId"), AdminSessionDefaults.DEFAULT_COMPANY_ID);
+    public void resolveAdminContextByEmail(String email, FirestoreCallback<AdminContext> callback) {
+        if (email == null || email.trim().isEmpty()) {
+            callback.onError(new IllegalArgumentException("El email no puede estar vacío"));
+            return;
+        }
 
-                    db.collection("inmobiliarias").document(companyId).get()
-                            .addOnSuccessListener(companyDoc -> {
-                                String companyName = companyDoc.exists()
-                                        ? safeString(companyDoc.getString("nombre"), companyId)
-                                        : companyId;
-                                String companyPhone = companyDoc.exists() ? safeString(companyDoc.getString("telefono"), "—") : "—";
-                                callback.onSuccess(new AdminContext(
-                                        userId,
-                                        email,
-                                        displayName,
-                                        phone,
-                                        address,
-                                        companyId,
-                                        companyName,
-                                        companyPhone,
-                                        role,
-                                        active,
-                                        fotoUrl
-                                ));
-                            })
-                            .addOnFailureListener(callback::onError);
+        db.collection("usuarios")
+                .whereEqualTo("correo", email.trim())
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    if (snap == null || snap.isEmpty()) {
+                        callback.onError(new IllegalStateException(
+                                "No se encontró el usuario admin con email " + email));
+                        return;
+                    }
+                    resolveContextFromUserDoc(snap.getDocuments().get(0), callback);
+                })
+                .addOnFailureListener(callback::onError);
+    }
+
+    private void resolveContextFromUserDoc(DocumentSnapshot userDoc, FirestoreCallback<AdminContext> callback) {
+        String userId = userDoc.getId();
+        String displayName = joinNames(userDoc.getString("nombres"), userDoc.getString("apellidos"), "Administrador");
+        String phone = safeString(userDoc.getString("telefono"), "—");
+        String address = safeString(userDoc.getString("domicilio"), "—");
+        String role = safeString(userDoc.getString("rol"), "admin");
+        boolean active = getBoolean(userDoc.get("activo"), true);
+        String fotoUrl = safeString(userDoc.getString("fotoUrl"), "");
+        String email = safeString(userDoc.getString("correo"), "");
+        String companyId = safeString(userDoc.getString("inmobiliariaId"), AdminSessionDefaults.DEFAULT_COMPANY_ID);
+
+        db.collection("inmobiliarias").document(companyId).get()
+                .addOnSuccessListener(companyDoc -> {
+                    String companyName = companyDoc.exists()
+                            ? safeString(companyDoc.getString("nombre"), companyId)
+                            : companyId;
+                    String companyPhone = companyDoc.exists() ? safeString(companyDoc.getString("telefono"), "—") : "—";
+                    callback.onSuccess(new AdminContext(
+                            userId,
+                            email,
+                            displayName,
+                            phone,
+                            address,
+                            companyId,
+                            companyName,
+                            companyPhone,
+                            role,
+                            active,
+                            fotoUrl
+                    ));
                 })
                 .addOnFailureListener(callback::onError);
     }
