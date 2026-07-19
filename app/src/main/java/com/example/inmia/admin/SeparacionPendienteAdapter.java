@@ -55,6 +55,7 @@ public class SeparacionPendienteAdapter extends RecyclerView.Adapter<SeparacionP
         h.tvCliente.setText(it.getClienteNombre());
         h.tvFecha.setText(it.getFecha());
         h.tvTipologia.setText(it.getTipologia().isEmpty() ? "Tipología no especificada" : "Tipología: " + it.getTipologia());
+        h.tvAsesor.setText(it.getAsesorNombre().isEmpty() ? "Asesor: sin asignar" : "Asesor: " + it.getAsesorNombre());
 
         h.btnAprobar.setOnClickListener(v -> {
             if (listener != null) listener.onAprobar(it);
@@ -76,6 +77,7 @@ public class SeparacionPendienteAdapter extends RecyclerView.Adapter<SeparacionP
         final TextView tvCliente;
         final TextView tvFecha;
         final TextView tvTipologia;
+        final TextView tvAsesor;
         final MaterialButton btnAprobar;
         final MaterialButton btnRechazar;
 
@@ -87,6 +89,7 @@ public class SeparacionPendienteAdapter extends RecyclerView.Adapter<SeparacionP
             tvCliente    = v.findViewById(R.id.tvPendienteCliente);
             tvFecha      = v.findViewById(R.id.tvPendienteFecha);
             tvTipologia  = v.findViewById(R.id.tvPendienteTipologia);
+            tvAsesor     = v.findViewById(R.id.tvPendienteAsesor);
             btnAprobar   = v.findViewById(R.id.btnPendienteAprobar);
             btnRechazar  = v.findViewById(R.id.btnPendienteRechazar);
         }

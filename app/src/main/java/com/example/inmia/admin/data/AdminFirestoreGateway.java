@@ -401,11 +401,13 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                     }
 
                     final java.util.concurrent.atomic.AtomicInteger pendientes = new java.util.concurrent.atomic.AtomicInteger(docs.size());
-                    final java.util.Map<String, String> nombresCache = new java.util.HashMap<>();
+                    final java.util.Map<String, String> nombresClientesCache = new java.util.HashMap<>();
+                    final java.util.Map<String, String> nombresAsesoresCache = new java.util.HashMap<>();
                     final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
                         String clienteId = doc.getString("clienteId");
+                        String asesorId = doc.getString("asesorId");
                         String nombreProyecto = doc.getString("nombreProyecto");
                         String ubicacion = doc.getString("ubicacion");
                         String tipologia = doc.getString("tipologia");
@@ -417,41 +419,116 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                                 ? "S/ " + String.format(Locale.getDefault(), "%,d", montoLong)
                                 : "—";
 
-                        if (clienteId == null || clienteId.isEmpty()) {
+                        final String clienteIdFinal = clienteId != null ? clienteId : "";
+                        final String asesorIdFinal = asesorId != null ? asesorId : "";
+
+                        if (clienteIdFinal.isEmpty() && asesorIdFinal.isEmpty()) {
                             items.add(new com.example.inmia.admin.SeparacionPendiente(
                                     doc.getId(), nombreProyecto, ubicacion,
-                                    "", "—", tipologia, montoStr, fechaStr));
+                                    "", "—", tipologia, montoStr, fechaStr,
+                                    "", ""));
                             if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
                             continue;
                         }
 
-                        String cached = nombresCache.get(clienteId);
-                        if (cached != null) {
+                        final String clienteNombreCached = nombresClientesCache.get(clienteIdFinal);
+                        final String asesorNombreCached = nombresAsesoresCache.get(asesorIdFinal);
+
+                        final String clienteNombre;
+                        if (clienteIdFinal.isEmpty()) {
+                            clienteNombre = "—";
+                        } else if (clienteNombreCached != null) {
+                            clienteNombre = clienteNombreCached;
+                        } else {
+                            clienteNombre = null;
+                        }
+
+                        final String asesorNombre;
+                        if (asesorIdFinal.isEmpty()) {
+                            asesorNombre = "";
+                        } else if (asesorNombreCached != null) {
+                            asesorNombre = asesorNombreCached;
+                        } else {
+                            asesorNombre = null;
+                        }
+
+                        if (clienteNombre != null && asesorNombre != null) {
                             items.add(new com.example.inmia.admin.SeparacionPendiente(
                                     doc.getId(), nombreProyecto, ubicacion,
-                                    clienteId, cached, tipologia, montoStr, fechaStr));
+                                    clienteIdFinal, clienteNombre, tipologia, montoStr, fechaStr,
+                                    asesorIdFinal, asesorNombre));
                             if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
                             continue;
                         }
 
-                        db.collection("usuarios").document(clienteId).get()
-                                .addOnSuccessListener(userDoc -> {
-                                    String nom = userDoc.getString("nombres");
-                                    String ape = userDoc.getString("apellidos");
-                                    String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
-                                    if (full.isEmpty()) full = "Cliente";
-                                    nombresCache.put(clienteId, full);
-                                    items.add(new com.example.inmia.admin.SeparacionPendiente(
-                                            doc.getId(), nombreProyecto, ubicacion,
-                                            clienteId, full, tipologia, montoStr, fechaStr));
+                        final boolean necesitaCliente = clienteNombre == null;
+                        final boolean necesitaAsesor = asesorNombre == null;
+
+                        final com.google.firebase.firestore.DocumentReference clienteRef = necesitaCliente && !clienteIdFinal.isEmpty()
+                                ? db.collection("usuarios").document(clienteIdFinal)
+                                : null;
+                        final com.google.firebase.firestore.DocumentReference asesorRef = necesitaAsesor && !asesorIdFinal.isEmpty()
+                                ? db.collection("usuarios").document(asesorIdFinal)
+                                : null;
+
+                        final java.util.concurrent.atomic.AtomicInteger completados = new java.util.concurrent.atomic.AtomicInteger(0);
+                        final int totalBusquedas = (clienteRef != null ? 1 : 0) + (asesorRef != null ? 1 : 0);
+
+                        if (clienteRef != null) {
+                            clienteRef.get().addOnSuccessListener(userDoc -> {
+                                String nom = userDoc.getString("nombres");
+                                String ape = userDoc.getString("apellidos");
+                                String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
+                                if (full.isEmpty()) full = "Cliente";
+                                nombresClientesCache.put(clienteIdFinal, full);
+                                items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                        doc.getId(), nombreProyecto, ubicacion,
+                                        clienteIdFinal, full, tipologia, montoStr, fechaStr,
+                                        asesorIdFinal, nombresAsesoresCache.getOrDefault(asesorIdFinal, "")));
+                                if (completados.incrementAndGet() == totalBusquedas) {
                                     if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
-                                })
-                                .addOnFailureListener(e -> {
-                                    items.add(new com.example.inmia.admin.SeparacionPendiente(
-                                            doc.getId(), nombreProyecto, ubicacion,
-                                            clienteId, "Cliente", tipologia, montoStr, fechaStr));
+                                }
+                            }).addOnFailureListener(e -> {
+                                nombresClientesCache.put(clienteIdFinal, "Cliente");
+                                items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                        doc.getId(), nombreProyecto, ubicacion,
+                                        clienteIdFinal, "Cliente", tipologia, montoStr, fechaStr,
+                                        asesorIdFinal, nombresAsesoresCache.getOrDefault(asesorIdFinal, "")));
+                                if (completados.incrementAndGet() == totalBusquedas) {
                                     if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
-                                });
+                                }
+                            });
+                        }
+
+                        if (asesorRef != null) {
+                            asesorRef.get().addOnSuccessListener(userDoc -> {
+                                String nom = userDoc.getString("nombres");
+                                String ape = userDoc.getString("apellidos");
+                                String full = ((nom != null ? nom : "") + " " + (ape != null ? ape : "")).trim();
+                                if (full.isEmpty()) full = "Asesor";
+                                nombresAsesoresCache.put(asesorIdFinal, full);
+                                items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                        doc.getId(), nombreProyecto, ubicacion,
+                                        clienteIdFinal.isEmpty() ? "" : clienteIdFinal,
+                                        clienteIdFinal.isEmpty() ? "—" : nombresClientesCache.getOrDefault(clienteIdFinal, "Cliente"),
+                                        tipologia, montoStr, fechaStr,
+                                        asesorIdFinal, full));
+                                if (completados.incrementAndGet() == totalBusquedas) {
+                                    if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                                }
+                            }).addOnFailureListener(e -> {
+                                nombresAsesoresCache.put(asesorIdFinal, "Asesor");
+                                items.add(new com.example.inmia.admin.SeparacionPendiente(
+                                        doc.getId(), nombreProyecto, ubicacion,
+                                        clienteIdFinal.isEmpty() ? "" : clienteIdFinal,
+                                        clienteIdFinal.isEmpty() ? "—" : nombresClientesCache.getOrDefault(clienteIdFinal, "Cliente"),
+                                        tipologia, montoStr, fechaStr,
+                                        asesorIdFinal, "Asesor"));
+                                if (completados.incrementAndGet() == totalBusquedas) {
+                                    if (pendientes.decrementAndGet() == 0) callback.onSuccess(items);
+                                }
+                            });
+                        }
                     }
                 });
     }

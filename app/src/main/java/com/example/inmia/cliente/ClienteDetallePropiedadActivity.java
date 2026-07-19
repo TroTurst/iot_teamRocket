@@ -254,30 +254,19 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Solicitando separación...", Toast.LENGTH_SHORT).show();
 
-            Map<String, Object> nuevaSeparacion = new HashMap<>();
-            nuevaSeparacion.put("clienteId", currentUser.getUid());
-            nuevaSeparacion.put("proyectoId", proyectoId);
-            nuevaSeparacion.put("nombreProyecto", proyectoNombre);
-            nuevaSeparacion.put("ubicacion", tvUbicacionProyecto.getText().toString());
-            nuevaSeparacion.put("inmobiliariaNombre", tvInmobiliariaProyecto.getText().toString());
-            nuevaSeparacion.put("tipologia", tipologiaSeleccionadaActual);
-            nuevaSeparacion.put("montoSeparacion", montoSeparacionActual);
-            nuevaSeparacion.put("imagenUrl", imagenProyectoUrl);
-            nuevaSeparacion.put("estado", "En proceso");
-            nuevaSeparacion.put("fechaCreacion", com.google.firebase.firestore.FieldValue.serverTimestamp());
-
-            db.collection("separaciones").add(nuevaSeparacion)
-                    .addOnSuccessListener(documentReference -> {
-                        LogHelper.registrar(
-                                "Se solicitó la separación de una unidad en "
-                                        + (proyectoNombre != null ? proyectoNombre : "un proyecto"),
-                                Log.TIPO_SEPARACION, LogHelper.ROL_CLIENTE);
-
-                        Toast.makeText(this, "¡Solicitud enviada a validación!", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(this, ClienteSeparacionesActivity.class);
-                        startActivity(intent);
+            final String uid = currentUser.getUid();
+            db.collection("proyectos").document(proyectoId).get()
+                    .addOnSuccessListener(proyDoc -> {
+                        String asesorIdAsignado = "";
+                        if (proyDoc != null && proyDoc.exists()) {
+                            List<String> asesoresIds = (List<String>) proyDoc.get("asesoresIds");
+                            if (asesoresIds != null && !asesoresIds.isEmpty()) {
+                                asesorIdAsignado = asesoresIds.get(0);
+                            }
+                        }
+                        crearSeparacion(uid, asesorIdAsignado);
                     })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Error al solicitar", Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> crearSeparacion(uid, ""));
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);
@@ -410,5 +399,33 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
             Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+
+    private void crearSeparacion(String clienteId, String asesorId) {
+        Map<String, Object> nuevaSeparacion = new HashMap<>();
+        nuevaSeparacion.put("clienteId", clienteId);
+        nuevaSeparacion.put("proyectoId", proyectoId);
+        nuevaSeparacion.put("nombreProyecto", proyectoNombre);
+        nuevaSeparacion.put("ubicacion", tvUbicacionProyecto.getText().toString());
+        nuevaSeparacion.put("inmobiliariaNombre", tvInmobiliariaProyecto.getText().toString());
+        nuevaSeparacion.put("tipologia", tipologiaSeleccionadaActual);
+        nuevaSeparacion.put("montoSeparacion", montoSeparacionActual);
+        nuevaSeparacion.put("imagenUrl", imagenProyectoUrl);
+        nuevaSeparacion.put("asesorId", asesorId);
+        nuevaSeparacion.put("estado", "En proceso");
+        nuevaSeparacion.put("fechaCreacion", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+        db.collection("separaciones").add(nuevaSeparacion)
+                .addOnSuccessListener(documentReference -> {
+                    LogHelper.registrar(
+                            "Se solicitó la separación de una unidad en "
+                                    + (proyectoNombre != null ? proyectoNombre : "un proyecto"),
+                            Log.TIPO_SEPARACION, LogHelper.ROL_CLIENTE);
+
+                    Toast.makeText(this, "¡Solicitud enviada a validación!", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(this, ClienteSeparacionesActivity.class);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al solicitar", Toast.LENGTH_SHORT).show());
     }
 }

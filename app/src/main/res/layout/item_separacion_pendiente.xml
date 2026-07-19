@@ -53,6 +53,17 @@
             android:singleLine="true"
             android:ellipsize="end" />
 
+        <TextView
+            android:id="@+id/tvPendienteAsesor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/inmia_teal_dark"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -186,6 +186,7 @@ public final class AsesorFirestoreRepository {
 
     public void getSeparaciones(SeparacionesCallback callback) {
         db.collection("separaciones")
+            .whereEqualTo("asesorId", getUid())
             .get()
             .addOnSuccessListener(snapshots -> {
                 List<QueryDocumentSnapshot> docs = new ArrayList<>();

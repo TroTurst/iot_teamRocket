@@ -10,6 +10,8 @@ public class SeparacionPendiente {
     private final String tipologia;
     private final String monto;
     private final String fecha;
+    private final String asesorId;
+    private final String asesorNombre;
 
     public SeparacionPendiente(
             String docId,
@@ -20,6 +22,20 @@ public class SeparacionPendiente {
             String tipologia,
             String monto,
             String fecha) {
+        this(docId, nombreProyecto, ubicacion, clienteId, clienteNombre, tipologia, monto, fecha, "", "");
+    }
+
+    public SeparacionPendiente(
+            String docId,
+            String nombreProyecto,
+            String ubicacion,
+            String clienteId,
+            String clienteNombre,
+            String tipologia,
+            String monto,
+            String fecha,
+            String asesorId,
+            String asesorNombre) {
         this.docId          = docId != null ? docId : "";
         this.nombreProyecto = nombreProyecto != null ? nombreProyecto : "";
         this.ubicacion      = ubicacion != null ? ubicacion : "";
@@ -28,6 +44,8 @@ public class SeparacionPendiente {
         this.tipologia      = tipologia != null ? tipologia : "";
         this.monto          = monto != null ? monto : "";
         this.fecha          = fecha != null ? fecha : "";
+        this.asesorId       = asesorId != null ? asesorId : "";
+        this.asesorNombre   = asesorNombre != null ? asesorNombre : "";
     }
 
     public String getDocId()          { return docId; }
@@ -38,4 +56,6 @@ public class SeparacionPendiente {
     public String getTipologia()      { return tipologia; }
     public String getMonto()          { return monto; }
     public String getFecha()          { return fecha; }
+    public String getAsesorId()       { return asesorId; }
+    public String getAsesorNombre()   { return asesorNombre; }
 }
