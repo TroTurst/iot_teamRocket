@@ -9,12 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.inmia.admin.AdminHomeActivity;
-import com.example.inmia.admin.RegistroInmobiliariaActivity;
-import com.example.inmia.asesor.AsesorHomeActivity;
-import com.example.inmia.cliente.ClienteHomeActivity;
-import com.example.inmia.superadmin.SessionManager;
-import com.example.inmia.superadmin.SuperAdminHomeActivity;
+import com.example.inmia.util.RolRouter;
+import com.example.inmia.util.SesionLocal;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -100,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
                     btnLogin.setEnabled(true);
 
                     if (documentSnapshot.exists()) {
-                        String rol = documentSnapshot.getString("rol");
                         Boolean activoObj = documentSnapshot.getBoolean("activo");
                         boolean activo = activoObj != null ? activoObj : false;
 
@@ -110,38 +105,14 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-
-                        if ("superadmin".equals(rol)) {
-                            new SessionManager(this).guardarSesion("Superadmin", email);
+                        Intent intent = RolRouter.resolverIntentDestino(this, documentSnapshot, email);
+                        if (intent == null) {
+                            Toast.makeText(this, "Rol desconocido en la base de datos.", Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();
+                            return;
                         }
 
-                        Intent intent;
-
-                        switch (rol != null ? rol : "") {
-                            case "cliente":
-                                intent = new Intent(this, ClienteHomeActivity.class);
-                                break;
-                            case "asesor":
-                                intent = new Intent(this, AsesorHomeActivity.class);
-                                break;
-                            case "admin":
-                                Boolean primeraVez = documentSnapshot.getBoolean("esPrimeraVez");
-                                if (Boolean.TRUE.equals(primeraVez)) {
-                                    intent = new Intent(this, RegistroInmobiliariaActivity.class);
-                                } else {
-                                    intent = new Intent(this, AdminHomeActivity.class);
-                                }
-                                break;
-                            case "superadmin":
-                                intent = new Intent(this, SuperAdminHomeActivity.class);
-                                break;
-                            default:
-                                Toast.makeText(this, "Rol desconocido en la base de datos.", Toast.LENGTH_SHORT).show();
-                                mAuth.signOut();
-                                return;
-                        }
-
-
+                        SesionLocal.marcarActiva(this);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
