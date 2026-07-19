@@ -1,8 +1,6 @@
 package com.example.inmia.admin;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -27,8 +25,8 @@ import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.firestore.ListenerRegistration;
 
-import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
@@ -93,6 +91,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
     private MapView mapaAdminProyecto;
     private View cardMapaProyecto;
+    private ListenerRegistration projectListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,11 +104,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_proyecto_detalle);
 
         gateway = new AdminFirestoreGateway();
-
-        Context ctx = getApplicationContext();
-        SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
-        Configuration.getInstance().load(ctx, prefs);
-        Configuration.getInstance().setUserAgentValue(getPackageName());
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackProyectoDetalle);
@@ -182,9 +176,10 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                     }
                 });
 
-                gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                projectListener = gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
                     @Override
                     public void onSuccess(Proyecto proyecto) {
+                        if (isFinishing() || isDestroyed()) return;
                         Log.d("AdminDetalle", "Proyecto cargado inicialmente: " + proyecto.getNombre() + " (id: " + proyecto.getId() + ")");
                         Log.d("AdminDetalle", "Tipologias count: " + (proyecto.getTipologias() != null ? proyecto.getTipologias().size() : 0));
                         currentProyecto = proyecto;
@@ -595,5 +590,9 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         isActivityDestroyed = true;
         super.onDestroy();
         if (mapaAdminProyecto != null) mapaAdminProyecto.onDetach();
+        if (projectListener != null) {
+            projectListener.remove();
+            projectListener = null;
+        }
     }
 }

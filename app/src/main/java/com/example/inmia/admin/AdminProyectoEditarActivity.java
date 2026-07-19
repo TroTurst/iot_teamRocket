@@ -48,6 +48,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -68,6 +69,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
     private String companyName;
     private String proyectoId;
     private View btnEditarDatosProyecto;
+    private ListenerRegistration projectListener;
 
     private TextInputEditText etTitulo;
     private TextInputEditText etUbicacion;
@@ -191,7 +193,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
         Runnable checkDone = () -> {
             completed[0]++;
-            if (completed[0] == total) {
+            if (total == 0 || completed[0] == total) {
                 // Build final Proyecto and do ONE updateProject call
                 Proyecto p = new Proyecto();
                 p.setNombre(texto(etTitulo));
@@ -382,6 +384,15 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (projectListener != null) {
+            projectListener.remove();
+            projectListener = null;
+        }
+    }
+
     private void resolverContextoAdmin() {
         gateway.resolveAdminContextByEmail(AdminSessionDefaults.DEFAULT_ADMIN_EMAIL, new AdminFirestoreGateway.FirestoreCallback<AdminContext>() {
             @Override
@@ -405,7 +416,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
             return;
         }
 
-        gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+        projectListener = gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
             @Override
             public void onSuccess(Proyecto proyecto) {
                 proyectoOriginal = proyecto;
@@ -420,6 +431,7 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
                 }
                 
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     etTitulo.setText(proyecto.getNombre());
                     etUbicacion.setText(proyecto.getUbicacion());
                     selLat = proyecto.getLatitud();

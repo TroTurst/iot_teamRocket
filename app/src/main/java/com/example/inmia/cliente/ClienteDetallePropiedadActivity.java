@@ -54,6 +54,7 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
     private View btnBack, btnCompartirQR, btnReservar;
     private MaterialButton btnAgendarVisita;
     private RecyclerView rvTipologias;
+    private MapView mapaClienteProyecto;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -296,11 +297,29 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
 
     private void configurarMapa() {
         Configuration.getInstance().load(this, android.preference.PreferenceManager.getDefaultSharedPreferences(this));
-        MapView mapa = findViewById(R.id.mapaClienteProyecto);
-        mapa.setMultiTouchControls(true);
-        IMapController mapController = mapa.getController();
+        mapaClienteProyecto = findViewById(R.id.mapaClienteProyecto);
+        mapaClienteProyecto.setMultiTouchControls(true);
+        IMapController mapController = mapaClienteProyecto.getController();
         mapController.setZoom(18.0);
         mapController.setCenter(new GeoPoint(-12.0975, -77.0366));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapaClienteProyecto != null) mapaClienteProyecto.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mapaClienteProyecto != null) mapaClienteProyecto.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mapaClienteProyecto != null) mapaClienteProyecto.onDetach();
     }
 
     private void showPopupMenu(View view) {

@@ -12,6 +12,8 @@ import org.osmdroid.config.Configuration;
 
 public class MyApplication extends Application {
 
+    private static final String OSMDROID_USER_AGENT = "inmia-android/1.0 (soporte@inmia.com)";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,6 +32,6 @@ public class MyApplication extends Application {
             Log.e("MyApplication", "Error al inicializar Places", e);
         }
 
-        Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().setUserAgentValue(OSMDROID_USER_AGENT);
     }
 }

@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
@@ -290,13 +291,13 @@ public class AdminFirestoreGateway {
                 });
     }
 
-public void observeProjectById(String projectId, FirestoreCallback<Proyecto> callback) {
+public ListenerRegistration observeProjectById(String projectId, FirestoreCallback<Proyecto> callback) {
         if (projectId == null || projectId.trim().isEmpty()) {
             callback.onError(new IllegalArgumentException("projectId vacío"));
-            return;
+            return null;
         }
 
-        db.collection("proyectos").document(projectId)
+        return db.collection("proyectos").document(projectId)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         callback.onError(error);

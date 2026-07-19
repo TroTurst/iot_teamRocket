@@ -2,7 +2,6 @@ package com.example.inmia.cliente;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,7 +28,6 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -104,11 +102,6 @@ public class ClienteExplorarMapaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getSupportActionBar() != null) getSupportActionBar().hide();
-
-        Context ctx = getApplicationContext();
-        SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
-        Configuration.getInstance().load(ctx, prefs);
-        Configuration.getInstance().setUserAgentValue(getPackageName());
 
         setContentView(R.layout.activity_explorar_mapa_cliente);
 
