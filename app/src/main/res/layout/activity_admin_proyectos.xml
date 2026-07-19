@@ -42,7 +42,7 @@
                     android:fontFamily="sans-serif-light"
                     android:letterSpacing="0.2"
                     android:text="@string/app_name"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="@id/imgHeaderLogo"
                     app:layout_constraintStart_toEndOf="@id/imgHeaderLogo"
@@ -93,7 +93,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="Proyectos"
-                    android:textColor="@color/inmia_text"
+                    android:textColor="#000000"
                     android:textSize="30sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -106,8 +106,9 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
                     android:text="Gestiona y revisa tus proyectos activos"
-                    android:textColor="#5A8A8A"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
 
