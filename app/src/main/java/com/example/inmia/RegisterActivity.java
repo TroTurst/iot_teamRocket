@@ -119,8 +119,13 @@ public class RegisterActivity extends AppCompatActivity {
             tilApellidos.setError("Este campo es obligatorio");
             valido = false;
         }
+        String tipoDocumento = spinnerTipoDocumento.getText() != null
+                ? spinnerTipoDocumento.getText().toString().trim() : "";
         if (TextUtils.isEmpty(numDoc)) {
             tilNumDocumento.setError("Este campo es obligatorio");
+            valido = false;
+        } else if (tipoDocumento.equals("DNI") && !numDoc.matches("\\d{8}")) {
+            tilNumDocumento.setError("El DNI debe tener 8 dígitos");
             valido = false;
         }
         if (TextUtils.isEmpty(fechaNac)) {
@@ -136,6 +141,9 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (TextUtils.isEmpty(telefono)) {
             tilTelefono.setError("Este campo es obligatorio");
+            valido = false;
+        } else if (!telefono.matches("\\d{9}")) {
+            tilTelefono.setError("El teléfono debe tener 9 dígitos");
             valido = false;
         }
         if (TextUtils.isEmpty(domicilio)) {

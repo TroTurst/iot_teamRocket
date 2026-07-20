@@ -18,6 +18,7 @@ import com.example.inmia.models.Log;
 import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,6 +37,7 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
     private ImageView imgFoto;
     private TextInputEditText etNombre, etApellido, etDni, etFechaNac;
     private TextInputEditText etEmail, etTelefono, etDomicilio;
+    private TextInputLayout tilDni, tilTelefono;
     private AutoCompleteTextView actvTipoDocumento, actvOficina;
     private MaterialButton btnCrear;
 
@@ -65,9 +67,11 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         etApellido        = findViewById(R.id.etApellidoAsesor);
         actvTipoDocumento = findViewById(R.id.actvTipoDocumento);
         etDni             = findViewById(R.id.etDniAsesor);
+        tilDni            = findViewById(R.id.tilDniAsesor);
         etFechaNac        = findViewById(R.id.etFechaNac);
         etEmail           = findViewById(R.id.etEmailAsesor);
         etTelefono        = findViewById(R.id.etTelefonoAsesor);
+        tilTelefono       = findViewById(R.id.tilTelefonoAsesor);
         etDomicilio       = findViewById(R.id.etDomicilioAsesor);
         actvOficina       = findViewById(R.id.etOficinaAsesor);
         btnCrear          = findViewById(R.id.btnCrearAsesor);
@@ -169,9 +173,23 @@ public class AdminAsesorNuevoActivity extends AppCompatActivity {
         String domicilio = texto(etDomicilio);
         String oficina   = actvOficina.getText().toString().trim();
 
+        tilDni.setError(null);
+        tilTelefono.setError(null);
+
         if (nombre.isEmpty() || apellido.isEmpty() || numDoc.isEmpty()
                 || email.isEmpty() || oficina.isEmpty()) {
             Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean esDni = tipoDoc.isEmpty() || tipoDoc.equals("DNI");
+        if (esDni && !numDoc.matches("\\d{8}")) {
+            tilDni.setError("El DNI debe tener 8 dígitos");
+            return;
+        }
+
+        if (!telefono.isEmpty() && !telefono.matches("\\d{9}")) {
+            tilTelefono.setError("El teléfono debe tener 9 dígitos");
             return;
         }
 

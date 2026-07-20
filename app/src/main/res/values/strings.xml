@@ -240,6 +240,8 @@
     <string name="hint_confirm_password">Confirmar contraseña</string>
     <string name="btn_crear_cuenta">Crear cuenta</string>
     <string name="error_campo_requerido">Este campo es obligatorio</string>
+    <string name="error_dni_invalido">El DNI debe tener 8 dígitos</string>
+    <string name="error_telefono_invalido">El teléfono debe tener 9 dígitos</string>
     <string name="error_passwords_no_coinciden">Las contraseñas no coinciden</string>
     <string name="error_password_corta">Mínimo 6 caracteres</string>
     <string name="registro_exitoso">¡Administrador creado exitosamente!</string>
