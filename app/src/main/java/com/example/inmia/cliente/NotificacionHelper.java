@@ -67,14 +67,15 @@ public class NotificacionHelper {
     }
 
     private static void guardar(Map<String, Object> notif) {
-
-        Log.d("NOTIF_FLOW", "4. Entró a guardar()");
+        String refId = (String) notif.get("referenciaId");
 
         db.collection("notificaciones")
-                .add(notif)
-                .addOnSuccessListener(doc ->
-                        Log.d("NOTIF_FLOW", "5. FIRESTORE OK ID = " + doc.getId()))
-                .addOnFailureListener(e ->
-                        Log.e("NOTIF_FLOW", "5. FIRESTORE ERROR", e));
+                .whereEqualTo("referenciaId", refId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    if (query.isEmpty()) {
+                        db.collection("notificaciones").add(notif);
+                    }
+                });
     }
 }

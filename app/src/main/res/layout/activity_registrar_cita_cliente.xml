@@ -94,63 +94,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Proyecto seleccionado"
-                        android:textColor="@color/inmia_teal_dark"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="8dp"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_card_light_cyan"
-                        android:padding="12dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="24dp">
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/imgResumenProyecto"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:scaleType="centerCrop"
-                            android:background="#D0D0D0"
-                            android:src="@drawable/onboarding1"
-                            app:shapeAppearanceOverlay="@style/RoundedSquare" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="12dp"
-                            android:orientation="vertical">
-                            <TextView android:id="@+id/tvResumenNombreProyecto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando proyecto..." android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                            <TextView android:id="@+id/tvResumenUbicacionProyecto" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando ubicación..." android:textColor="#18C0C1" android:textSize="10sp" />
-                            <TextView android:id="@+id/tvResumenTipologia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tipología: Cargando..." android:textColor="#087A82" android:textStyle="bold" android:textSize="10sp" android:layout_marginTop="2dp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/btnCambiarProyecto"
-                            android:layout_width="wrap_content"
-                            android:layout_height="28dp"
-                            android:background="@drawable/bg_tipologia_active"
-                            android:gravity="center"
-                            android:paddingHorizontal="12dp"
-                            android:text="Cambiar"
-                            android:textColor="#FFFFFF"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:text="Selecciona la fecha"
                         android:textColor="@color/inmia_teal_dark"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
-
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -200,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Elige una hora para tu cita"
-                        android:textColor="#18C0C1"
+                        android:textColor="@color/inmia_teal_dark"
                         android:textSize="10sp"
                         android:layout_marginBottom="16dp"/>
 
@@ -233,7 +181,7 @@
                             android:background="@drawable/bg_time_inactive"
                             android:gravity="center"
                             android:text="11:00 AM"
-                            android:textColor="#18C0C1"
+                            android:textColor="@color/inmia_teal_dark"
                             android:textSize="12sp" />
 
                         <TextView
@@ -244,7 +192,7 @@
                             android:background="@drawable/bg_time_inactive"
                             android:gravity="center"
                             android:text="12:00 PM"
-                            android:textColor="#18C0C1"
+                            android:textColor="@color/inmia_teal_dark"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -278,7 +226,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="@drawable/foto_perfil" />
+                                android:src="@drawable/ic_default_avatar" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <LinearLayout
@@ -288,7 +236,7 @@
                             android:layout_marginStart="12dp"
                             android:orientation="vertical">
                             <TextView android:id="@+id/tvNombreAsesor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cargando asesor..." android:textColor="@color/inmia_teal_dark" android:textSize="14sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor Inmobiliario" android:textColor="#18C0C1" android:textSize="11sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Asesor Inmobiliario" android:textColor="@color/inmia_teal_dark" android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 

@@ -2,6 +2,9 @@ package com.example.inmia.cliente;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +30,12 @@ public class ClienteMensajesActivity extends AppCompatActivity {
 
     private RecyclerView rvMensajes;
     private ChatAdapter adapter;
-    private List<ChatThread> listaChats = new ArrayList<>();
+
+
+    private List<ChatThread> listaChatsCompletos = new ArrayList<>();
+    private List<ChatThread> listaChatsFiltrados = new ArrayList<>();
+
+    private EditText etSearchChat;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -46,12 +54,50 @@ public class ClienteMensajesActivity extends AppCompatActivity {
         rvMensajes = findViewById(R.id.rvMensajes);
         rvMensajes.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new ChatAdapter(listaChats);
+        adapter = new ChatAdapter(listaChatsFiltrados);
         rvMensajes.setAdapter(adapter);
 
+        etSearchChat = findViewById(R.id.etSearchChat);
+
         configurarNavegacion();
+        configurarBuscador();
         cargarBandejaDeChats();
     }
+
+
+    private void configurarBuscador() {
+        if (etSearchChat != null) {
+            etSearchChat.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    filtrarLista(s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) { }
+            });
+        }
+    }
+
+    private void filtrarLista(String textoBusqueda) {
+        listaChatsFiltrados.clear();
+
+        if (textoBusqueda == null || textoBusqueda.trim().isEmpty()) {
+            listaChatsFiltrados.addAll(listaChatsCompletos);
+        } else {
+            String filtro = textoBusqueda.toLowerCase().trim();
+            for (ChatThread chat : listaChatsCompletos) {
+                if (chat.getName() != null && chat.getName().toLowerCase().contains(filtro)) {
+                    listaChatsFiltrados.add(chat);
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
 
     private void cargarBandejaDeChats() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -68,7 +114,8 @@ public class ClienteMensajesActivity extends AppCompatActivity {
                         return;
                     }
 
-                    listaChats.clear();
+                    listaChatsCompletos.clear();
+
                     if (value != null) {
                         for (QueryDocumentSnapshot doc : value) {
                             String asesorNombre = doc.getString("asesorNombre");
@@ -85,7 +132,7 @@ public class ClienteMensajesActivity extends AppCompatActivity {
                             asesorNombre = asesorNombre != null ? asesorNombre : "Asesor Inmia";
                             ultimoMsj = ultimoMsj != null ? ultimoMsj : "Archivo adjunto";
 
-                            listaChats.add(new ChatThread(
+                            listaChatsCompletos.add(new ChatThread(
                                     doc.getId(),
                                     asesorNombre,
                                     ultimoMsj,
@@ -95,9 +142,12 @@ public class ClienteMensajesActivity extends AppCompatActivity {
                             ));
                         }
                     }
-                    adapter.notifyDataSetChanged();
+
+                    String textoActual = etSearchChat != null ? etSearchChat.getText().toString() : "";
+                    filtrarLista(textoActual);
                 });
     }
+
 
     private void configurarNavegacion() {
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavCliente);

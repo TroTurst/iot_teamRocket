@@ -136,7 +136,15 @@ public class ClienteVerTodosActivity extends AppCompatActivity {
                         else if ("en_preventa".equals(estadoRaw)) p.setEstadoProyecto("Preventa");
                         else                                       p.setEstadoProyecto("Venta");
 
-                        p.setImagenHeroPrincipal(R.drawable.onboarding1);
+                        List<String> imagenesUrls = (List<String>) doc.get("imagenesUrls");
+                        if (imagenesUrls != null && !imagenesUrls.isEmpty()
+                                && !imagenesUrls.get(0).isEmpty()) {
+                            p.setImagenesUrls(imagenesUrls);
+                            p.setImagenHeroPrincipal(0);
+                        } else {
+                            p.setImagenesUrls(null);
+                            p.setImagenHeroPrincipal(R.drawable.onboarding1);
+                        }
 
                         List<Map<String, Object>> tipologiasData = (List<Map<String, Object>>) doc.get("tipologias");
                         List<Tipologia> listaTipologias = new ArrayList<>();

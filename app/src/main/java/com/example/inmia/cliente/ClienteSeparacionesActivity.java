@@ -106,8 +106,9 @@ public class ClienteSeparacionesActivity extends AppCompatActivity {
 
 
                     if (sepIdParaValorar != null) {
-                        mostrarDialogValoracion(
-                                sepIdParaValorar, proyectoIdParaValorar, nombreParaValorar, uid);
+                        if (getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                            mostrarDialogValoracion(sepIdParaValorar, proyectoIdParaValorar, nombreParaValorar, uid);
+                        }
                     }
                 });
     }

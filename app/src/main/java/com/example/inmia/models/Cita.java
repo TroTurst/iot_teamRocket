@@ -8,6 +8,7 @@ public class Cita {
     private String empresa;
 
 
+
     public Cita() {}
     public Cita(String estado, String nombre, String ubicacion, String empresa) {
         this.estado = estado;
@@ -22,4 +23,8 @@ public class Cita {
     public String getNombre() { return nombre; }
     public String getUbicacion() { return ubicacion; }
     public String getEmpresa() { return empresa; }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
 }

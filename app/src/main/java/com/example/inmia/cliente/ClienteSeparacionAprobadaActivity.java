@@ -3,6 +3,7 @@ package com.example.inmia.cliente;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -76,6 +77,10 @@ public class ClienteSeparacionAprobadaActivity extends AppCompatActivity {
         if (estadoSeparacion == null) return;
         String estado = estadoSeparacion.trim().toLowerCase();
 
+        if (btnCancelarSeparacion != null) {
+            btnCancelarSeparacion.setVisibility(View.VISIBLE);
+        }
+
         if (estado.equals("en proceso")) {
             bannerEstado.setBackgroundColor(Color.parseColor("#FFF3E0"));
             tvEstadoMensaje.setTextColor(Color.parseColor("#E65100"));
@@ -93,6 +98,19 @@ public class ClienteSeparacionAprobadaActivity extends AppCompatActivity {
             btnProcederPago.setEnabled(true);
             btnProcederPago.setText("Pagar Separación");
             btnProcederPago.setBackgroundColor(Color.parseColor("#0A3D46"));
+
+        } else if (estado.equals("pagada")) {
+            bannerEstado.setBackgroundColor(Color.parseColor("#E8F5E9"));
+            tvEstadoMensaje.setTextColor(Color.parseColor("#2E7D32"));
+            tvEstadoMensaje.setText("Este trámite ya fue pagado exitosamente. La unidad está separada para ti.");
+
+            btnProcederPago.setEnabled(false);
+            btnProcederPago.setText("Trámite Pagado");
+            btnProcederPago.setBackgroundColor(Color.parseColor("#2ECC71"));
+
+            if (btnCancelarSeparacion != null) {
+                btnCancelarSeparacion.setVisibility(View.GONE);
+            }
 
         } else {
             bannerEstado.setBackgroundColor(Color.parseColor("#FFEBEE"));

@@ -14,23 +14,30 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgSeparacion"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="centerCrop"
-            android:background="#E0E0E0"
-            app:shapeAppearanceOverlay="@style/RoundedSquare"
+        <!-- Contenedor circular con el ícono de llave -->
+        <FrameLayout
+            android:id="@+id/iconContenedorSeparacion"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_circle_teal_light"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_key"
+                app:tint="@color/inmia_teal_dark" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:orientation="vertical"
-            app:layout_constraintStart_toEndOf="@id/imgSeparacion"
+            app:layout_constraintStart_toEndOf="@id/iconContenedorSeparacion"
             app:layout_constraintEnd_toStartOf="@id/btnDetallesSeparacion"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">

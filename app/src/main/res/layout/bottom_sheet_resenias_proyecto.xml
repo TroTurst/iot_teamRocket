@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_content_rounded">
+
+    <!-- Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:background="#DDDDDD"
+        android:backgroundTint="#DDDDDD"/>
+
+    <!-- Header: título + promedio -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvTituloResenias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reseñas del proyecto"
+            android:textColor="#1A1A1A"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <!-- Promedio general -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="14dp">
+
+            <TextView
+                android:id="@+id/tvPromedioGeneral"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.5"
+                android:textColor="#F5A623"
+                android:textSize="36sp"
+                android:fontFamily="sans-serif-medium"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <!-- Estrellas del promedio -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView android:id="@+id/starG1"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/ic_star_filled"
+                        app:tint="#F5A623"/>
+                    <ImageView android:id="@+id/starG2"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/ic_star_filled"
+                        app:tint="#F5A623"/>
+                    <ImageView android:id="@+id/starG3"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/ic_star_filled"
+                        app:tint="#F5A623"/>
+                    <ImageView android:id="@+id/starG4"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/ic_star_filled"
+                        app:tint="#F5A623"/>
+                    <ImageView android:id="@+id/starG5"
+                        android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_star_outline"
+                        app:tint="#F5A623"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvTotalResenias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12 reseñas"
+                    android:textColor="#AAAAAA"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#F0F0F0"/>
+
+    <!-- Estado vacío -->
+    <LinearLayout
+        android:id="@+id/layoutEmptyResenias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="40dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_star_outline"
+            android:alpha="0.3"
+            android:contentDescription="Sin reseñas"
+            app:tint="#087A82"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aún no hay reseñas"
+            android:textColor="#087A82"
+            android:textSize="14sp"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sé el primero en opinar"
+            android:textColor="#80087A82"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Lista de reseñas -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvReseniasProyecto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="24dp"
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+</LinearLayout>

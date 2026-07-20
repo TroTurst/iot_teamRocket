@@ -28,17 +28,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgCita"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+        <!-- Contenedor circular con el ícono (Reemplaza la foto) -->
+        <FrameLayout
+            android:id="@+id/iconContenedorCita"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginTop="12dp"
-            android:scaleType="centerCrop"
-            android:background="#E0E0E0"
-            android:src="@drawable/onboarding1"
-            app:shapeAppearanceOverlay="@style/RoundedSquare"
+            android:background="@drawable/bg_circle_teal_light"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvStatusCita" />
+            app:layout_constraintTop_toBottomOf="@id/tvStatusCita">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_calendar_event"
+                app:tint="@color/inmia_teal_dark" />
+        </FrameLayout>
+        <!-- NOTA: Si no tienes 'ic_calendar_event', puedes usar '@android:drawable/ic_menu_today' -->
 
         <TextView
             android:id="@+id/tvNameCita"
@@ -51,8 +58,8 @@
             android:textColor="@color/inmia_text"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/imgCita"
-            app:layout_constraintTop_toTopOf="@id/imgCita"
+            app:layout_constraintStart_toEndOf="@id/iconContenedorCita"
+            app:layout_constraintTop_toTopOf="@id/iconContenedorCita"
             app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
 
         <TextView
@@ -60,12 +67,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
-            android:text="San Isidro, Lima"
+            android:text="15 de Oct. - 10:00 AM"
             android:textColor="#7A9E9E"
-            android:textSize="11sp"
-            app:layout_constraintStart_toEndOf="@id/imgCita"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/iconContenedorCita"
             app:layout_constraintTop_toBottomOf="@id/tvNameCita"
             app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
 
@@ -81,7 +88,7 @@
             android:textColor="@color/inmia_teal_dark"
             android:textSize="10sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/imgCita"
+            app:layout_constraintStart_toEndOf="@id/iconContenedorCita"
             app:layout_constraintTop_toBottomOf="@id/tvLocationCita"
             app:layout_constraintEnd_toStartOf="@id/btnDetallesCita"/>
 
@@ -96,9 +103,9 @@
             android:textSize="11sp"
             app:backgroundTint="@color/inmia_teal_dark"
             app:cornerRadius="18dp"
-            app:layout_constraintBottom_toBottomOf="@id/imgCita"
+            app:layout_constraintBottom_toBottomOf="@id/iconContenedorCita"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imgCita" />
+            app:layout_constraintTop_toTopOf="@id/iconContenedorCita" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

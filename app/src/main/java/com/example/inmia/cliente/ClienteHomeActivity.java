@@ -21,6 +21,9 @@ import com.example.inmia.models.Proyecto;
 import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -58,6 +61,7 @@ public class ClienteHomeActivity extends AppCompatActivity {
         configurarListeners();
         createNotificationChannel();
         cargarProyectosDesdeFirestore();
+        iniciarEscuchaNotificaciones();
     }
 
 
@@ -153,7 +157,15 @@ public class ClienteHomeActivity extends AppCompatActivity {
                         else if ("en_preventa".equals(estadoRaw)) p.setEstadoProyecto("Preventa");
                         else                                       p.setEstadoProyecto("Venta");
 
-                        p.setImagenHeroPrincipal(R.drawable.onboarding1);
+                        List<String> imagenesUrls = (List<String>) doc.get("imagenesUrls");
+                        if (imagenesUrls != null && !imagenesUrls.isEmpty()
+                                && !imagenesUrls.get(0).isEmpty()) {
+                            p.setImagenesUrls(imagenesUrls);
+                            p.setImagenHeroPrincipal(0);
+                        } else {
+                            p.setImagenesUrls(null);
+                            p.setImagenHeroPrincipal(R.drawable.onboarding1);
+                        }
 
                         List<Map<String, Object>> tipologiasData = (List<Map<String, Object>>) doc.get("tipologias");
                         List<Tipologia> listaTipologias = new ArrayList<>();
@@ -217,5 +229,45 @@ public class ClienteHomeActivity extends AppCompatActivity {
             androidx.core.app.ActivityCompat.requestPermissions(
                     this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
+    }
+
+    private void iniciarEscuchaNotificaciones() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        db.collection("citas")
+                .whereEqualTo("clienteId", user.getUid())
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null || snapshots == null) return;
+
+                    for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.MODIFIED) {
+                            String nuevoEstado = dc.getDocument().getString("estado");
+                            String idCita = dc.getDocument().getId();
+
+                            if ("confirmada".equals(nuevoEstado)) {
+                                NotificacionHelper.crearNotifCita(user.getUid(), "Asesor Inmia",
+                                        "confirmada", idCita);
+                            }
+                        }
+                    }
+                });
+
+        db.collection("separaciones")
+                .whereEqualTo("clienteId", user.getUid())
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null || snapshots == null) return;
+
+                    for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.MODIFIED) {
+                            String nuevoEstado = dc.getDocument().getString("estado");
+                            String nombre = dc.getDocument().getString("nombreProyecto");
+
+                            if ("aprobada".equals(nuevoEstado)) {
+                                NotificacionHelper.crearNotifSeparacion(user.getUid(), nombre, "ACEPTADA", dc.getDocument().getId());
+                            }
+                        }
+                    }
+                });
     }
 }

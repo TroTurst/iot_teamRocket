@@ -9,10 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
 import com.example.inmia.models.Separacion;
 
@@ -40,14 +38,6 @@ public class SeparacionAdapter extends RecyclerView.Adapter<SeparacionAdapter.Vi
         holder.tvUbicacion.setText(sep.getUbicacion());
         holder.tvEmpresa.setText(sep.getEmpresa());
 
-        if (sep.getImagenUrl() != null && !sep.getImagenUrl().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(sep.getImagenUrl())
-                    .placeholder(R.drawable.onboarding1)
-                    .into(holder.imgSeparacion);
-        } else {
-            holder.imgSeparacion.setImageResource(R.drawable.onboarding1);
-        }
 
         String estadoLimpio = sep.getEstado().trim().toLowerCase();
         if (estadoLimpio.equals("aprobada")) {
@@ -72,13 +62,11 @@ public class SeparacionAdapter extends RecyclerView.Adapter<SeparacionAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ShapeableImageView imgSeparacion;
         TextView tvEstadoSeparacion, tvNombreProyecto, tvUbicacion, tvEmpresa;
         MaterialButton btnDetallesSeparacion;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgSeparacion = itemView.findViewById(R.id.imgSeparacion);
             tvEstadoSeparacion = itemView.findViewById(R.id.tvEstadoSeparacion);
             tvNombreProyecto = itemView.findViewById(R.id.tvNombreProyecto);
             tvUbicacion = itemView.findViewById(R.id.tvUbicacion);

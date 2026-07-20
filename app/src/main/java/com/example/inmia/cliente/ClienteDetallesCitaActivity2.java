@@ -16,10 +16,12 @@ import com.example.inmia.models.Log;
 import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +36,10 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
     private ImageView imgHeroDetalleCita, imgMiniaturaProyecto;
     private MaterialButton btnCancelarCita, btnHablarAsesor;
 
+
+    private FirebaseAuth mAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,8 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
         if (getIntent() != null && getIntent().hasExtra("CITA_ID")) {
             citaId = getIntent().getStringExtra("CITA_ID");
         }
+
+        mAuth = FirebaseAuth.getInstance();
 
         inicializarVistas();
 
@@ -77,7 +85,6 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> finish());
         }
-
 
         if (btnCancelarCita != null) {
             btnCancelarCita.setOnClickListener(v -> cancelarCitaActual());
@@ -144,8 +151,10 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                             String telefono = docAsesor.getString("telefono");
                             tvTelefonoAsesorCita.setText(telefono != null ? telefono : "No registrado");
 
+                            String fotoUrlAsesor = docAsesor.getString("fotoUrl");
+
                             if (btnHablarAsesor != null && nombreAsesor != null) {
-                                btnHablarAsesor.setOnClickListener(v -> buscarOAbrirChat(nombreAsesor));
+                                btnHablarAsesor.setOnClickListener(v -> buscarOAbrirChat(nombreAsesor, asesorId, fotoUrlAsesor));
                             }
                         }
                     });
@@ -175,6 +184,8 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                             "Se canceló una cita" + (!proy.isEmpty() ? " en " + proy : ""),
                             Log.TIPO_CITA, LogHelper.ROL_CLIENTE);
 
+
+                    NotificacionHelper.crearNotifCita(mAuth.getCurrentUser().getUid(), "Sistema", "cancelada", citaId);
                     Toast.makeText(this, "Tu cita ha sido cancelada", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(this, ClienteCitasActivity.class);
@@ -189,28 +200,25 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                 });
     }
 
-    private void buscarOAbrirChat(String nombreAsesor) {
+    private void buscarOAbrirChat(String nombreAsesor, String asesorId, String fotoAsesorUrl) {
         String miUid = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        btnHablarAsesor.setText("Buscando chat...");
+        btnHablarAsesor.setText("Abriendo chat...");
         btnHablarAsesor.setEnabled(false);
 
         db.collection("chats")
                 .whereEqualTo("clienteId", miUid)
-                .whereEqualTo("asesorNombre", nombreAsesor)
+                .whereEqualTo("asesorId", asesorId)
                 .get()
                 .addOnSuccessListener(query -> {
-                    btnHablarAsesor.setText("Hablar con el asesor");
-                    btnHablarAsesor.setEnabled(true);
-
                     if (!query.isEmpty()) {
+                        btnHablarAsesor.setText("Hablar con el asesor");
+                        btnHablarAsesor.setEnabled(true);
+
                         String chatId = query.getDocuments().get(0).getId();
-                        Intent intent = new Intent(this, ClienteChatActivity.class);
-                        intent.putExtra("CHAT_ID", chatId);
-                        intent.putExtra("ASESOR_NOMBRE", nombreAsesor);
-                        startActivity(intent);
+                        abrirPantallaChat(chatId, nombreAsesor);
                     } else {
-                        Toast.makeText(this, "Aún no tienes un chat creado con " + nombreAsesor, Toast.LENGTH_SHORT).show();
+                        crearNuevoChat(miUid, asesorId, nombreAsesor, fotoAsesorUrl);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -218,5 +226,54 @@ public class ClienteDetallesCitaActivity2 extends AppCompatActivity {
                     btnHablarAsesor.setEnabled(true);
                     Toast.makeText(this, "Error de red al buscar chat", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void crearNuevoChat(String miUid, String asesorId, String nombreAsesor, String fotoAsesorUrl) {
+        db.collection("usuarios").document(miUid).get()
+                .addOnSuccessListener(docCliente -> {
+                    String clienteNombre = "Cliente";
+                    String clienteTelefono = "";
+
+                    if (docCliente.exists()) {
+                        clienteNombre = docCliente.getString("nombres") != null ? docCliente.getString("nombres") : "Cliente";
+                        clienteTelefono = docCliente.getString("telefono") != null ? docCliente.getString("telefono") : "";
+                    }
+
+                    Map<String, Object> nuevoChat = new HashMap<>();
+                    nuevoChat.put("asesorId", asesorId);
+                    nuevoChat.put("asesorNombre", nombreAsesor);
+                    nuevoChat.put("clienteId", miUid);
+                    nuevoChat.put("clienteNombre", clienteNombre);
+                    nuevoChat.put("clienteTelefono", clienteTelefono);
+                    nuevoChat.put("favoritoAsesor", false);
+                    nuevoChat.put("fotoAsesorUrl", fotoAsesorUrl != null ? fotoAsesorUrl : "");
+                    nuevoChat.put("timestamp", com.google.firebase.firestore.FieldValue.serverTimestamp());
+                    nuevoChat.put("ultimoMensaje", "Chat iniciado");
+
+                    db.collection("chats").add(nuevoChat)
+                            .addOnSuccessListener(documentReference -> {
+                                btnHablarAsesor.setText("Hablar con el asesor");
+                                btnHablarAsesor.setEnabled(true);
+
+                                abrirPantallaChat(documentReference.getId(), nombreAsesor);
+                            })
+                            .addOnFailureListener(e -> {
+                                btnHablarAsesor.setText("Hablar con el asesor");
+                                btnHablarAsesor.setEnabled(true);
+                                Toast.makeText(this, "Error al crear el chat", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    btnHablarAsesor.setText("Hablar con el asesor");
+                    btnHablarAsesor.setEnabled(true);
+                    Toast.makeText(this, "Error al obtener tus datos", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void abrirPantallaChat(String chatId, String nombreAsesor) {
+        Intent intent = new Intent(this, ClienteChatActivity.class);
+        intent.putExtra("CHAT_ID", chatId);
+        intent.putExtra("ASESOR_NOMBRE", nombreAsesor);
+        startActivity(intent);
     }
 }

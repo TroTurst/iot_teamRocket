@@ -81,6 +81,9 @@ public class ClienteCitasActivity extends AppCompatActivity {
                             String estado = doc.getString("estado");
                             String nombreProyecto = doc.getString("nombreProyecto");
 
+                            String inmobiliariaNombre = doc.getString("inmobiliariaNombre");
+                            String proyectoId = doc.getString("proyectoId");
+
                             String fechaHoraStr = "Fecha por definir";
                             Timestamp tsInicio = doc.getTimestamp("fechaHoraInicio");
                             if (tsInicio != null) {
@@ -89,16 +92,31 @@ public class ClienteCitasActivity extends AppCompatActivity {
                                 fechaHoraStr = sdf.format(date);
                             }
 
+
                             Cita cita = new Cita(
                                     estado != null ? estado : "Pendiente",
                                     nombreProyecto != null ? nombreProyecto : "Proyecto Desconocido",
                                     fechaHoraStr,
-                                    "GALEON INMOBILIARIA"
+                                    (inmobiliariaNombre != null && !inmobiliariaNombre.isEmpty()) ? inmobiliariaNombre : "Cargando empresa..."
                             );
 
                             cita.setId(doc.getId());
-
                             listaCitasCompletas.add(cita);
+
+                            if (inmobiliariaNombre == null || inmobiliariaNombre.isEmpty()) {
+                                if (proyectoId != null && !proyectoId.isEmpty()) {
+                                    db.collection("proyectos").document(proyectoId).get()
+                                            .addOnSuccessListener(proyectoDoc -> {
+                                                if (proyectoDoc.exists()) {
+                                                    String inmoReal = proyectoDoc.getString("inmobiliariaNombre");
+                                                    if (inmoReal != null && !inmoReal.isEmpty()) {
+                                                        cita.setEmpresa(inmoReal);
+                                                        adapter.notifyDataSetChanged();
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
                         }
                     }
 
@@ -125,6 +143,7 @@ public class ClienteCitasActivity extends AppCompatActivity {
             }
         });
     }
+
     private void filtrarLista(String estadoFiltro) {
         if (estadoFiltro.equals("todos")) {
             adapter = new CitasAdapter(listaCitasCompletas);

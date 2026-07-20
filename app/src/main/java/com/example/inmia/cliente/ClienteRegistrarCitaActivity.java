@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,10 +13,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.inmia.R;
 import com.example.inmia.models.Log;
 import com.example.inmia.util.LogHelper;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,12 +36,12 @@ import java.util.Map;
 public class ClienteRegistrarCitaActivity extends AppCompatActivity {
 
     private TextView btnHora1, btnHora2, btnHora3;
-    private TextView btnCambiarProyecto;
     private MaterialButton btnConfirmarCita;
     private LinearLayout containerFechas;
     private TextView tvFechaSeleccionada, tvSubtituloHorarios;
 
-    private TextView tvResumenNombreProyecto, tvResumenUbicacionProyecto, tvResumenTipologia, tvNombreAsesor;
+    private TextView tvNombreAsesor;
+    private ImageView imgFotoAsesor;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -81,23 +84,13 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
         btnHora1 = findViewById(R.id.btnHora1);
         btnHora2 = findViewById(R.id.btnHora2);
         btnHora3 = findViewById(R.id.btnHora3);
-        btnCambiarProyecto = findViewById(R.id.btnCambiarProyecto);
         btnConfirmarCita = findViewById(R.id.btnConfirmarCita);
         containerFechas = findViewById(R.id.containerFechas);
         tvFechaSeleccionada = findViewById(R.id.tvFechaSeleccionada);
         tvSubtituloHorarios = findViewById(R.id.tvSubtituloHorarios);
 
-        tvResumenNombreProyecto = findViewById(R.id.tvResumenNombreProyecto);
-        tvResumenUbicacionProyecto = findViewById(R.id.tvResumenUbicacionProyecto);
-        tvResumenTipologia = findViewById(R.id.tvResumenTipologia);
         tvNombreAsesor = findViewById(R.id.tvNombreAsesor);
-
-        tvResumenNombreProyecto.setText(proyectoNombre);
-        if (!tipologiaNombre.isEmpty()) {
-            tvResumenTipologia.setText("Tipología: " + tipologiaNombre);
-        } else {
-            tvResumenTipologia.setText("Tipología: Consultar con asesor");
-        }
+        imgFotoAsesor = findViewById(R.id.imgFotoAsesor);
 
         marcarHorarioSeleccionado(btnHora1);
     }
@@ -112,11 +105,6 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                 .addOnSuccessListener(docProyecto -> {
                     if (docProyecto.exists()) {
                         inmobiliariaId = docProyecto.getString("inmobiliariaId");
-
-                        Map<String, Object> ubicacion = (Map<String, Object>) docProyecto.get("ubicacion");
-                        if (ubicacion != null && ubicacion.get("direccion") != null) {
-                            tvResumenUbicacionProyecto.setText(ubicacion.get("direccion").toString());
-                        }
 
                         List<String> asesoresIds = (List<String>) docProyecto.get("asesoresIds");
                         if (asesoresIds != null && !asesoresIds.isEmpty()) {
@@ -138,6 +126,18 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                     if (docAsesor.exists()) {
                         String nombreReal = docAsesor.getString("nombres") + " " + docAsesor.getString("apellidos");
                         tvNombreAsesor.setText(nombreReal);
+
+                        String fotoUrl = docAsesor.getString("fotoUrl");
+                        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+                            Glide.with(this)
+                                    .load(fotoUrl)
+                                    .placeholder(R.drawable.ic_default_avatar)
+                                    .error(R.drawable.ic_default_avatar)
+                                    .centerCrop()
+                                    .into(imgFotoAsesor);
+                        } else {
+                            imgFotoAsesor.setImageResource(R.drawable.ic_default_avatar);
+                        }
 
                         List<Integer> diasAtencion = new ArrayList<>();
                         if (docAsesor.contains("diasAtencion")) {
@@ -210,10 +210,10 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                 tvMes.setTextColor(Color.WHITE);
             } else {
                 card.setBackgroundResource(R.drawable.bg_time_inactive);
-                int colorTeal = Color.parseColor("#18C0C1");
-                tvDiaNombre.setTextColor(colorTeal);
-                tvDiaNumero.setTextColor(colorTeal);
-                tvMes.setTextColor(colorTeal);
+                int colorVerdeOscuro = ContextCompat.getColor(this, R.color.inmia_teal_dark);
+                tvDiaNombre.setTextColor(colorVerdeOscuro);
+                tvDiaNumero.setTextColor(colorVerdeOscuro);
+                tvMes.setTextColor(colorVerdeOscuro);
             }
         }
     }
@@ -235,12 +235,10 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
     }
 
     private void configurarNavegacion() {
-        if (btnCambiarProyecto != null) btnCambiarProyecto.setOnClickListener(v -> finish());
-
         if (btnConfirmarCita != null) {
             btnConfirmarCita.setOnClickListener(v -> {
                 if (calendarioElegido == null) {
-                    Toast.makeText(this, "Por favor selecciona un día del calendario", Toast.LENGTH_SHORT).show();
+                    mostrarDialogoError("Fecha requerida", "Por favor selecciona un día del calendario antes de continuar.");
                     return;
                 }
                 btnConfirmarCita.setEnabled(false);
@@ -271,26 +269,43 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                 .whereIn("estado", Arrays.asList("pendiente", "confirmada")).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        boolean hayCruce = false;
+                        boolean hayCruceDeHorario = false;
+                        boolean yaTieneCitaEnEsteProyecto = false;
+
                         for (QueryDocumentSnapshot doc : task.getResult()) {
+
+                            String docProyectoId = doc.getString("proyectoId");
+                            if (proyectoId.equals(docProyectoId)) {
+                                yaTieneCitaEnEsteProyecto = true;
+                                break;
+                            }
+
                             Timestamp tsInicioExistente = doc.getTimestamp("fechaHoraInicio");
                             Timestamp tsFinExistente = doc.getTimestamp("fechaHoraFin");
 
                             if (tsInicioExistente != null && tsFinExistente != null) {
                                 if (tsInicioNuevo.compareTo(tsFinExistente) < 0 && tsFinNuevo.compareTo(tsInicioExistente) > 0) {
-                                    hayCruce = true;
-                                    break;
+                                    hayCruceDeHorario = true;
                                 }
                             }
                         }
 
-                        if (hayCruce) {
-                            Toast.makeText(this, "Horario cruzado. Ya tienes una cita en este momento.", Toast.LENGTH_LONG).show();
+                        if (yaTieneCitaEnEsteProyecto) {
+                            mostrarDialogoError("Cita en curso", "Ya tienes una cita activa para este proyecto. Debes completarla o cancelarla si deseas agendar una nueva.");
+                            btnConfirmarCita.setEnabled(true);
+                            btnConfirmarCita.setText("Confirmar Cita");
+                        } else if (hayCruceDeHorario) {
+                            mostrarDialogoError("Horario no disponible", "Ya tienes una cita programada a esa misma hora para otro proyecto. Por favor elige otro horario.");
                             btnConfirmarCita.setEnabled(true);
                             btnConfirmarCita.setText("Confirmar Cita");
                         } else {
                             guardarCitaEnFirestore(clienteId, tsInicioNuevo, tsFinNuevo);
                         }
+
+                    } else {
+                        mostrarDialogoError("Error", "Error de red al validar la cita. Inténtalo de nuevo.");
+                        btnConfirmarCita.setEnabled(true);
+                        btnConfirmarCita.setText("Confirmar Cita");
                     }
                 });
     }
@@ -315,6 +330,10 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                                     + (proyectoNombre != null ? proyectoNombre : "un proyecto"),
                             Log.TIPO_CITA, LogHelper.ROL_CLIENTE, "", clienteId);
 
+                    NotificacionHelper.crearNotifCita(clienteId, tvNombreAsesor.getText().toString(),
+                            "10:00 AM", documentReference.getId());
+
+
                     Toast.makeText(this, "¡Cita agendada con éxito!", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(this, ClienteDetallesCitaActivity2.class);
@@ -322,6 +341,7 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 });
+
     }
 
     private void resetearHorarios() {
@@ -329,7 +349,7 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
         for (TextView btn : botones) {
             if (btn != null) {
                 btn.setBackgroundResource(R.drawable.bg_time_inactive);
-                btn.setTextColor(Color.parseColor("#18C0C1"));
+                btn.setTextColor(ContextCompat.getColor(this, R.color.inmia_teal_dark));
                 btn.setTypeface(null, android.graphics.Typeface.NORMAL);
             }
         }
@@ -341,5 +361,14 @@ public class ClienteRegistrarCitaActivity extends AppCompatActivity {
             btn.setTextColor(ContextCompat.getColor(this, android.R.color.white));
             btn.setTypeface(null, android.graphics.Typeface.BOLD);
         }
+    }
+
+
+    private void mostrarDialogoError(String titulo, String mensaje) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(titulo)
+                .setMessage(mensaje)
+                .setPositiveButton("Entendido", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 }
