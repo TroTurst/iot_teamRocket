@@ -2,7 +2,6 @@ package com.example.inmia.admin;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -105,11 +104,6 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_proyecto_detalle);
 
         gateway = new AdminFirestoreGateway();
-
-        Context ctx = getApplicationContext();
-        SharedPreferences prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE);
-        Configuration.getInstance().load(ctx, prefs);
-        Configuration.getInstance().setUserAgentValue(getPackageName());
 
         bottomNav = findViewById(R.id.bottomNavAdmin);
         View btnBack = findViewById(R.id.btnBackProyectoDetalle);

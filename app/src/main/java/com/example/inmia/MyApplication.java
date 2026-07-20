@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -14,7 +15,7 @@ import org.osmdroid.config.Configuration;
 
 public class MyApplication extends Application {
 
-    private static final String OSMDROID_USER_AGENT = "inmia-android/1.0 (soporte@inmia.com)";
+    public static final String OSMDROID_USER_AGENT = "inmia-android/1.0 (soporte@inmia.com)";
 
     @Override
     public void onCreate() {
@@ -38,6 +39,10 @@ public class MyApplication extends Application {
             Log.e("MyApplication", "Error al inicializar Places", e);
         }
 
+        // Configurar osmdroid UNA vez al inicio, antes de que se cree cualquier MapView
+        // Esto evita la race condition donde load() restaura un User-Agent viejo
+        // ANTES de que setUserAgentValue() lo corrija.
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
         Configuration.getInstance().setUserAgentValue(OSMDROID_USER_AGENT);
     }
 }

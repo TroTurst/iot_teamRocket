@@ -285,7 +285,6 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
     }
 
     private void configurarMapa() {
-        Configuration.getInstance().load(this, android.preference.PreferenceManager.getDefaultSharedPreferences(this));
         mapaClienteProyecto = findViewById(R.id.mapaClienteProyecto);
         mapaClienteProyecto.setMultiTouchControls(true);
         IMapController mapController = mapaClienteProyecto.getController();
