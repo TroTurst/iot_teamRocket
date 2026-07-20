@@ -26,6 +26,7 @@ import com.example.inmia.models.Tipologia;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -47,6 +48,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
     private AdminFirestoreGateway gateway;
     private String companyId;
+    private ListenerRegistration projectListener;
 
     private ImageView imgHeroProyecto;
     private android.widget.TextView tvNombreProyecto;
@@ -176,7 +178,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
                     }
                 });
 
-                gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
+                projectListener = gateway.observeProjectById(proyectoId, new AdminFirestoreGateway.FirestoreCallback<Proyecto>() {
                     @Override
                     public void onSuccess(Proyecto proyecto) {
                         Log.d("AdminDetalle", "Proyecto cargado inicialmente: " + proyecto.getNombre() + " (id: " + proyecto.getId() + ")");
@@ -395,6 +397,7 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
 
         cardMapaProyecto.setVisibility(View.VISIBLE);
         mapaAdminProyecto.onResume();
+        mapaAdminProyecto.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.OpenTopo);
         mapaAdminProyecto.setMultiTouchControls(true);
 
         GeoPoint puntoProyecto = new GeoPoint(p.getLatitud(), p.getLongitud());
@@ -589,5 +592,9 @@ public class AdminProyectoDetalleActivity extends AppCompatActivity {
         isActivityDestroyed = true;
         super.onDestroy();
         if (mapaAdminProyecto != null) mapaAdminProyecto.onDetach();
+        if (projectListener != null) {
+            projectListener.remove();
+            projectListener = null;
+        }
     }
 }

@@ -286,6 +286,7 @@ public class ClienteDetallePropiedadActivity extends AppCompatActivity {
 
     private void configurarMapa() {
         mapaClienteProyecto = findViewById(R.id.mapaClienteProyecto);
+        mapaClienteProyecto.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.OpenTopo);
         mapaClienteProyecto.setMultiTouchControls(true);
         IMapController mapController = mapaClienteProyecto.getController();
         mapController.setZoom(18.0);

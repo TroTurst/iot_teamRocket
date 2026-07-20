@@ -133,7 +133,7 @@ public class ClienteExplorarMapaActivity extends AppCompatActivity {
 
 
     private void configurarMapa() {
-        mapaReal.setTileSource(TileSourceFactory.MAPNIK);
+        mapaReal.setTileSource(TileSourceFactory.OpenTopo);
         mapaReal.setMultiTouchControls(true);
         mapaReal.getController().setZoom(12.0);
         mapaReal.getController().setCenter(new GeoPoint(-12.046374, -77.042793));
