@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -398,6 +399,16 @@ public class ReportesActivity extends AppCompatActivity {
         leftAxis.setTextColor(Color.parseColor("#A0BFBF"));
         leftAxis.setTextSize(9f);
         leftAxis.setAxisMinimum(0f);
+        // Las cantidades de separaciones/citas siempre son enteras: se evita que
+        // MPAndroidChart interpole marcas decimales entre los valores del eje.
+        leftAxis.setGranularity(1f);
+        leftAxis.setGranularityEnabled(true);
+        leftAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return String.valueOf(Math.round(value));
+            }
+        });
 
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getLegend().setEnabled(false);
@@ -480,6 +491,8 @@ public class ReportesActivity extends AppCompatActivity {
         int[] sepBuckets  = bucketear(separaciones, periodoIndex, numBuckets, inicio, fin);
         int[] citaBuckets = bucketear(citas, periodoIndex, numBuckets, inicio, fin);
 
+        ajustarEjeYSegunDatos(sepBuckets, citaBuckets);
+
         List<Entry> entriesSep  = new ArrayList<>();
         List<Entry> entriesCita = new ArrayList<>();
         for (int i = 0; i < numBuckets; i++) {
@@ -518,6 +531,44 @@ public class ReportesActivity extends AppCompatActivity {
         lineChart.setData(new LineData(dsSep, dsCita));
         lineChart.animateX(800);
         lineChart.invalidate();
+    }
+
+    // Ajusta el techo del eje Y de forma escalonada según el mayor valor mostrado
+    // (separaciones o citas) en el período actual: 5, 10, 20, 50, 100... en vez de
+    // dejar que la gráfica se autoescale con marcas decimales o un rango arbitrario.
+    private void ajustarEjeYSegunDatos(int[] sepBuckets, int[] citaBuckets) {
+        int maxValor = 0;
+        for (int v : sepBuckets)  maxValor = Math.max(maxValor, v);
+        for (int v : citaBuckets) maxValor = Math.max(maxValor, v);
+
+        int techo = calcularTechoEscalonado(maxValor);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(techo);
+        leftAxis.setLabelCount(calcularCantidadEtiquetas(techo), true);
+    }
+
+    private int calcularTechoEscalonado(int maxValor) {
+        if (maxValor <= 5)   return 5;
+        if (maxValor <= 10)  return 10;
+        if (maxValor <= 20)  return 20;
+        if (maxValor <= 50)  return 50;
+        if (maxValor <= 100) return 100;
+
+        // Para valores mayores, redondea hacia arriba al siguiente múltiplo "bonito"
+        // de la magnitud correspondiente (ej. 234 -> 300, 1250 -> 2000).
+        int magnitud = 1;
+        while (magnitud * 10 <= maxValor) magnitud *= 10;
+        return ((maxValor / magnitud) + 1) * magnitud;
+    }
+
+    // Elige un número de marcas que divida el techo en pasos enteros y prolijos.
+    private int calcularCantidadEtiquetas(int techo) {
+        for (int etiquetas = 6; etiquetas >= 2; etiquetas--) {
+            if (techo % (etiquetas - 1) == 0) return etiquetas;
+        }
+        return 2; // 0 y el techo, como respaldo
     }
 
     private int[] bucketear(List<DocumentSnapshot> docs, int periodoIndex,
