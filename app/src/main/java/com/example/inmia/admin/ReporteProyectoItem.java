@@ -12,6 +12,7 @@ public class ReporteProyectoItem {
     private final int numPendientes;
     private final int numRechazadas;
     private final double montoTotal;
+    private final boolean tieneAsesoresAsignados;
 
     public ReporteProyectoItem(
             String proyectoId,
@@ -24,16 +25,33 @@ public class ReporteProyectoItem {
             int numPendientes,
             int numRechazadas,
             double montoTotal) {
-        this.proyectoId       = proyectoId != null ? proyectoId : "";
-        this.nombreProyecto   = nombreProyecto != null ? nombreProyecto : "";
-        this.distrito         = distrito != null ? distrito : "";
-        this.numAsesores      = numAsesores;
-        this.asesoresNombres  = asesoresNombres != null ? asesoresNombres : "";
-        this.numAprobadas     = numAprobadas;
-        this.numPagadas       = numPagadas;
-        this.numPendientes    = numPendientes;
-        this.numRechazadas    = numRechazadas;
-        this.montoTotal       = montoTotal;
+        this(proyectoId, nombreProyecto, distrito, numAsesores, asesoresNombres,
+                numAprobadas, numPagadas, numPendientes, numRechazadas, montoTotal, false);
+    }
+
+    public ReporteProyectoItem(
+            String proyectoId,
+            String nombreProyecto,
+            String distrito,
+            int numAsesores,
+            String asesoresNombres,
+            int numAprobadas,
+            int numPagadas,
+            int numPendientes,
+            int numRechazadas,
+            double montoTotal,
+            boolean tieneAsesoresAsignados) {
+        this.proyectoId                = proyectoId != null ? proyectoId : "";
+        this.nombreProyecto            = nombreProyecto != null ? nombreProyecto : "";
+        this.distrito                  = distrito != null ? distrito : "";
+        this.numAsesores               = numAsesores;
+        this.asesoresNombres           = asesoresNombres != null ? asesoresNombres : "";
+        this.numAprobadas              = numAprobadas;
+        this.numPagadas                = numPagadas;
+        this.numPendientes             = numPendientes;
+        this.numRechazadas             = numRechazadas;
+        this.montoTotal                = montoTotal;
+        this.tieneAsesoresAsignados    = tieneAsesoresAsignados;
     }
 
     public String getProyectoId()       { return proyectoId; }
@@ -46,6 +64,7 @@ public class ReporteProyectoItem {
     public int    getNumPendientes()    { return numPendientes; }
     public int    getNumRechazadas()    { return numRechazadas; }
     public double getMontoTotal()       { return montoTotal; }
+    public boolean isTieneAsesoresAsignados() { return tieneAsesoresAsignados; }
 
     public int getTotalSeparaciones() {
         return numAprobadas + numPagadas + numPendientes + numRechazadas;

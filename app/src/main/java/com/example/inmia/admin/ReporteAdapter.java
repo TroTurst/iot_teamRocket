@@ -80,6 +80,11 @@ public class ReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     ? "Sin asesores asignados"
                     : p.getNumAsesores() + " asesor" + (p.getNumAsesores() == 1 ? "" : "es") + ": " + p.getAsesoresNombres();
             h.tvAsesores.setText(asesores);
+            h.tvEtiquetaAsesor.setText(
+                    p.isTieneAsesoresAsignados()
+                            ? "(los que realmente atendieron en el periodo)"
+                            : "(asignados al proyecto, sin actividad en el periodo)");
+            h.tvEtiquetaAsesor.setVisibility(View.VISIBLE);
             h.tvAprobadas.setText(String.valueOf(p.getNumAprobadas()));
             h.tvPagadas.setText(String.valueOf(p.getNumPagadas()));
             h.tvPendientes.setText(String.valueOf(p.getNumPendientes()));
@@ -118,19 +123,20 @@ public class ReporteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     static class ProyectoVH extends RecyclerView.ViewHolder {
-        final TextView tvNombre, tvMonto, tvUbicacion, tvAsesores;
+        final TextView tvNombre, tvMonto, tvUbicacion, tvAsesores, tvEtiquetaAsesor;
         final TextView tvAprobadas, tvPagadas, tvPendientes, tvRechazadas;
 
         ProyectoVH(@NonNull View v) {
             super(v);
-            tvNombre      = v.findViewById(R.id.tvReporteProyectoNombre);
-            tvMonto       = v.findViewById(R.id.tvReporteProyectoMonto);
-            tvUbicacion   = v.findViewById(R.id.tvReporteProyectoUbicacion);
-            tvAsesores    = v.findViewById(R.id.tvReporteProyectoAsesores);
-            tvAprobadas   = v.findViewById(R.id.tvReporteProyectoAprobadas);
-            tvPagadas     = v.findViewById(R.id.tvReporteProyectoPagadas);
-            tvPendientes  = v.findViewById(R.id.tvReporteProyectoPendientes);
-            tvRechazadas  = v.findViewById(R.id.tvReporteProyectoRechazadas);
+            tvNombre         = v.findViewById(R.id.tvReporteProyectoNombre);
+            tvMonto          = v.findViewById(R.id.tvReporteProyectoMonto);
+            tvUbicacion      = v.findViewById(R.id.tvReporteProyectoUbicacion);
+            tvAsesores       = v.findViewById(R.id.tvReporteProyectoAsesores);
+            tvEtiquetaAsesor = v.findViewById(R.id.tvReporteProyectoEtiquetaAsesor);
+            tvAprobadas      = v.findViewById(R.id.tvReporteProyectoAprobadas);
+            tvPagadas        = v.findViewById(R.id.tvReporteProyectoPagadas);
+            tvPendientes     = v.findViewById(R.id.tvReporteProyectoPendientes);
+            tvRechazadas     = v.findViewById(R.id.tvReporteProyectoRechazadas);
         }
     }
 

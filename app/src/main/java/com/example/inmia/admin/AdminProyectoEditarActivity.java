@@ -404,8 +404,11 @@ public class AdminProyectoEditarActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
-                companyId = AdminSessionDefaults.DEFAULT_COMPANY_ID;
-                companyName = "Inmobiliaria";
+                companyId = "";
+                companyName = "";
+                android.widget.Toast.makeText(AdminProyectoEditarActivity.this,
+                        "No se pudo cargar tu inmobiliaria. Contacta al superadmin.",
+                        android.widget.Toast.LENGTH_LONG).show();
             }
         });
     }

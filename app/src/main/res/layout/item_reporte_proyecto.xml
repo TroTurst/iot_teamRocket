@@ -60,6 +60,15 @@
             android:textColor="#5F8F8F"
             android:textSize="11sp" />
 
+        <TextView
+            android:id="@+id/tvReporteProyectoEtiquetaAsesor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:textColor="#9CB7B7"
+            android:textSize="9sp"
+            android:textStyle="italic" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

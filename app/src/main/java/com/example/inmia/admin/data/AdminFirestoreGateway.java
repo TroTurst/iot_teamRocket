@@ -241,7 +241,15 @@ public class AdminFirestoreGateway {
         boolean active = getBoolean(userDoc.get("activo"), true);
         String fotoUrl = safeString(userDoc.getString("fotoUrl"), "");
         String email = safeString(userDoc.getString("correo"), "");
-        String companyId = safeString(userDoc.getString("inmobiliariaId"), AdminSessionDefaults.DEFAULT_COMPANY_ID);
+
+        String rawCompanyId = userDoc.getString("inmobiliariaId");
+        if (rawCompanyId == null || rawCompanyId.trim().isEmpty()) {
+            android.util.Log.e("AdminFirestore", "Admin " + email + " (" + userId + ") sin inmobiliariaId. Devolviendo error.");
+            callback.onError(new IllegalStateException(
+                    "Tu usuario no tiene una inmobiliaria asignada. Contacta al superadmin."));
+            return;
+        }
+        final String companyId = rawCompanyId.trim();
 
         db.collection("inmobiliarias").document(companyId).get()
                 .addOnSuccessListener(companyDoc -> {
@@ -626,6 +634,7 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                                         .addOnSuccessListener(separacionesSnap -> {
                                             final java.util.Map<String, int[]> contadores = new java.util.HashMap<>();
                                             final java.util.Map<String, Double> montos = new java.util.HashMap<>();
+                                            final java.util.Map<String, java.util.Set<String>> asesoresAsignadosPorProyecto = new java.util.HashMap<>();
                                             if (separacionesSnap != null) {
                                                 for (com.google.firebase.firestore.QueryDocumentSnapshot s : separacionesSnap) {
                                                     String estado = safeString(s.getString("estado"), "");
@@ -657,6 +666,13 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                                                     if (monto != null && "Pagada".equalsIgnoreCase(estado)) {
                                                         montos.merge(proyectoId, (double) monto, Double::sum);
                                                     }
+
+                                                    String asesorReal = s.getString("asesorId");
+                                                    if (asesorReal != null && !asesorReal.isEmpty()) {
+                                                        asesoresAsignadosPorProyecto
+                                                                .computeIfAbsent(proyectoId, k -> new java.util.HashSet<>())
+                                                                .add(asesorReal);
+                                                    }
                                                 }
                                             }
 
@@ -670,24 +686,36 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                                                 }
 
                                                 int[] cont = contadores.getOrDefault(proyectoId, new int[4]);
-                                                List<String> aids = asesoresByProyecto.getOrDefault(proyectoId, new ArrayList<>());
-                                                StringBuilder nombres = new StringBuilder();
-                                                for (int i = 0; i < aids.size(); i++) {
-                                                    if (i > 0) nombres.append(", ");
-                                                    String n = nombresAsesores.get(aids.get(i));
-                                                    nombres.append(n != null ? n : aids.get(i));
+
+                                                java.util.Set<String> aidsReales = asesoresAsignadosPorProyecto.get(proyectoId);
+                                                List<String> aidsParaMostrar;
+                                                if (aidsReales != null && !aidsReales.isEmpty()) {
+                                                    aidsParaMostrar = new ArrayList<>(aidsReales);
+                                                } else {
+                                                    aidsParaMostrar = asesoresByProyecto.getOrDefault(proyectoId, new ArrayList<>());
                                                 }
+
+                                                StringBuilder nombres = new StringBuilder();
+                                                for (int i = 0; i < aidsParaMostrar.size(); i++) {
+                                                    if (i > 0) nombres.append(", ");
+                                                    String id = aidsParaMostrar.get(i);
+                                                    String n = nombresAsesores.get(id);
+                                                    nombres.append(n != null ? n : id);
+                                                }
+                                                String asesoresStr = nombres.toString();
+                                                boolean tieneAsignados = aidsReales != null && !aidsReales.isEmpty();
                                                 resultados.add(new com.example.inmia.admin.ReporteProyectoItem(
                                                         proyectoId,
                                                         doc.getString("nombre"),
                                                         doc.getString("distrito"),
-                                                        aids.size(),
-                                                        nombres.toString(),
+                                                        aidsParaMostrar.size(),
+                                                        asesoresStr,
                                                         cont[0],
                                                         cont[1],
                                                         cont[2],
                                                         cont[3],
-                                                        montos.getOrDefault(proyectoId, 0.0)
+                                                        montos.getOrDefault(proyectoId, 0.0),
+                                                        tieneAsignados
                                                 ));
                                             }
 
@@ -773,23 +801,20 @@ public ListenerRegistration observeProjectById(String projectId, FirestoreCallba
                                                             && !"Rechazada".equalsIgnoreCase(estado)) {
                                                         continue;
                                                     }
-                                                    String proyectoId = s.getString("proyectoId");
-                                                    if (proyectoId == null) continue;
-                                                    List<String> aids = asesoresByProyecto.get(proyectoId);
-                                                    if (aids == null || aids.isEmpty()) continue;
+
+                                                    String asesorReal = s.getString("asesorId");
+                                                    if (asesorReal == null || asesorReal.isEmpty()) continue;
+                                                    if (asesorIdFiltro != null && !asesorIdFiltro.isEmpty() && !asesorReal.equals(asesorIdFiltro)) continue;
+
+                                                    int[] cont = contadores.computeIfAbsent(asesorReal, k -> new int[4]);
+                                                    if ("Aprobada".equalsIgnoreCase(estado) || "aprobado".equalsIgnoreCase(estado)) cont[0]++;
+                                                    else if ("Pagada".equalsIgnoreCase(estado)) cont[1]++;
+                                                    else if ("En proceso".equalsIgnoreCase(estado)) cont[2]++;
+                                                    else if ("Rechazada".equalsIgnoreCase(estado)) cont[3]++;
 
                                                     Long monto = s.getLong("montoSeparacion");
-
-                                                    for (String aid : aids) {
-                                                        if (asesorIdFiltro != null && !asesorIdFiltro.isEmpty() && !aid.equals(asesorIdFiltro)) continue;
-                                                        int[] cont = contadores.computeIfAbsent(aid, k -> new int[4]);
-                                                        if ("Aprobada".equalsIgnoreCase(estado) || "aprobado".equalsIgnoreCase(estado)) cont[0]++;
-                                                        else if ("Pagada".equalsIgnoreCase(estado)) cont[1]++;
-                                                        else if ("En proceso".equalsIgnoreCase(estado)) cont[2]++;
-                                                        else if ("Rechazada".equalsIgnoreCase(estado)) cont[3]++;
-                                                        if (monto != null && "Pagada".equalsIgnoreCase(estado)) {
-                                                            montos.merge(aid, (double) monto, Double::sum);
-                                                        }
+                                                    if (monto != null && "Pagada".equalsIgnoreCase(estado)) {
+                                                        montos.merge(asesorReal, (double) monto, Double::sum);
                                                     }
                                                 }
                                             }
