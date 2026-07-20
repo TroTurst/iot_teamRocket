@@ -262,8 +262,13 @@ public class CrearAdminActivity extends AppCompatActivity {
         }
 
         // Validar número documento
+        String tipoDocumento = spinnerTipoDocumento.getText() != null
+                ? spinnerTipoDocumento.getText().toString().trim() : "";
         if (TextUtils.isEmpty(numDoc)) {
             tilNumDocumento.setError(getString(R.string.error_campo_requerido));
+            valido = false;
+        } else if (tipoDocumento.equals("DNI") && !numDoc.matches("\\d{8}")) {
+            tilNumDocumento.setError(getString(R.string.error_dni_invalido));
             valido = false;
         }
 
@@ -285,6 +290,9 @@ public class CrearAdminActivity extends AppCompatActivity {
         // Validar teléfono
         if (TextUtils.isEmpty(telefono)) {
             tilTelefono.setError(getString(R.string.error_campo_requerido));
+            valido = false;
+        } else if (!telefono.matches("\\d{9}")) {
+            tilTelefono.setError(getString(R.string.error_telefono_invalido));
             valido = false;
         }
 

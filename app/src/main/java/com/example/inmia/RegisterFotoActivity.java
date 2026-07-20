@@ -1,6 +1,8 @@
 package com.example.inmia;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,7 +14,10 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,6 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,22 +52,32 @@ public class RegisterFotoActivity extends AppCompatActivity {
                     result -> {
                         if (result.getResultCode() == RESULT_OK
                                 && result.getData() != null) {
-                            fotoUri = result.getData().getData();
-                            imgFoto.setImageURI(fotoUri);
-                            imgFoto.setPadding(0, 0, 0, 0);
+                            mostrarFotoSeleccionada(result.getData().getData());
                         }
                     });
 
-    // Launcher para cámara
+    // Launcher para cámara. La foto se guarda directamente en fotoUriCamara
+    // (vía FileProvider), por lo que el Intent de resultado no trae los datos.
+    private Uri fotoUriCamara;
     private final ActivityResultLauncher<Intent> launcherCamara =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-                        if (result.getResultCode() == RESULT_OK
-                                && result.getData() != null) {
-                            fotoUri = result.getData().getData();
-                            imgFoto.setImageURI(fotoUri);
-                            imgFoto.setPadding(0, 0, 0, 0);
+                        if (result.getResultCode() == RESULT_OK && fotoUriCamara != null) {
+                            mostrarFotoSeleccionada(fotoUriCamara);
+                        }
+                    });
+
+    private final ActivityResultLauncher<String> permisoCamaraLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    concedido -> {
+                        if (concedido) {
+                            lanzarIntentCamara();
+                        } else {
+                            Toast.makeText(this,
+                                    "Se necesita permiso de cámara para tomar la foto.",
+                                    Toast.LENGTH_LONG).show();
                         }
                     });
 
@@ -112,8 +129,43 @@ public class RegisterFotoActivity extends AppCompatActivity {
     }
 
     private void abrirCamara() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        launcherCamara.launch(intent);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            lanzarIntentCamara();
+        } else {
+            permisoCamaraLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void lanzarIntentCamara() {
+        try {
+            File archivo = crearArchivoTemporalFoto();
+            fotoUriCamara = FileProvider.getUriForFile(
+                    this, getPackageName() + ".fileprovider", archivo);
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, fotoUriCamara);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            launcherCamara.launch(intent);
+        } catch (IOException e) {
+            Toast.makeText(this, "No se pudo abrir la cámara.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private File crearArchivoTemporalFoto() throws IOException {
+        File dir = new File(getCacheDir(), "fotos_temp");
+        if (!dir.exists()) dir.mkdirs();
+        return File.createTempFile("foto_", ".jpg", dir);
+    }
+
+    /** Limpia el tinte/fondo del placeholder y muestra la foto real seleccionada. */
+    private void mostrarFotoSeleccionada(Uri uri) {
+        if (uri == null) return;
+        fotoUri = uri;
+        imgFoto.setBackground(null);
+        imgFoto.setPadding(0, 0, 0, 0);
+        imgFoto.setImageTintList(null);
+        Glide.with(this).load(uri).circleCrop().into(imgFoto);
     }
 
     private boolean validarFormulario() {
