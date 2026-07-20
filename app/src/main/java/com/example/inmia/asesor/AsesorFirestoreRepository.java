@@ -16,6 +16,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +122,55 @@ public final class AsesorFirestoreRepository {
                         }
                     }
                 }
+                resolveNombresClientes(clienteIds, nombresMap -> {
+                    List<HomeCita> items = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : docs) items.add(homeCitaFromDoc(doc, nombresMap));
+                    callback.onLoaded(items);
+                });
+            })
+            .addOnFailureListener(e -> callback.onLoaded(new ArrayList<>()));
+    }
+
+    // Citas del asesor dentro del mes calendario actual (de hoy en adelante y
+    // también las que ya pasaron este mes), ordenadas cronológicamente.
+    public void getCitasDelMes(HomeCitasCallback callback) {
+        Calendar inicioMes = Calendar.getInstance();
+        inicioMes.set(Calendar.DAY_OF_MONTH, 1);
+        inicioMes.set(Calendar.HOUR_OF_DAY, 0);
+        inicioMes.set(Calendar.MINUTE, 0);
+        inicioMes.set(Calendar.SECOND, 0);
+        inicioMes.set(Calendar.MILLISECOND, 0);
+
+        Calendar finMes = Calendar.getInstance();
+        finMes.set(Calendar.DAY_OF_MONTH, finMes.getActualMaximum(Calendar.DAY_OF_MONTH));
+        finMes.set(Calendar.HOUR_OF_DAY, 23);
+        finMes.set(Calendar.MINUTE, 59);
+        finMes.set(Calendar.SECOND, 59);
+        finMes.set(Calendar.MILLISECOND, 999);
+
+        Date inicio = inicioMes.getTime();
+        Date fin    = finMes.getTime();
+
+        db.collection("citas")
+            .whereEqualTo("asesorId", getUid())
+            .get()
+            .addOnSuccessListener(snapshots -> {
+                List<QueryDocumentSnapshot> docs = new ArrayList<>();
+                List<String> clienteIds = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    Timestamp ts = doc.getTimestamp("fechaHoraInicio");
+                    if (ts != null && !ts.toDate().before(inicio) && !ts.toDate().after(fin)) {
+                        docs.add(doc);
+                        String cid = doc.getString("clienteId");
+                        if (cid != null && !cid.isEmpty()) clienteIds.add(cid);
+                    }
+                }
+                docs.sort((a, b) -> {
+                    Timestamp ta = a.getTimestamp("fechaHoraInicio");
+                    Timestamp tb = b.getTimestamp("fechaHoraInicio");
+                    if (ta == null || tb == null) return 0;
+                    return ta.compareTo(tb);
+                });
                 resolveNombresClientes(clienteIds, nombresMap -> {
                     List<HomeCita> items = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : docs) items.add(homeCitaFromDoc(doc, nombresMap));

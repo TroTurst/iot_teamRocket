@@ -44,7 +44,7 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
         tvSeparacionesCount = findViewById(R.id.tvSeparacionesCount);
         tvProyectosCount    = findViewById(R.id.tvProyectosCount);
 
-        AsesorNotificacionStore.seedIfEmpty(this);
+        AsesorNotificacionSyncer.sincronizar(this);
         configurarBadge();
 
         frameNotificaciones.setOnClickListener(v -> {
@@ -78,16 +78,21 @@ public class AsesorHomeActivity extends AppCompatActivity implements HomeCitaAda
     protected void onResume() {
         super.onResume();
         cargarDashboardFirestore();
+        AsesorNotificacionSyncer.sincronizar(this);
         configurarBadge();
     }
 
     private void cargarDashboardFirestore() {
         AsesorFirestoreRepository repo = AsesorFirestoreRepository.get();
 
-        // Citas de hoy → recycler + contador
+        // Contador "Citas hoy"
         repo.getCitasHoy(items -> {
-            if (homeCitaAdapter != null) homeCitaAdapter.updateItems(items);
             if (tvCitasHoyCount != null) tvCitasHoyCount.setText(String.valueOf(items.size()));
+        });
+
+        // Lista "Próximas citas" → todas las citas del mes calendario actual
+        repo.getCitasDelMes(items -> {
+            if (homeCitaAdapter != null) homeCitaAdapter.updateItems(items);
         });
 
         // Separaciones: aprobadas y total

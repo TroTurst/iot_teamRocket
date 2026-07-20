@@ -33,75 +33,16 @@ public final class AsesorNotificacionStore {
     private static final String PREFS_NAME = "inmia_asesor_local_storage";
     private static final String KEY_BADGE_COUNT = "asesor_badge_count";
     private static final String KEY_NOTIFICATIONS = "asesor_notifications_json";
-    private static final String KEY_SEEDED = "asesor_seeded_notifications";
 
     private AsesorNotificacionStore() {
     }
 
+    // Ya no genera notificaciones de ejemplo hardcodeadas. Se conserva el método
+    // (llamado desde varias pantallas del asesor) como no-op para no romper esos
+    // puntos de entrada; la generación real de notificaciones ocurre en
+    // AsesorNotificacionSyncer, a partir de datos reales de Firestore.
     public static void seedIfEmpty(Context context) {
-        SharedPreferences prefs = prefs(context);
-        if (prefs.getBoolean(KEY_SEEDED, false)) {
-            return;
-        }
-
-        if (!getNotifications(context).isEmpty()) {
-            prefs.edit().putBoolean(KEY_SEEDED, true).apply();
-            return;
-        }
-
-        List<AsesorNotificacionRegistro> defaults = new ArrayList<>();
-        long now = System.currentTimeMillis();
-        defaults.add(new AsesorNotificacionRegistro(
-            "Cita confirmada",
-            "George Cordova confirmo una cita para Palm Living",
-            TIPO_CITA_CONFIRMADA,
-            TARGET_CITA_DETAIL,
-            "juan_perez_edificio_catalina_sky",
-            now - 2 * 60 * 60 * 1000L,
-            false
-        ));
-        defaults.add(new AsesorNotificacionRegistro(
-            "Separacion solicitada",
-            "Adrian solicita separacion para Palm Living Dpto 402",
-            TIPO_SEPARACION_SOLICITADA,
-            TARGET_SEPARACION_DETAIL,
-            "palm_living",
-            now - 4 * 60 * 60 * 1000L,
-            false
-        ));
-        defaults.add(new AsesorNotificacionRegistro(
-            "Separacion aprobada",
-            "La separacion de Maria Quispe fue aprobada",
-            TIPO_SEPARACION_APROBADA,
-            TARGET_SEPARACION_DETAIL,
-            "palm_living",
-            now - 6 * 60 * 60 * 1000L,
-            false
-        ));
-        defaults.add(new AsesorNotificacionRegistro(
-            "Cita cancelada",
-            "Juan Perez cancelo su cita del 06/04/2026",
-            TIPO_CITA_CANCELADA,
-            TARGET_CITA_DETAIL,
-            "juan_perez_edificio_catalina_sky",
-            now - 26 * 60 * 60 * 1000L,
-            false
-        ));
-        defaults.add(new AsesorNotificacionRegistro(
-            "Pago recibido",
-            "Carlos Mendoza realizo el pago de S/ 2,000",
-            TIPO_PAGO_RECIBIDO,
-            TARGET_SEPARACION_DETAIL,
-            "palm_living",
-            now - 30 * 60 * 60 * 1000L,
-            false
-        ));
-
-        saveNotifications(context, defaults);
-        prefs.edit()
-            .putInt(KEY_BADGE_COUNT, defaults.size())
-            .putBoolean(KEY_SEEDED, true)
-            .apply();
+        // Intencionalmente vacío.
     }
 
     public static int getBadgeCount(Context context) {
